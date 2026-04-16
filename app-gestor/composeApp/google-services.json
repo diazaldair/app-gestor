@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "505531929030",
+    "firebase_url": "https://appgestor-91a81-default-rtdb.firebaseio.com",
+    "project_id": "appgestor-91a81",
+    "storage_bucket": "appgestor-91a81.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:505531929030:android:a5f9ceef74216054c462c7",
+        "android_client_info": {
+          "package_name": "com.gestorplus.appgestor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvvC89D4rdkXlJD8vFGnay124QTMP61l4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

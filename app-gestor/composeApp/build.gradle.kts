@@ -6,44 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-}
-
-kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-    
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
-    sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
-        }
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-    }
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -68,12 +31,65 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+
+    @Suppress("DEPRECATION")
+    androidTarget()
+    
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+    
+    sourceSets {
+        androidMain.dependencies {
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+            implementation(libs.ktor.client.okhttp)
+
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.config)
+            implementation(libs.firebase.database)
+            implementation(libs.firebase.messaging)
+            implementation(libs.kotlinx.coroutines.play.services)
+            
+            // WorkManager
+            implementation(libs.androidx.work.runtime.ktx)
+        }
+        commonMain.dependencies {
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.materialIconsCore)
+            implementation(libs.compose.materialIconsExtended)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            
+            // Koin Core para el AppModule compartido
+            implementation(libs.koin.core)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
 }
-
