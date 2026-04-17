@@ -91,5 +91,6 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.firebase.messaging)
     debugImplementation(libs.compose.uiTooling)
 }
