@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- PERMISO PARA ANDROID 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MainApplication"
@@ -11,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
         <activity
             android:exported="true"
             android:name=".MainActivity"
@@ -21,7 +24,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Servicio de Firebase FCM -->
         <service
             android:name=".core.data.notification.FirebaseService"
             android:exported="false">
@@ -30,7 +32,6 @@
             </intent-filter>
         </service>
 
-        <!-- Meta-data para ícono y color personalizado -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_ic_notification" />

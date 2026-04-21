@@ -70,6 +70,7 @@ kotlin {
             implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
+            implementation(project(":designsystem")) // <--- AGREGAMOS ESTO
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -91,6 +92,5 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.firebase.messaging)
     debugImplementation(libs.compose.uiTooling)
 }

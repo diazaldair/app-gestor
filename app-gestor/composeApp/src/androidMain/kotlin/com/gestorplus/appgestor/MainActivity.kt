@@ -1,33 +1,58 @@
 package com.gestorplus.appgestor
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.gestorplus.appgestor.core.firebase.getToken
 import com.gestorplus.appgestor.core.work.LogScheduler
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class MainActivity : ComponentActivity() {
+
+    // Manejador del resultado del permiso
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Log.d("FCM_DEBUG", "Permiso de notificaciones CONCEDIDO")
+        } else {
+            Log.w("FCM_DEBUG", "Permiso de notificaciones DENEGADO")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Inicializar WorkManager (Programador de tareas)
+        // 1. Pedir permiso de notificaciones (Android 13+)
+        askNotificationPermission()
+
+        // 2. Inicializar WorkManager
         val scheduler = LogScheduler(this)
         scheduler.schedulePeriodicUpload()
+        Log.w("FCM_DEBUG", "=== PUNTO 1: WorkManager OK ===")
 
-        // Fase 4: Obtener Token para pruebas
-        fetchFcmToken()
+        // 3. Obtener el Token de Firebase
+        lifecycleScope.launch {
+            try {
+                val token = getToken()
+                Log.w("FCM_DEBUG", "=== 🎯 TOKEN OBTENIDO: $token ===")
+            } catch (e: Exception) {
+                Log.e("FCM_DEBUG", "=== 💀 ERROR OBTENIENDO TOKEN: ${e.message}")
+            }
+        }
 
-        // Fase 5: Procesar intent de notificación
         handleIntent(intent)
 
         setContent {
@@ -35,20 +60,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d("FCM_DEBUG", "El permiso ya estaba concedido")
+            } else {
+                // Pedir el permiso directamente
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
-    }
-
-    private fun fetchFcmToken() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val token = FirebaseMessaging.getInstance().token.await()
-                Log.d("FIREBASE_TOKEN", "Mi Token es: $token")
-            } catch (e: Exception) {
-                Log.e("FIREBASE_TOKEN", "Error obteniendo token", e)
-            }
-        }
     }
 
     private fun handleIntent(intent: Intent?) {

@@ -15,60 +15,64 @@ import com.google.firebase.messaging.RemoteMessage
 class FirebaseService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "Mensaje recibido de: ${remoteMessage.from}")
+        // LOG CRITICO: Esto DEBE aparecer en el Logcat si Firebase está enviando algo
+        Log.w(TAG, "¡¡¡ EVENTO RECIBIDO !!!")
+        Log.d(TAG, "De: ${remoteMessage.from}")
 
-        // 1. Procesar datos (Data payload)
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Datos del mensaje: ${remoteMessage.data}")
-            // Aquí podrías disparar un Worker si la tarea es larga
-        }
+        val title = remoteMessage.notification?.title ?: remoteMessage.data["title"] ?: "Notificación Forzada"
+        val body = remoteMessage.notification?.body ?: remoteMessage.data["body"] ?: "Mensaje recibido sin cuerpo"
 
-        // 2. Procesar notificación visible
-        remoteMessage.notification?.let {
-            Log.d(TAG, "Cuerpo de la notificación: ${it.body}")
-            sendNotification(it.title ?: "Nuevo mensaje", it.body ?: "")
-        }
+        Log.d(TAG, "Procesando Notificación: $title - $body")
+        sendNotification(title, body)
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Nuevo Token generado: $token")
-        // Aquí deberías enviar el token a tu servidor/base de datos
+        Log.w(TAG, "TOKEN REFRESCADO: $token")
     }
 
     private fun sendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val channelId = "fcm_default_channel"
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // Usa un ícono real de tu app
-            .setContentTitle(title)
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "fcm_test_channel"
 
-        // Crear canal para Android 8.0 o superior
+        // Forzamos la creación del canal con importancia MAXIMA
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "Notificaciones Generales",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                "Pruebas Firebase",
+                NotificationManager.IMPORTANCE_HIGH // IMPORTANCIA ALTA para que suene y salga el globo
+            ).apply {
+                description = "Canal para pruebas de notificaciones"
+                enableLights(true)
+                enableVibration(true)
+            }
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(0, notificationBuilder.build())
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        
+        val pendingIntent = PendingIntent.getActivity(
+            this, 
+            System.currentTimeMillis().toInt(), 
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // PRIORIDAD ALTA
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
+        Log.d(TAG, "Comando de notificación enviado al sistema Android")
     }
 
     companion object {
-        private const val TAG = "FirebaseService"
+        private const val TAG = "FCM_SERVICE"
     }
 }
