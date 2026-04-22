@@ -91,8 +91,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             
-            // Koin Core para el AppModule compartido
+            // Koin Core y Compose
             implementation(libs.koin.core)
+            implementation("io.insert-koin:koin-compose:4.0.1")
+            implementation("io.insert-koin:koin-compose-viewmodel:4.0.1")
 
             // Room
             implementation(libs.androidx.room.runtime)
