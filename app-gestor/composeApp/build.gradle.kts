@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -36,6 +38,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+}
+
+// Configuración obligatoria para Room Gradle Plugin
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 kotlin {
@@ -78,7 +85,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
+            
             implementation(libs.compose.materialIconsCore)
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -86,6 +93,10 @@ kotlin {
             
             // Koin Core para el AppModule compartido
             implementation(libs.koin.core)
+
+            // Room
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -95,6 +106,10 @@ kotlin {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    // Procesador de Room con KSP
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
 }
 
 // Tarea para descargar traducciones de Loco compatible con Gradle 8+
@@ -110,7 +125,7 @@ abstract class DownloadLocoTask : DefaultTask() {
 
     @TaskAction
     fun download() {
-        val apiKey = key.get().trim() // Limpiamos espacios o caracteres extra
+        val apiKey = key.get().trim()
         if (apiKey.isEmpty()) {
             throw GradleException("locoKey not found in local.properties")
         }

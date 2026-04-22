@@ -10,17 +10,8 @@ kotlin {
 
     androidLibrary {
         namespace = "com.gestorplus.appgestor.designsystem"
-        compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     val xcfName = "designsystemKit"
@@ -52,7 +43,7 @@ kotlin {
                 implementation(libs.compose.material3)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.components.resources)
-                implementation(libs.compose.uiToolingPreview)
+                // Se eliminó de aquí porque no es compatible con iOS en esta versión
             }
         }
 
@@ -64,14 +55,8 @@ kotlin {
 
         androidMain {
             dependencies {
-            }
-        }
-
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.testExt.junit)
+                // Se movió aquí para que solo afecte al target de Android
+                implementation(libs.compose.uiToolingPreview)
             }
         }
 
