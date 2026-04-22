@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
-import com.gestorplus.appgestor.presentation.DesignSystemTestScreen
+import com.gestorplus.appgestor.presentation.booking.BookingScreen
 
 @Composable
 fun App() {
@@ -27,7 +27,7 @@ fun App() {
            snackbarHost = { SnackbarHost(snackbarHostState) }
        ) { paddingValues ->
            Box(modifier = Modifier.padding(paddingValues)) {
-               DesignSystemTestScreen()
+               BookingScreen()
            }
        }
    }

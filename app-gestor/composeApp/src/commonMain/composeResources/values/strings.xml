@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Loco xml export: Android strings
+ Project: Mobile
+ Locale: en-US, English (USA)
+ Exported by: Marlon Tomas Marzo Fernandez
+ Exported at: Wed, 22 Apr 2026 11:36:47 -0400
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="booking_title">Bookings</string>
+</resources>

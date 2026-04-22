@@ -1,5 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.net.URI
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -70,7 +72,7 @@ kotlin {
             implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
-            implementation(project(":designsystem")) // <--- AGREGAMOS ESTO
+            implementation(project(":designsystem"))
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -93,4 +95,61 @@ kotlin {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+}
+
+// Tarea para descargar traducciones de Loco compatible con Gradle 8+
+abstract class DownloadLocoTask : DefaultTask() {
+    @get:Input
+    abstract val key: Property<String>
+
+    @get:Input
+    abstract val locales: MapProperty<String, String>
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun download() {
+        val apiKey = key.get().trim() // Limpiamos espacios o caracteres extra
+        if (apiKey.isEmpty()) {
+            throw GradleException("locoKey not found in local.properties")
+        }
+
+        locales.get().forEach { (locoLocale, folderName) ->
+            println("Downloading translations for $locoLocale...")
+            val url = "https://localise.biz/api/export/locale/$locoLocale.xml?key=$apiKey"
+            
+            val destFolder = outputDir.get().dir(folderName).asFile
+            if (!destFolder.exists()) destFolder.mkdirs()
+            
+            val destinationFile = File(destFolder, "strings.xml")
+            
+            try {
+                val content = URI(url).toURL().readText()
+                destinationFile.writeText(content)
+                println("✅ Saved to ${destinationFile.absolutePath}")
+            } catch (e: Exception) {
+                println("❌ Error downloading $locoLocale: ${e.message}")
+            }
+        }
+    }
+}
+
+val locoProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
+
+tasks.register<DownloadLocoTask>("downloadLocoTranslations") {
+    group = "localization"
+    description = "Downloads translations from Loco (localise.biz)"
+    key.set(locoProperties.getProperty("locoKey") ?: "")
+    locales.set(mapOf(
+        "es-BO" to "values-es",
+        "en-US" to "values",
+        "it-IT" to "values-it"
+    ))
+    outputDir.set(project.file("src/commonMain/composeResources"))
 }
