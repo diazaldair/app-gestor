@@ -1,1 +1,29 @@
-/build
+# Android & Kotlin general
+build/
+.gradle/
+*.iml
+.kotlin/
+
+# Android Studio / IntelliJ
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/studiobot.xml
+
+# VS Code
+.vscode/
+
+# Local configuration (IMPORTANTE: nunca subas tus keys)
+local.properties
+
+# Log files
+*.log
+
+# Mac / Windows files
+.DS_Store
+Thumbs.db
