@@ -57,6 +57,7 @@ fun OwnerDashboardScreen(
                                 "CONFIRMED" -> Color(0xFF4CAF50)
                                 "PENDING" -> Color(0xFFFF9800)
                                 "PAID" -> Color(0xFF2196F3)
+                                "FEATURED" -> Color(0xFF00BCD4) // Cian para sincronización
                                 else -> Color.Gray
                             },
                             onDetailsClick = { /* Ver detalles */ },

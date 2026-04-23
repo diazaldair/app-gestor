@@ -32,4 +32,30 @@ class BookingRepository(
         bookingDao.updateBookingStatus(bookingId, newStatus)
         firebaseManager.saveData("bookings/$bookingId/status", newStatus)
     }
+
+    suspend fun syncInitialConfig() {
+        try {
+            // 1. Obtenemos datos de Remote Config
+            val syncClient = firebaseManager.getString("sync_client_name")
+            val syncService = firebaseManager.getString("sync_client_service")
+            val syncPrice = firebaseManager.getString("sync_price").toDoubleOrNull() ?: 99.9
+
+            // 2. Si hay datos válidos, guardamos en Room como "Caché inicial"
+            if (syncClient.isNotEmpty() && syncClient != "vacio") {
+                val configBooking = BookingEntity(
+                    id = "config_sync_001",
+                    clientName = syncClient,
+                    serviceName = syncService,
+                    timestamp = System.currentTimeMillis(),
+                    durationMinutes = 45,
+                    status = "FEATURED", // Un estado especial para identificarlo
+                    price = syncPrice,
+                    categoryColor = 0xFF00BCD4 // Color Cian para destacar
+                )
+                bookingDao.insertBooking(configBooking)
+            }
+        } catch (e: Exception) {
+            // Si falla el fetch, Room mantendrá lo que ya tenía (Persistencia Offline)
+        }
+    }
 }

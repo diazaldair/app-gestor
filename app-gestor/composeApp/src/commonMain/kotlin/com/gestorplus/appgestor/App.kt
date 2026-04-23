@@ -14,18 +14,28 @@ import androidx.compose.ui.Modifier
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.data.repository.BookingRepository
 import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
 import org.koin.compose.koinInject
 
 @Composable
 fun App() {
    val firebaseManager: FirebaseManager = koinInject()
+   val repository: BookingRepository = koinInject()
    val snackbarHostState = remember { SnackbarHostState() }
 
    LaunchedEffect(Unit) {
-       val defaults = mapOf("primary_color" to "#6200EE")
+       val defaults = mapOf(
+           "primary_color" to "#6200EE",
+           "sync_client_name" to "Promoción de Verano",
+           "sync_client_service" to "Consultoría Gratuita",
+           "sync_price" to "0.0"
+       )
        firebaseManager.initializeRemoteConfig(defaults)
        firebaseManager.fetchAndActivate()
+       
+       // Sincronizamos con Room
+       repository.syncInitialConfig()
    }
 
    DsTheme(
