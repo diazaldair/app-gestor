@@ -7,7 +7,7 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
 import kotlinx.coroutines.tasks.await
 
 actual class FirebaseManager actual constructor() {
-    private val database = FirebaseDatabase.getInstance().reference
+    private val database = FirebaseDatabase.getInstance("https://appgestor-91a81-default-rtdb.firebaseio.com/").reference
     private val remoteConfig = FirebaseRemoteConfig.getInstance()
 
     actual suspend fun saveData(path: String, value: String) {

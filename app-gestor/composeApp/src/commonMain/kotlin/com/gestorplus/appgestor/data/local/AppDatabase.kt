@@ -9,7 +9,7 @@ import com.gestorplus.appgestor.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.data.local.entity.BookingDraftEntity
 import com.gestorplus.appgestor.data.local.entity.EventLogEntity
 
-@Database(entities = [BookingEntity::class, BookingDraftEntity::class, EventLogEntity::class], version = 1)
+@Database(entities = [BookingEntity::class, BookingDraftEntity::class, EventLogEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase(), DB {
     abstract fun bookingDao(): BookingDao
     abstract fun bookingDraftDao(): BookingDraftDao

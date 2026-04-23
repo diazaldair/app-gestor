@@ -10,8 +10,10 @@ val databaseModule = module {
     // Provee la instancia de AppDatabase usando el builder de plataforma
     single<AppDatabase> { getRoomDatabase(get()) }
     
-    // Provee el DAO para que sea fácil de inyectar en Repositorios
+    // Provee los DAOs para que sea fácil de inyectar en Repositorios
     single { get<AppDatabase>().bookingDao() }
+    single { get<AppDatabase>().bookingDraftDao() }
+    single { get<AppDatabase>().eventLogDao() }
 }
 
 // Módulo que debe ser implementado en cada plataforma (androidMain e iosMain)

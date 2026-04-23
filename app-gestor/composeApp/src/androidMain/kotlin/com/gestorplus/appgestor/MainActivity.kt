@@ -16,9 +16,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.gestorplus.appgestor.core.firebase.getToken
 import com.gestorplus.appgestor.core.work.LogScheduler
+import com.gestorplus.appgestor.data.repository.EventRepository
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+    private val eventRepository: EventRepository by inject()
 
     // Manejador del resultado del permiso
     private val requestPermissionLauncher = registerForActivityResult(
@@ -55,6 +58,9 @@ class MainActivity : ComponentActivity() {
 
         handleIntent(intent)
 
+        // Registro de evento de apertura
+        eventRepository.logEvent("APP_START")
+
         setContent {
             App()
         }
@@ -85,6 +91,11 @@ class MainActivity : ComponentActivity() {
                 Log.d("MAIN_ACTIVITY", "¡Éxito! Navegando a GithubScreen por Push Notification")
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        eventRepository.logEvent("APP_CLOSE")
     }
 }
 

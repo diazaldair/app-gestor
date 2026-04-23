@@ -1,6 +1,7 @@
 package com.gestorplus.appgestor.di
 
 import com.gestorplus.appgestor.data.repository.BookingRepository
+import com.gestorplus.appgestor.data.repository.EventRepository
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.presentation.owner.OwnerDashboardViewModel
 import org.koin.dsl.module
@@ -12,6 +13,7 @@ val appModule = module {
 
     // Repositorios
     single { BookingRepository(get(), get()) }
+    single { EventRepository(get(), get()) }
 
     // ViewModels
     viewModelOf(::OwnerDashboardViewModel)
