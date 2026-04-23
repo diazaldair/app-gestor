@@ -44,4 +44,14 @@ actual class FirebaseManager actual constructor() {
         Log.d("Firebase_Debug", "Leyendo llave [$key]: Valor obtenido -> '$value'")
         return value
     }
+
+    actual suspend fun getFirebaseLogs(path: String): List<String> {
+        return try {
+            val snapshot = database.child(path).get().await()
+            snapshot.children.mapNotNull { it.value?.toString() }
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error obteniendo logs: ${e.message}")
+            emptyList()
+        }
+    }
 }

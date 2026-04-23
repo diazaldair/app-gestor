@@ -11,6 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gestorplus.appgestor.designsystem.components.card.AppointmentCard
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import org.koin.compose.viewmodel.koinViewModel
@@ -21,6 +25,9 @@ fun OwnerDashboardScreen(
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
     val bookings by viewModel.bookings.collectAsState()
+    val firebaseLogs by viewModel.firebaseLogs.collectAsState()
+    val isLogsLoading by viewModel.isLogsLoading.collectAsState()
+    var showLogsDialog by remember { mutableStateOf(false) }
 
     DsTheme {
         Scaffold(
@@ -64,8 +71,54 @@ fun OwnerDashboardScreen(
                             onMessageClick = { /* Enviar mensaje */ }
                         )
                     }
+
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = { 
+                                viewModel.loadFirebaseLogs()
+                                showLogsDialog = true 
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                        ) {
+                            Text(" Ver Logs del Ejercicio 4 (Desde Firebase)")
+                        }
+                    }
                 }
             }
+        }
+
+        if (showLogsDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogsDialog = false },
+                title = { Text("App Logs (Realtime Database)") },
+                text = {
+                    Column {
+                        if (isLogsLoading) {
+                            CircularProgressIndicator(modifier = Modifier.align(androidx.compose.ui.Alignment.CenterHorizontally))
+                        } else if (firebaseLogs.isEmpty()) {
+                            Text("No se encontraron logs en Firebase.")
+                        } else {
+                            LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                                items(firebaseLogs) { log ->
+                                    Text(
+                                        text = "• $log",
+                                        style = AppTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(vertical = 4.dp)
+                                    )
+                                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showLogsDialog = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
         }
     }
 }

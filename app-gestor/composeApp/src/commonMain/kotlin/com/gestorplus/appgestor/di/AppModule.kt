@@ -13,7 +13,7 @@ val appModule = module {
 
     // Repositorios
     single { BookingRepository(get(), get()) }
-    single { EventRepository(get(), get()) }
+    single { EventRepository(get()) }
 
     // ViewModels
     viewModelOf(::OwnerDashboardViewModel)

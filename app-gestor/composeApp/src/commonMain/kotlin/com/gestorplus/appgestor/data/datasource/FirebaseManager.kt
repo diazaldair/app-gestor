@@ -7,4 +7,5 @@ expect class FirebaseManager() {
     suspend fun initializeRemoteConfig(defaultValues: Map<String, Any>)
     suspend fun fetchAndActivate(): Boolean
     fun getString(key: String): String
+    suspend fun getFirebaseLogs(path: String): List<String>
 }

@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
 
         // Registro de evento de apertura
         eventRepository.logEvent("APP_START")
+        
+        // Disparar sincronización en segundo plano (WorkManager)
+        scheduler.triggerImmediateSync()
 
         setContent {
             App()
@@ -96,6 +99,9 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         eventRepository.logEvent("APP_CLOSE")
+        
+        // Disparar sincronización antes de que el proceso se detenga
+        LogScheduler(this).triggerImmediateSync()
     }
 }
 
