@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.data.local.entity.BookingEntity
-import com.gestorplus.appgestor.data.repository.BookingRepository
+import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class OwnerDashboardViewModel(
-    private val repository: BookingRepository,
+    private val repository: OwnerBookingRepository,
     private val firebaseManager: FirebaseManager
 ) : ViewModel() {
 
@@ -22,6 +22,12 @@ class OwnerDashboardViewModel(
 
     private val _isLogsLoading = MutableStateFlow(false)
     val isLogsLoading = _isLogsLoading.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.syncAllBookings()
+        }
+    }
 
     // Escuchamos los cambios en Room de forma reactiva
     val bookings: StateFlow<List<BookingEntity>> = repository.getBookings()

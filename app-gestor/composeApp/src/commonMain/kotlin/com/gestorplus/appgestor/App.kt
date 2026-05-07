@@ -14,14 +14,14 @@ import androidx.compose.ui.Modifier
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.data.repository.BookingRepository
+import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
 import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
 import org.koin.compose.koinInject
 
 @Composable
 fun App() {
    val firebaseManager: FirebaseManager = koinInject()
-   val repository: BookingRepository = koinInject()
+   val repository: OwnerBookingRepository = koinInject()
    val snackbarHostState = remember { SnackbarHostState() }
 
    LaunchedEffect(Unit) {
@@ -41,13 +41,9 @@ fun App() {
    DsTheme(
        mode = ThemeMode.DARK
    ) {
-       Scaffold(
-           contentWindowInsets = WindowInsets.safeDrawing,
-           snackbarHost = { SnackbarHost(snackbarHostState) }
-       ) { paddingValues ->
-           Box(modifier = Modifier.padding(paddingValues)) {
-               OwnerDashboardScreen()
-           }
-       }
+       // Llamamos directamente a la pantalla del dueño. 
+       // Ella ya tiene su propio Scaffold y maneja sus márgenes.
+       OwnerDashboardScreen()
    }
+
 }

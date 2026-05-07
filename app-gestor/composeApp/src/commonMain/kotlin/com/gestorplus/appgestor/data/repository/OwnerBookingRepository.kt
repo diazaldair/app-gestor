@@ -5,7 +5,7 @@ import com.gestorplus.appgestor.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import kotlinx.coroutines.flow.Flow
 
-class BookingRepository(
+class OwnerBookingRepository(
     private val bookingDao: BookingDao,
     private val firebaseManager: FirebaseManager
 ) {
@@ -31,6 +31,33 @@ class BookingRepository(
     suspend fun updateStatus(bookingId: String, newStatus: String) {
         bookingDao.updateBookingStatus(bookingId, newStatus)
         firebaseManager.saveData("bookings/$bookingId/status", newStatus)
+    }
+
+    suspend fun syncAllBookings() {
+        try {
+            // Fetch all bookings for all dates (simplified)
+            // En un caso real, filtraríamos por fecha o usaríamos un listener.
+            val allRemoteData = firebaseManager.getData("bookings") ?: return
+            
+            allRemoteData.forEach { (date, slots) ->
+                (slots as? Map<String, String>)?.forEach { (slotId, value) ->
+                    val parts = value.split("|")
+                    val booking = BookingEntity(
+                        id = "$date-$slotId",
+                        clientName = parts.getOrNull(0) ?: "Unknown",
+                        serviceName = parts.getOrNull(1) ?: "General Service",
+                        timestamp = System.currentTimeMillis(),
+                        durationMinutes = 30,
+                        status = parts.getOrNull(2) ?: "PENDING",
+                        price = 0.0, // Valor por defecto para sincronización masiva
+                        categoryColor = 0xFF6200EE // Color por defecto
+                    )
+                    bookingDao.insertBooking(booking)
+                }
+            }
+        } catch (e: Exception) {
+            // Log error
+        }
     }
 
     suspend fun syncInitialConfig() {

@@ -28,10 +28,11 @@ import com.gestorplus.appgestor.presentation.booking.theme.TextSecondary
 import org.jetbrains.compose.resources.stringResource
 import app_gestor.composeapp.generated.resources.Res
 import app_gestor.composeapp.generated.resources.booking_title
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun BookingScreen(
-    viewModel: BookingViewModel = androidx.lifecycle.viewmodel.compose.viewModel { BookingViewModel() }
+    viewModel: BookingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 

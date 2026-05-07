@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.gestorplus.appgestor.MainActivity
 import com.gestorplus.appgestor.data.local.entity.BookingEntity
-import com.gestorplus.appgestor.data.repository.BookingRepository
+import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +21,7 @@ import org.koin.android.ext.android.inject
 
 class FirebaseService : FirebaseMessagingService() {
 
-    private val repository: BookingRepository by inject()
+    private val repository: OwnerBookingRepository by inject()
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

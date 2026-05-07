@@ -18,4 +18,14 @@ actual class FirebaseManager actual constructor() {
         println("Firebase iOS: getString not yet implemented")
         return ""
     }
+
+    actual suspend fun getFirebaseLogs(path: String): List<String> {
+        println("Firebase iOS: getFirebaseLogs not yet implemented")
+        return emptyList()
+    }
+
+    actual suspend fun getData(path: String): Map<String, Any>? {
+        println("Firebase iOS: getData not yet implemented")
+        return null
+    }
 }

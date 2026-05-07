@@ -54,4 +54,14 @@ actual class FirebaseManager actual constructor() {
             emptyList()
         }
     }
+
+    actual suspend fun getData(path: String): Map<String, Any>? {
+        return try {
+            val snapshot = database.child(path).get().await()
+            snapshot.value as? Map<String, Any>
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error obteniendo data: ${e.message}")
+            null
+        }
+    }
 }

@@ -8,4 +8,5 @@ expect class FirebaseManager() {
     suspend fun fetchAndActivate(): Boolean
     fun getString(key: String): String
     suspend fun getFirebaseLogs(path: String): List<String>
+    suspend fun getData(path: String): Map<String, Any>?
 }

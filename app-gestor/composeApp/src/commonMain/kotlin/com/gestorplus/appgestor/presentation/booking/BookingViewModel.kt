@@ -1,6 +1,5 @@
 package com.gestorplus.appgestor.presentation.booking
 
-import com.gestorplus.appgestor.data.booking.repository.BookingRepositoryImpl
 import com.gestorplus.appgestor.domain.booking.model.SlotPeriod
 import com.gestorplus.appgestor.domain.booking.usecase.ConfirmBookingUseCase
 import com.gestorplus.appgestor.domain.booking.usecase.GetAvailableSlotsUseCase
@@ -14,8 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BookingViewModel(
-    private val getAvailableSlotsUseCase: GetAvailableSlotsUseCase = GetAvailableSlotsUseCase(BookingRepositoryImpl()),
-    private val confirmBookingUseCase: ConfirmBookingUseCase = ConfirmBookingUseCase(BookingRepositoryImpl())
+    private val getAvailableSlotsUseCase: GetAvailableSlotsUseCase,
+    private val confirmBookingUseCase: ConfirmBookingUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookingState())
