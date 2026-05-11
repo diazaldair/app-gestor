@@ -14,11 +14,11 @@ plugins {
 }
 
 android {
-    namespace = "com.gestorplus.appgestor"
+    namespace = "com.appGestor.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.gestorplus.appgestor"
+        applicationId = "com.appGestor.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -73,6 +73,7 @@ kotlin {
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
             implementation(libs.firebase.messaging)
+            implementation(libs.firebase.analytics)
             implementation(libs.kotlinx.coroutines.play.services)
             
             // WorkManager
