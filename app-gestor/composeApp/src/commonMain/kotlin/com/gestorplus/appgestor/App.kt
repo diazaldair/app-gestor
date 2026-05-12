@@ -15,7 +15,7 @@ import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
-import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
+import com.gestorplus.appgestor.presentation.MainScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -41,9 +41,8 @@ fun App() {
    DsTheme(
        mode = ThemeMode.DARK
    ) {
-       // Llamamos directamente a la pantalla del dueño. 
-       // Ella ya tiene su propio Scaffold y maneja sus márgenes.
-       OwnerDashboardScreen()
+       // Llamamos a la pantalla principal que maneja la navegación inferior.
+       MainScreen()
    }
 
 }

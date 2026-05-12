@@ -35,3 +35,10 @@ val HighContrastPalette = AppColors(
    textPrimary = Color(0xFFFFFFFF),
    isLight = false
 )
+
+// SoloBook Theme Colors
+val SoloBookBackground = Color(0xFF0F172A)
+val SoloBookSurface = Color(0xFF1E293B)
+val SoloBookPrimary = Color(0xFF3B82F6)
+val SoloBookTextGray = Color(0xFF94A3B8)
+val SoloBookCardBackground = Color(0xFF1E293B)
