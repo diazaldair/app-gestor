@@ -19,45 +19,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
+import com.gestorplus.appgestor.designsystem.theme.SoloBookBackground
+import com.gestorplus.appgestor.designsystem.theme.SoloBookPrimary
+import com.gestorplus.appgestor.designsystem.theme.SoloBookSurface
 import org.koin.compose.viewmodel.koinViewModel
-
-// Colores del tema SoloBook
-private val SoloBookBackground = Color(0xFF0F172A)
-private val SoloBookSurface = Color(0xFF1E293B)
-private val SoloBookPrimary = Color(0xFF3B82F6)
 
 @Composable
 fun OwnerDashboardScreen(
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
+    DsTheme {
+        OwnerDashboardScreenContent(viewModel)
+    }
+}
+
+@Composable
+fun OwnerDashboardScreenContent(
+    viewModel: OwnerDashboardViewModel = koinViewModel()
+) {
     // 1. Observamos los datos reales del ViewModel
     val bookings by viewModel.bookings.collectAsState()
 
-    DsTheme {
-        Scaffold(
-            bottomBar = {
-                BottomNavigationBar()
-            },
-            containerColor = SoloBookBackground
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                DashboardHeader()
-                Spacer(modifier = Modifier.height(24.dp))
-                StatusFilters()
-                Spacer(modifier = Modifier.height(24.dp))
-                CalendarGrid()
-                Spacer(modifier = Modifier.height(32.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SoloBookBackground)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        DashboardHeader()
+        Spacer(modifier = Modifier.height(24.dp))
+        StatusFilters()
+        Spacer(modifier = Modifier.height(24.dp))
+        CalendarGrid()
+        Spacer(modifier = Modifier.height(32.dp))
 
-                // 2. Pasamos las citas reales a la sección de agenda
-                AgendaSection(bookings)
-            }
-        }
+        // 2. Pasamos las citas reales a la sección de agenda
+        AgendaSection(bookings)
     }
 }
 
@@ -276,24 +274,3 @@ fun AgendaItem(time: String, title: String, subtitle: String, statusIcon: androi
     }
 }
 
-@Composable
-fun BottomNavigationBar() {
-    Surface(color = SoloBookBackground, border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.White.copy(alpha = 0.1f))) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            NavigationItem(Icons.Default.DateRange, "Calendar", true)
-            NavigationItem(Icons.Default.Person, "Clients", false)
-            NavigationItem(Icons.Default.Info, "Insights", false)
-            NavigationItem(Icons.Default.AccountCircle, "Profile", false)
-        }
-    }
-}
-
-@Composable
-fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
-    val color = if (isSelected) SoloBookPrimary else Color.Gray
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { /* TODO */ }) {
-        Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(label, color = color, fontSize = 10.sp)
-    }
-}
