@@ -1,6 +1,7 @@
 package com.gestorplus.appgestor.services.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ServiceScreen(
     viewModel: ServiceViewModel = koinViewModel(),
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onNavigateToSuccess: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -46,7 +48,7 @@ fun ServiceScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { /* TODO */ },
-                containerColor = Color(0xFF60A5FA),
+                containerColor = Color(0xFF3B82F6),
                 contentColor = Color.White,
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -78,7 +80,7 @@ fun ServiceScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 8.dp)
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "${state.services.size} Active",
                     color = Color.Gray,
@@ -96,7 +98,10 @@ fun ServiceScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(state.services) { service ->
-                    ServiceCard(service = service)
+                    ServiceCard(
+                        service = service,
+                        modifier = Modifier.clickable { onNavigateToSuccess() }
+                    )
                 }
 
                 item {
@@ -141,9 +146,4 @@ fun BusinessInsightsCard() {
             modifier = Modifier.padding(top = 16.dp)
         )
     }
-}
-
-@Composable
-private fun Spacer(modifier: Modifier) {
-    androidx.compose.foundation.layout.Spacer(modifier = modifier)
 }

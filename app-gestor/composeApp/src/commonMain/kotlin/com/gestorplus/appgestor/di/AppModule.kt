@@ -13,6 +13,7 @@ import com.gestorplus.appgestor.services.data.repository.ServiceRepositoryImpl
 import com.gestorplus.appgestor.services.domain.repository.ServiceRepository
 import com.gestorplus.appgestor.services.domain.usecase.GetServicesUseCase
 import com.gestorplus.appgestor.services.presentation.viewmodel.ServiceViewModel
+import com.gestorplus.appgestor.booking_success.presentation.viewmodel.BookingSuccessViewModel
 import org.koin.dsl.module
 import org.koin.core.module.dsl.viewModelOf
 
@@ -35,4 +36,5 @@ val appModule = module {
     viewModelOf(::OwnerDashboardViewModel)
     viewModelOf(::BookingViewModel)
     viewModelOf(::ServiceViewModel)
+    viewModelOf(::BookingSuccessViewModel)
 }

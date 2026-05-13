@@ -7,6 +7,7 @@ import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
 import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
 import com.gestorplus.appgestor.services.presentation.screen.ServiceScreen
+import com.gestorplus.appgestor.booking_success.presentation.screen.BookingSuccessScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -33,14 +34,24 @@ fun App() {
    DsTheme(
        mode = ThemeMode.DARK
    ) {
-       if (currentScreen == "dashboard") {
-           OwnerDashboardScreen(
-               onNavigateToServices = { currentScreen = "services" }
-           )
-       } else {
-           ServiceScreen(
-               onBack = { currentScreen = "dashboard" }
-           )
+       when (currentScreen) {
+           "dashboard" -> {
+               OwnerDashboardScreen(
+                   onNavigateToServices = { currentScreen = "services" }
+               )
+           }
+           "services" -> {
+               ServiceScreen(
+                   onBack = { currentScreen = "dashboard" },
+                   onNavigateToSuccess = { currentScreen = "booking_success" }
+               )
+           }
+           "booking_success" -> {
+               BookingSuccessScreen(
+                   onDone = { currentScreen = "dashboard" },
+                   onViewBookings = { currentScreen = "dashboard" }
+               )
+           }
        }
    }
 }
