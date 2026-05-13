@@ -28,35 +28,34 @@ private val SoloBookPrimary = Color(0xFF3B82F6)
 
 @Composable
 fun OwnerDashboardScreen(
-    viewModel: OwnerDashboardViewModel = koinViewModel()
+    viewModel: OwnerDashboardViewModel = koinViewModel(),
+    onNavigateToServices: () -> Unit = {}
 ) {
     // 1. Observamos los datos reales del ViewModel
     val bookings by viewModel.bookings.collectAsState()
 
-    DsTheme {
-        Scaffold(
-            bottomBar = {
-                BottomNavigationBar()
-            },
-            containerColor = SoloBookBackground
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                DashboardHeader()
-                Spacer(modifier = Modifier.height(24.dp))
-                StatusFilters()
-                Spacer(modifier = Modifier.height(24.dp))
-                CalendarGrid()
-                Spacer(modifier = Modifier.height(32.dp))
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(onNavigateToServices = onNavigateToServices)
+        },
+        containerColor = SoloBookBackground
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            DashboardHeader()
+            Spacer(modifier = Modifier.height(24.dp))
+            StatusFilters()
+            Spacer(modifier = Modifier.height(24.dp))
+            CalendarGrid()
+            Spacer(modifier = Modifier.height(32.dp))
 
-                // 2. Pasamos las citas reales a la sección de agenda
-                AgendaSection(bookings)
-            }
+            // 2. Pasamos las citas reales a la sección de agenda
+            AgendaSection(bookings)
         }
     }
 }
@@ -277,21 +276,29 @@ fun AgendaItem(time: String, title: String, subtitle: String, statusIcon: androi
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(onNavigateToServices: () -> Unit) {
     Surface(color = SoloBookBackground, border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.White.copy(alpha = 0.1f))) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround) {
             NavigationItem(Icons.Default.DateRange, "Calendar", true)
             NavigationItem(Icons.Default.Person, "Clients", false)
             NavigationItem(Icons.Default.Info, "Insights", false)
-            NavigationItem(Icons.Default.AccountCircle, "Profile", false)
+            NavigationItem(Icons.Default.AccountCircle, "Services", false, onClick = onNavigateToServices)
         }
     }
 }
 
 @Composable
-fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
+fun NavigationItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector, 
+    label: String, 
+    isSelected: Boolean,
+    onClick: () -> Unit = {}
+) {
     val color = if (isSelected) SoloBookPrimary else Color.Gray
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { /* TODO */ }) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally, 
+        modifier = Modifier.clickable { onClick() }
+    ) {
         Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(4.dp))
         Text(label, color = color, fontSize = 10.sp)
