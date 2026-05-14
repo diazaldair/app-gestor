@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +33,26 @@ import app_gestor.composeapp.generated.resources.Res
 import app_gestor.composeapp.generated.resources.booking_title
 import org.koin.compose.viewmodel.koinViewModel
 
+private val SurfaceColor = Color(0xFF1E293B)
+
 @Composable
 fun BookingScreen(
+    onBack: () -> Unit,
+    onConfirm: () -> Unit,
     viewModel: BookingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var showSuccess by remember { mutableStateOf(false) }
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is BookingEffect.NavigateBack -> onBack()
+                is BookingEffect.BookingConfirmed -> onConfirm()
+                else -> { /* Handle others if needed */ }
+            }
+        }
+    }
 
     DsTheme {
         Scaffold(
@@ -48,7 +66,7 @@ fun BookingScreen(
                     onConfirm = { viewModel.onEvent(BookingEvent.OnConfirmBooking) }
                 )
             },
-            containerColor = AppTheme.colors.background
+            containerColor = Color(0xFF0F172A)
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -79,12 +97,12 @@ fun BookingScreen(
                     Column {
                         Text(
                             text = "Available Time Slots",
-                            color = AppTheme.colors.textPrimary,
+                            color = Color.White,
                             style = AppTheme.typography.headlineLarge.copy(fontSize = 20.sp)
                         )
                         Text(
                             text = "Thursday, October 5",
-                            color = AppTheme.colors.textPrimary.copy(alpha = 0.6f),
+                            color = Color.Gray,
                             style = AppTheme.typography.bodyMedium.copy(fontSize = 14.sp)
                         )
                     }
@@ -130,6 +148,27 @@ fun BookingScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
             }
+
+            if (showSuccess) {
+                AlertDialog(
+                    onDismissRequest = { 
+                        showSuccess = false
+                        onBack()
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { 
+                            showSuccess = false
+                            onBack()
+                        }) {
+                            Text("Aceptar", color = SelectedBlue)
+                        }
+                    },
+                    title = { Text("¡Reserva Confirmada!", color = Color.White) },
+                    text = { Text("Tu cita ha sido agendada con éxito para el ${state.selectedDate} a las ${state.selectedTimeSlot}.", color = Color.White.copy(alpha = 0.7f)) },
+                    containerColor = SurfaceColor,
+                    shape = RoundedCornerShape(20.dp)
+                )
+            }
         }
     }
 }
@@ -141,13 +180,13 @@ fun BookingTopBar(onBack: () -> Unit) {
         title = {
             Text(
                 text = stringResource(Res.string.booking_title),
-                color = AppTheme.colors.textPrimary,
+                color = Color.White,
                 style = AppTheme.typography.headlineLarge.copy(fontSize = 18.sp)
             )
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppTheme.colors.textPrimary)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -171,7 +210,7 @@ fun ProgressIndicator() {
                     .height(4.dp)
                     .padding(horizontal = 2.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(if (isActive) AppTheme.colors.primary else AppTheme.colors.textPrimary.copy(alpha = 0.2f))
+                    .background(if (isActive) Color(0xFF3B82F6) else Color.White.copy(alpha = 0.2f))
             )
         }
     }
@@ -184,7 +223,7 @@ fun BookingBottomBar(
     onConfirm: () -> Unit
 ) {
     Surface(
-        color = AppTheme.colors.surface,
+        color = Color(0xFF1E293B),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -195,10 +234,10 @@ fun BookingBottomBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Selected Slot", color = AppTheme.colors.textPrimary.copy(alpha = 0.6f), fontSize = 12.sp)
+                Text("Selected Slot", color = Color.Gray, fontSize = 12.sp)
                 Text(
                     "$selectedDate, ${selectedTime ?: "Select a slot"}",
-                    color = AppTheme.colors.textPrimary,
+                    color = Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -206,7 +245,7 @@ fun BookingBottomBar(
 
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.primary),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {

@@ -3,6 +3,7 @@ package com.gestorplus.appgestor.data.repository
 import com.gestorplus.appgestor.data.local.dao.BookingDao
 import com.gestorplus.appgestor.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.util.DateTimeUtils
 import kotlinx.coroutines.flow.Flow
 
 class OwnerBookingRepository(
@@ -39,18 +40,40 @@ class OwnerBookingRepository(
             // En un caso real, filtraríamos por fecha o usaríamos un listener.
             val allRemoteData = firebaseManager.getData("bookings") ?: return
             
-            allRemoteData.forEach { (date, slots) ->
-                (slots as? Map<String, String>)?.forEach { (slotId, value) ->
+            allRemoteData.forEach { (key, value) ->
+                // Intentamos manejar estructura anidada o plana
+                if (value is Map<*, *>) {
+                    // Estructura: date -> slotId -> data
+                    val dateInt = key.toIntOrNull() ?: 0
+                    value.forEach { (slotId, slotData) ->
+                        if (slotData is String) {
+                            val parts = slotData.split("|")
+                            val slotIndex = slotId.toString().toIntOrNull() ?: 0
+                            val booking = BookingEntity(
+                                id = "$key-$slotId",
+                                clientName = parts.getOrNull(0) ?: "Unknown",
+                                serviceName = parts.getOrNull(1) ?: "General Service",
+                                timestamp = DateTimeUtils.calculateTimestamp(dateInt, slotIndex),
+                                durationMinutes = 30,
+                                status = parts.getOrNull(2) ?: "PENDING",
+                                price = 0.0,
+                                categoryColor = 0xFF6200EE
+                            )
+                            bookingDao.insertBooking(booking)
+                        }
+                    }
+                } else if (value is String) {
+                    // Estructura plana: id -> data
                     val parts = value.split("|")
                     val booking = BookingEntity(
-                        id = "$date-$slotId",
+                        id = key,
                         clientName = parts.getOrNull(0) ?: "Unknown",
                         serviceName = parts.getOrNull(1) ?: "General Service",
-                        timestamp = System.currentTimeMillis(),
+                        timestamp = System.currentTimeMillis(), // No hay fecha en el ID simple
                         durationMinutes = 30,
                         status = parts.getOrNull(2) ?: "PENDING",
-                        price = 0.0, // Valor por defecto para sincronización masiva
-                        categoryColor = 0xFF6200EE // Color por defecto
+                        price = 0.0,
+                        categoryColor = 0xFF6200EE
                     )
                     bookingDao.insertBooking(booking)
                 }

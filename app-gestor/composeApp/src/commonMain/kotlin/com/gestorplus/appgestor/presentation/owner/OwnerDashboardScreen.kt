@@ -19,6 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
+import com.gestorplus.appgestor.core.util.DateTimeUtils
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
+import androidx.compose.foundation.lazy.grid.items
 import org.koin.compose.viewmodel.koinViewModel
 
 // Colores del tema SoloBook
@@ -28,10 +32,13 @@ private val SoloBookPrimary = Color(0xFF3B82F6)
 
 @Composable
 fun OwnerDashboardScreen(
+    onBack: () -> Unit,
+    onNavigateToWorkingHours: () -> Unit,
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
     // 1. Observamos los datos reales del ViewModel
     val bookings by viewModel.bookings.collectAsState()
+    val selectedDate by viewModel.selectedDate.collectAsState()
 
     DsTheme {
         Scaffold(
@@ -47,11 +54,19 @@ fun OwnerDashboardScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                DashboardHeader()
+                DashboardHeader(
+                    selectedDate = selectedDate,
+                    onMonthChange = { viewModel.onMonthChange(it) },
+                    onBack = onBack,
+                    onNavigateToWorkingHours = onNavigateToWorkingHours
+                )
                 Spacer(modifier = Modifier.height(24.dp))
                 StatusFilters()
                 Spacer(modifier = Modifier.height(24.dp))
-                CalendarGrid()
+                CalendarGrid(
+                    selectedDate = selectedDate,
+                    onDateSelected = { viewModel.onDateSelected(it) }
+                )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // 2. Pasamos las citas reales a la sección de agenda
@@ -62,7 +77,12 @@ fun OwnerDashboardScreen(
 }
 
 @Composable
-fun DashboardHeader() {
+fun DashboardHeader(
+    selectedDate: LocalDate,
+    onMonthChange: (Int) -> Unit,
+    onBack: () -> Unit,
+    onNavigateToWorkingHours: () -> Unit
+) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -70,6 +90,10 @@ fun DashboardHeader() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
+                }
+                Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "Logo",
@@ -85,6 +109,9 @@ fun DashboardHeader() {
                 )
             }
             Row {
+                IconButton(onClick = onNavigateToWorkingHours) {
+                    Icon(Icons.Default.Schedule, "Schedule", tint = SoloBookPrimary)
+                }
                 IconButton(onClick = { /* TODO */ }) {
                     Icon(Icons.Default.DateRange, "Calendar", tint = Color.White)
                 }
@@ -106,7 +133,7 @@ fun DashboardHeader() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "October 2023",
+                    text = "${selectedDate.month.name} ${selectedDate.year}",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
@@ -115,14 +142,14 @@ fun DashboardHeader() {
             }
             Row {
                 IconButton(
-                    onClick = { /* TODO */ },
+                    onClick = { onMonthChange(-1) },
                     modifier = Modifier.size(36.dp).background(SoloBookSurface, RoundedCornerShape(8.dp))
                 ) {
                     Icon(Icons.Default.KeyboardArrowLeft, null, tint = Color.White)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
-                    onClick = { /* TODO */ },
+                    onClick = { onMonthChange(1) },
                     modifier = Modifier.size(36.dp).background(SoloBookSurface, RoundedCornerShape(8.dp))
                 ) {
                     Icon(Icons.Default.KeyboardArrowRight, null, tint = Color.White)
@@ -164,8 +191,21 @@ fun FilterChip(label: String, icon: androidx.compose.ui.graphics.vector.ImageVec
 }
 
 @Composable
-fun CalendarGrid() {
+fun CalendarGrid(
+    selectedDate: LocalDate,
+    onDateSelected: (Int) -> Unit
+) {
     val daysOfWeek = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+    
+    // Cálculos para el mes actual
+    val firstDayOfMonth = LocalDate(selectedDate.year, selectedDate.month, 1)
+    val daysInMonth = when (selectedDate.month) {
+        kotlinx.datetime.Month.FEBRUARY -> if (selectedDate.year % 4 == 0) 29 else 28
+        kotlinx.datetime.Month.APRIL, kotlinx.datetime.Month.JUNE, kotlinx.datetime.Month.SEPTEMBER, kotlinx.datetime.Month.NOVEMBER -> 30
+        else -> 31
+    }
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % 7 // 0=Sun, 1=Mon...
+
     Surface(
         color = SoloBookSurface.copy(alpha = 0.5f),
         shape = RoundedCornerShape(24.dp),
@@ -182,9 +222,19 @@ fun CalendarGrid() {
                 modifier = Modifier.height(260.dp),
                 userScrollEnabled = false
             ) {
-                items(31) { index ->
+                // Espacios vacíos antes del primer día
+                items(firstDayOfWeek) {
+                    Spacer(Modifier.size(36.dp))
+                }
+                
+                items(daysInMonth) { index ->
                     val day = index + 1
-                    CalendarDayItem(day, day == 5, day % 7 == 3)
+                    CalendarDayItem(
+                        day = day, 
+                        isSelected = day == selectedDate.dayOfMonth, 
+                        hasAppointments = false, // Podríamos pasar esto desde el ViewModel después
+                        onSelect = { onDateSelected(day) }
+                    )
                 }
             }
         }
@@ -192,8 +242,13 @@ fun CalendarGrid() {
 }
 
 @Composable
-fun CalendarDayItem(day: Int, isSelected: Boolean, hasAppointments: Boolean) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 4.dp)) {
+fun CalendarDayItem(day: Int, isSelected: Boolean, hasAppointments: Boolean, onSelect: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally, 
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .clickable { onSelect() }
+    ) {
         Box(
             modifier = Modifier.size(36.dp).background(if (isSelected) SoloBookPrimary else Color.Transparent, androidx.compose.foundation.shape.CircleShape),
             contentAlignment = Alignment.Center
@@ -214,7 +269,10 @@ fun AgendaSection(bookings: List<com.gestorplus.appgestor.data.local.entity.Book
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Agenda • Today", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Column {
+                Text("Agenda • Today", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("9:00 AM - 6:00 PM", color = Color.Gray, fontSize = 12.sp)
+            }
             Text("Block Day", color = SoloBookPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         }
 
@@ -225,7 +283,7 @@ fun AgendaSection(bookings: List<com.gestorplus.appgestor.data.local.entity.Book
         } else {
             bookings.forEach { booking ->
                 AgendaItem(
-                    time = "10:00 AM", // Podríamos formatear el timestamp después
+                    time = DateTimeUtils.formatTime(booking.timestamp),
                     title = booking.serviceName,
                     subtitle = "${booking.clientName} • ${booking.durationMinutes} min",
                     statusIcon = if (booking.status == "CONFIRMED") Icons.Default.CheckCircle else Icons.Default.Notifications,
@@ -289,7 +347,7 @@ fun BottomNavigationBar() {
 }
 
 @Composable
-fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
+private fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
     val color = if (isSelected) SoloBookPrimary else Color.Gray
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { /* TODO */ }) {
         Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
