@@ -1,31 +1,16 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
-import com.gestorplus.appgestor.data.repository.EventRepository
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.domain.booking.repository.BookingRepository
-import com.gestorplus.appgestor.data.booking.repository.BookingRepositoryImpl
-import com.gestorplus.appgestor.domain.booking.usecase.GetAvailableSlotsUseCase
-import com.gestorplus.appgestor.domain.booking.usecase.ConfirmBookingUseCase
-import com.gestorplus.appgestor.presentation.owner.OwnerDashboardViewModel
-import com.gestorplus.appgestor.presentation.booking.BookingViewModel
-import org.koin.dsl.module
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.Module
 
-val appModule = module {
-    // Data Sources
-    single { FirebaseManager() }
-
-    // Repositorios
-    single { OwnerBookingRepository(get(), get()) }
-    single<BookingRepository> { BookingRepositoryImpl(get()) }
-    single { EventRepository(get()) }
-
-    // Use Cases
-    factory { GetAvailableSlotsUseCase(get()) }
-    factory { ConfirmBookingUseCase(get()) }
-
-    // ViewModels
-    viewModelOf(::OwnerDashboardViewModel)
-    viewModelOf(::BookingViewModel)
-}
+/**
+ * Main aggregator for all Koin modules in the project.
+ * This structure allows for easy scalability as new features are added.
+ */
+val appModules: List<Module> = listOf(
+    dataModule,
+    databaseModule,
+    bookingModule,
+    ownerModule,
+    notificationModule,
+    platformModule
+)

@@ -6,12 +6,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gestorplus.appgestor.designsystem.components.button.PrimaryButton
 import com.gestorplus.appgestor.designsystem.components.divider.HorizontalDivider
 import com.gestorplus.appgestor.designsystem.components.input.BasicInput
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
+import org.jetbrains.compose.resources.stringResource
+import app_gestor.composeapp.generated.resources.*
 
 @Composable
 fun DesignSystemTestScreen() {
@@ -27,7 +28,7 @@ fun DesignSystemTestScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Prueba de Design System",
+            text = stringResource(Res.string.ds_test_title),
             color = AppTheme.colors.primary,
             style = AppTheme.typography.headlineLarge
         )
@@ -38,15 +39,14 @@ fun DesignSystemTestScreen() {
             modifier = Modifier.fillMaxWidth(),
             value = textValue,
             onValueChange = { textValue = it },
-            label = "Escribe algo aquí..."
+            label = stringResource(Res.string.ds_test_input_label)
         )
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
-            text = if (isLoading) "Cargando..." else "Enviar Datos",
+            text = if (isLoading) stringResource(Res.string.common_loading) else stringResource(Res.string.common_send),
             isLoading = isLoading,
             onClick = {
-                // Simulamos una carga
                 isLoading = true
             }
         )
@@ -54,13 +54,13 @@ fun DesignSystemTestScreen() {
         if (isLoading) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Restablecer Botón",
+                text = stringResource(Res.string.common_reset),
                 onClick = { isLoading = false }
             )
         }
         
         Text(
-            text = "Valor ingresado: $textValue",
+            text = stringResource(Res.string.ds_test_result_label, textValue),
             style = AppTheme.typography.bodyMedium,
             color = AppTheme.colors.textPrimary
         )

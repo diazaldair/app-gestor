@@ -19,26 +19,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
+import com.gestorplus.appgestor.designsystem.theme.AppTheme
+import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
-
-// Colores del tema SoloBook
-private val SoloBookBackground = Color(0xFF0F172A)
-private val SoloBookSurface = Color(0xFF1E293B)
-private val SoloBookPrimary = Color(0xFF3B82F6)
+import org.jetbrains.compose.resources.stringResource
+import app_gestor.composeapp.generated.resources.*
 
 @Composable
 fun OwnerDashboardScreen(
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
-    // 1. Observamos los datos reales del ViewModel
-    val bookings by viewModel.bookings.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is OwnerDashboardEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
+            }
+        }
+    }
 
     DsTheme {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
                 BottomNavigationBar()
             },
-            containerColor = SoloBookBackground
+            containerColor = AppTheme.colors.background
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -54,8 +65,20 @@ fun OwnerDashboardScreen(
                 CalendarGrid()
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 2. Pasamos las citas reales a la sección de agenda
-                AgendaSection(bookings)
+                if (state.isSyncing) {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = AppTheme.colors.primary,
+                        trackColor = AppTheme.colors.surface
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                AgendaSection(
+                    bookings = state.bookings,
+                    onAccept = { viewModel.onEvent(OwnerDashboardEvent.OnAcceptBooking(it)) },
+                    onReject = { viewModel.onEvent(OwnerDashboardEvent.OnRejectBooking(it)) }
+                )
             }
         }
     }
@@ -72,24 +95,32 @@ fun DashboardHeader() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    contentDescription = "Logo",
-                    tint = SoloBookPrimary,
+                    contentDescription = stringResource(Res.string.app_name),
+                    tint = AppTheme.colors.primary,
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "SoloBook",
-                    color = Color.White,
+                    text = stringResource(Res.string.app_name),
+                    color = AppTheme.colors.textPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Row {
-                IconButton(onClick = { /* TODO */ }) {
-                    Icon(Icons.Default.DateRange, "Calendar", tint = Color.White)
+                IconButton(onClick = { /* TODO: Event */ }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = stringResource(Res.string.nav_calendar),
+                        tint = AppTheme.colors.textPrimary
+                    )
                 }
-                IconButton(onClick = { /* TODO */ }) {
-                    Icon(Icons.Default.Settings, "Settings", tint = Color.White)
+                IconButton(onClick = { /* TODO: Event */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(Res.string.common_settings),
+                        tint = AppTheme.colors.textPrimary
+                    )
                 }
             }
         }
@@ -106,26 +137,34 @@ fun DashboardHeader() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "October 2023",
-                    color = Color.White,
+                    text = stringResource(Res.string.owner_date_mock),
+                    color = AppTheme.colors.textPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                Icon(Icons.Default.KeyboardArrowDown, null, tint = Color.LightGray)
+                Icon(Icons.Default.KeyboardArrowDown, null, tint = AppTheme.colors.textSecondary)
             }
             Row {
                 IconButton(
                     onClick = { /* TODO */ },
-                    modifier = Modifier.size(36.dp).background(SoloBookSurface, RoundedCornerShape(8.dp))
+                    modifier = Modifier.size(36.dp).background(AppTheme.colors.surface, RoundedCornerShape(8.dp))
                 ) {
-                    Icon(Icons.Default.KeyboardArrowLeft, null, tint = Color.White)
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = stringResource(Res.string.common_prev),
+                        tint = AppTheme.colors.textPrimary
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = { /* TODO */ },
-                    modifier = Modifier.size(36.dp).background(SoloBookSurface, RoundedCornerShape(8.dp))
+                    modifier = Modifier.size(36.dp).background(AppTheme.colors.surface, RoundedCornerShape(8.dp))
                 ) {
-                    Icon(Icons.Default.KeyboardArrowRight, null, tint = Color.White)
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = stringResource(Res.string.common_next),
+                        tint = AppTheme.colors.textPrimary
+                    )
                 }
             }
         }
@@ -138,9 +177,9 @@ fun StatusFilters() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        FilterChip("CONFIRMED", Icons.Default.CheckCircle, true, Modifier.weight(1f))
-        FilterChip("PENDING", Icons.Default.Notifications, false, Modifier.weight(1f))
-        FilterChip("BLOCKED", Icons.Default.Lock, false, Modifier.weight(1f))
+        FilterChip(stringResource(Res.string.status_confirmed), Icons.Default.CheckCircle, true, Modifier.weight(1f))
+        FilterChip(stringResource(Res.string.status_pending), Icons.Default.Notifications, false, Modifier.weight(1f))
+        FilterChip(stringResource(Res.string.status_blocked), Icons.Default.Lock, false, Modifier.weight(1f))
     }
 }
 
@@ -149,32 +188,55 @@ fun FilterChip(label: String, icon: androidx.compose.ui.graphics.vector.ImageVec
     Surface(
         modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) SoloBookPrimary else SoloBookSurface
+        color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.surface
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.padding(horizontal = 8.dp)
         ) {
-            Icon(icon, null, tint = Color.White, modifier = Modifier.size(16.dp))
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.textPrimary,
+                modifier = Modifier.size(16.dp)
+            )
             Spacer(modifier = Modifier.width(4.dp))
-            Text(label, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = label,
+                color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.textPrimary,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
 
 @Composable
 fun CalendarGrid() {
-    val daysOfWeek = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+    val daysOfWeek = listOf(
+        Res.string.day_sun,
+        Res.string.day_mon,
+        Res.string.day_tue,
+        Res.string.day_wed,
+        Res.string.day_thu,
+        Res.string.day_fri,
+        Res.string.day_sat
+    )
     Surface(
-        color = SoloBookSurface.copy(alpha = 0.5f),
+        color = AppTheme.colors.surface.copy(alpha = 0.5f),
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                daysOfWeek.forEach { day ->
-                    Text(day, color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                daysOfWeek.forEach { dayRes ->
+                    Text(
+                        text = stringResource(dayRes),
+                        color = AppTheme.colors.textSecondary,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
             LazyVerticalGrid(
@@ -195,81 +257,138 @@ fun CalendarGrid() {
 fun CalendarDayItem(day: Int, isSelected: Boolean, hasAppointments: Boolean) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 4.dp)) {
         Box(
-            modifier = Modifier.size(36.dp).background(if (isSelected) SoloBookPrimary else Color.Transparent, androidx.compose.foundation.shape.CircleShape),
+            modifier = Modifier
+                .size(36.dp)
+                .background(
+                    if (isSelected) AppTheme.colors.primary else Color.Transparent,
+                    RoundedCornerShape(18.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Text(day.toString(), color = Color.White, fontSize = 14.sp)
+            Text(
+                text = day.toString(),
+                color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.textPrimary,
+                fontSize = 14.sp
+            )
         }
         if (hasAppointments && !isSelected) {
-            Box(Modifier.padding(top = 2.dp).size(4.dp).background(SoloBookPrimary, androidx.compose.foundation.shape.CircleShape))
+            Box(
+                Modifier
+                    .padding(top = 2.dp)
+                    .size(4.dp)
+                    .background(AppTheme.colors.primary, RoundedCornerShape(2.dp))
+            )
         }
     }
 }
 
 @Composable
-fun AgendaSection(bookings: List<com.gestorplus.appgestor.data.local.entity.BookingEntity>) {
+fun AgendaSection(
+    bookings: List<BookingEntity>,
+    onAccept: (String) -> Unit,
+    onReject: (String) -> Unit
+) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Agenda • Today", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text("Block Day", color = SoloBookPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(Res.string.owner_agenda_today),
+                color = AppTheme.colors.textPrimary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = stringResource(Res.string.owner_block_day),
+                color = AppTheme.colors.primary,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         if (bookings.isEmpty()) {
-            Text("No hay citas hoy", color = Color.Gray, modifier = Modifier.padding(24.dp))
+            Text(
+                text = stringResource(Res.string.owner_no_bookings),
+                color = AppTheme.colors.textSecondary,
+                modifier = Modifier.padding(24.dp)
+            )
         } else {
             bookings.forEach { booking ->
                 AgendaItem(
-                    time = "10:00 AM", // Podríamos formatear el timestamp después
+                    time = "10:00 AM",
                     title = booking.serviceName,
-                    subtitle = "${booking.clientName} • ${booking.durationMinutes} min",
+                    subtitle = stringResource(Res.string.owner_agenda_subtitle_format, booking.clientName, booking.durationMinutes),
                     statusIcon = if (booking.status == "CONFIRMED") Icons.Default.CheckCircle else Icons.Default.Notifications,
-                    statusColor = if (booking.status == "CONFIRMED") SoloBookPrimary else Color.Gray
+                    statusColor = if (booking.status == "CONFIRMED") AppTheme.colors.primary else AppTheme.colors.textSecondary,
+                    onClick = {
+                        if (booking.status != "CONFIRMED") onAccept(booking.id)
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
 
-        // Ítem de Personal Time al final
+        // Ítem de Personal Time
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = Color.Transparent,
             shape = RoundedCornerShape(12.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
+            border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.textSecondary.copy(alpha = 0.3f))
         ) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(40.dp).background(Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Lock, null, tint = Color.Gray)
+                Box(Modifier.size(40.dp).background(AppTheme.colors.textSecondary.copy(alpha = 0.2f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Lock, null, tint = AppTheme.colors.textSecondary)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("PERSONAL TIME", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("Unavailable for booking", color = Color.Gray, fontSize = 12.sp)
+                    Text(
+                        text = stringResource(Res.string.owner_personal_time),
+                        color = AppTheme.colors.textPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = stringResource(Res.string.owner_personal_time_desc),
+                        color = AppTheme.colors.textSecondary,
+                        fontSize = 12.sp
+                    )
                 }
-                Icon(Icons.Default.MoreVert, null, tint = Color.Gray)
+                Icon(Icons.Default.MoreVert, null, tint = AppTheme.colors.textSecondary)
             }
         }
     }
 }
 
 @Composable
-fun AgendaItem(time: String, title: String, subtitle: String, statusIcon: androidx.compose.ui.graphics.vector.ImageVector, statusColor: Color) {
-    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = SoloBookSurface), shape = RoundedCornerShape(12.dp)) {
+fun AgendaItem(
+    time: String,
+    title: String,
+    subtitle: String,
+    statusIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    statusColor: Color,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
+        shape = RoundedCornerShape(12.dp)
+    ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             val parts = time.split(" ")
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(parts[0], color = SoloBookPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                if (parts.size > 1) Text(parts[1], color = SoloBookPrimary.copy(alpha = 0.7f), fontSize = 10.sp)
+                Text(parts[0], color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                if (parts.size > 1) Text(parts[1], color = AppTheme.colors.primary.copy(alpha = 0.7f), fontSize = 10.sp)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                Text(subtitle, color = Color.Gray, fontSize = 12.sp)
+                Text(title, color = AppTheme.colors.textPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(subtitle, color = AppTheme.colors.textSecondary, fontSize = 12.sp)
             }
             Icon(statusIcon, null, tint = statusColor, modifier = Modifier.size(24.dp))
         }
@@ -278,19 +397,22 @@ fun AgendaItem(time: String, title: String, subtitle: String, statusIcon: androi
 
 @Composable
 fun BottomNavigationBar() {
-    Surface(color = SoloBookBackground, border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.White.copy(alpha = 0.1f))) {
+    Surface(
+        color = AppTheme.colors.background,
+        border = androidx.compose.foundation.BorderStroke(0.5.dp, AppTheme.colors.textPrimary.copy(alpha = 0.1f))
+    ) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            NavigationItem(Icons.Default.DateRange, "Calendar", true)
-            NavigationItem(Icons.Default.Person, "Clients", false)
-            NavigationItem(Icons.Default.Info, "Insights", false)
-            NavigationItem(Icons.Default.AccountCircle, "Profile", false)
+            NavigationItem(Icons.Default.DateRange, stringResource(Res.string.nav_calendar), true)
+            NavigationItem(Icons.Default.Person, stringResource(Res.string.nav_clients), false)
+            NavigationItem(Icons.Default.Info, stringResource(Res.string.nav_insights), false)
+            NavigationItem(Icons.Default.AccountCircle, stringResource(Res.string.nav_profile), false)
         }
     }
 }
 
 @Composable
 fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
-    val color = if (isSelected) SoloBookPrimary else Color.Gray
+    val color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.textSecondary
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { /* TODO */ }) {
         Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(4.dp))

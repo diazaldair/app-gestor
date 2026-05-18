@@ -1,9 +1,7 @@
 package com.gestorplus.appgestor
 
 import android.app.Application
-import com.gestorplus.appgestor.di.appModule
-import com.gestorplus.appgestor.di.databaseModule
-import com.gestorplus.appgestor.di.platformModule
+import com.gestorplus.appgestor.di.appModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -13,7 +11,7 @@ class MainApplication : Application() {
 
         startKoin {
             androidContext(this@MainApplication)
-            modules(appModule, databaseModule, platformModule)
+            modules(appModules)
         }
     }
 }

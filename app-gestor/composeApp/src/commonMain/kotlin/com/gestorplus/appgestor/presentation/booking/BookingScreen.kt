@@ -23,11 +23,9 @@ import com.gestorplus.appgestor.presentation.booking.components.CalendarComponen
 import com.gestorplus.appgestor.presentation.booking.components.TimeSlotSection
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
-import com.gestorplus.appgestor.presentation.booking.theme.SelectedBlue
-import com.gestorplus.appgestor.presentation.booking.theme.TextSecondary
 import org.jetbrains.compose.resources.stringResource
 import app_gestor.composeapp.generated.resources.Res
-import app_gestor.composeapp.generated.resources.booking_title
+import app_gestor.composeapp.generated.resources.*
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -78,12 +76,12 @@ fun BookingScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Available Time Slots",
+                            text = stringResource(Res.string.booking_available_slots),
                             color = AppTheme.colors.textPrimary,
                             style = AppTheme.typography.headlineLarge.copy(fontSize = 20.sp)
                         )
                         Text(
-                            text = "Thursday, October 5",
+                            text = stringResource(Res.string.booking_selected_date_mock),
                             color = AppTheme.colors.textPrimary.copy(alpha = 0.6f),
                             style = AppTheme.typography.bodyMedium.copy(fontSize = 14.sp)
                         )
@@ -105,7 +103,12 @@ fun BookingScreen(
                                     .background(AppTheme.colors.primary)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("EST", color = AppTheme.colors.primary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = stringResource(Res.string.booking_timezone_est),
+                                color = AppTheme.colors.primary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -113,7 +116,7 @@ fun BookingScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TimeSlotSection(
-                    title = "MORNING",
+                    title = stringResource(Res.string.booking_morning),
                     slots = state.timeSlotsMorning,
                     selectedSlot = state.selectedTimeSlot,
                     onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
@@ -122,7 +125,7 @@ fun BookingScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TimeSlotSection(
-                    title = "AFTERNOON",
+                    title = stringResource(Res.string.booking_afternoon),
                     slots = state.timeSlotsAfternoon,
                     selectedSlot = state.selectedTimeSlot,
                     onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
@@ -147,7 +150,11 @@ fun BookingTopBar(onBack: () -> Unit) {
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppTheme.colors.textPrimary)
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(Res.string.common_back),
+                    tint = AppTheme.colors.textPrimary
+                )
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -195,9 +202,13 @@ fun BookingBottomBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Selected Slot", color = AppTheme.colors.textPrimary.copy(alpha = 0.6f), fontSize = 12.sp)
                 Text(
-                    "$selectedDate, ${selectedTime ?: "Select a slot"}",
+                    text = stringResource(Res.string.booking_selected_slot_label),
+                    color = AppTheme.colors.textPrimary.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
+                Text(
+                    text = if (selectedTime != null) "$selectedDate, $selectedTime" else stringResource(Res.string.booking_no_slot_selected),
                     color = AppTheme.colors.textPrimary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -211,7 +222,11 @@ fun BookingBottomBar(
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Confirm Booking", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        text = stringResource(Res.string.booking_confirm_button),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
                 }

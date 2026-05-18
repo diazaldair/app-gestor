@@ -21,6 +21,8 @@ fun AppointmentCard(
     duration: String,
     statusText: String,
     statusColor: Color,
+    detailsButtonText: String,
+    messageButtonText: String,
     modifier: Modifier = Modifier,
     onDetailsClick: () -> Unit,
     onMessageClick: () -> Unit
@@ -86,14 +88,20 @@ fun AppointmentCard(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Details", style = AppTheme.typography.labelLarge)
+                        Text(
+                            text = detailsButtonText,
+                            style = AppTheme.typography.labelLarge
+                        )
                     }
                     OutlinedButton(
                         onClick = onMessageClick,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Message", style = AppTheme.typography.labelLarge)
+                        Text(
+                            text = messageButtonText,
+                            style = AppTheme.typography.labelLarge
+                        )
                     }
                 }
             }
