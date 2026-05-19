@@ -35,6 +35,12 @@
     <string name="nav_clients">Clients</string>
     <string name="nav_insights">Insights</string>
     <string name="nav_profile">Profile</string>
+    <string name="nav_find">Find</string>
+    <string name="nav_bookings">Bookings</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_citas">Citas</string>
+    <string name="nav_perfil">Perfil</string>
+    <string name="nav_ajustes">Ajustes</string>
 
     <string name="common_back">Back</string>
     <string name="common_prev">Prev</string>
@@ -45,6 +51,8 @@
     <string name="common_reset">Reset</string>
     <string name="common_details">Details</string>
     <string name="common_message">Message</string>
+    <string name="common_view_description">Ver descripción</string>
+    <string name="common_reserve">Reservar</string>
 
     <string name="ds_test_title">Design System Test</string>
     <string name="ds_test_input_label">Type something here...</string>
@@ -57,4 +65,40 @@
     <string name="day_thu">THU</string>
     <string name="day_fri">FRI</string>
     <string name="day_sat">SAT</string>
+
+    <!-- Clinic Profile -->
+    <string name="clinic_profile_title">SoloBook</string>
+    <string name="clinic_profile_name">SoloBook Medical Center</string>
+    <string name="clinic_profile_subtitle">Centro de Especialidades Médicas</string>
+    <string name="clinic_profile_bio_title">Bio</string>
+    <string name="clinic_profile_bio_content">Centro médico de vanguardia dedicado a brindar atención integral de salud. Contamos con tecnología de última generación y un equipo multidisciplinario comprometido con el bienestar y la excelencia en el trato al paciente.</string>
+    <string name="clinic_profile_specialties_title">Especialidades</string>
+    <string name="clinic_profile_location_title">Ubicación</string>
+    <string name="clinic_profile_location_address">Av. de la Libertad 124, Madrid</string>
+    <string name="clinic_profile_view_map">Ver en el mapa</string>
+    <string name="clinic_profile_services_title">Servicios</string>
+
+    <string name="specialty_hipertension">Hipertensión</string>
+    <string name="specialty_ecocardio">Ecocardiografía</string>
+    <string name="specialty_prevencion">Prevención</string>
+    <string name="specialty_insuficiencia">Insuficiencia Cardíaca</string>
+
+    <!-- Date Time Selector -->
+    <string name="date_time_selector_title">Reservas</string>
+    <string name="date_time_selector_available_slots">Available Time Slots</string>
+    <string name="date_time_selector_confirm_booking">Confirm Booking</string>
+    <string name="date_time_selector_selected_slot_label">Selected Slot</string>
+    <string name="date_time_selector_select_a_slot">Select a slot</string>
+
+    <!-- Confirmation Screen -->
+    <string name="confirmation_title">Confirmación</string>
+    <string name="confirmation_premium_service">PREMIUM SERVICE</string>
+    <string name="confirmation_service_name">Consulta de Cardiología General</string>
+    <string name="confirmation_specialist_label">CARDIÓLOGO ESPECIALISTA</string>
+    <string name="confirmation_doctor_name">Dr. Alejandro Mendoza</string>
+    <string name="confirmation_notes_label">Notas adicionales o peticiones</string>
+    <string name="confirmation_service_price_1">Consulta Médica</string>
+    <string name="confirmation_service_price_2">Electrocardiograma (ECG)</string>
+    <string name="confirmation_label_fecha">FECHA</string>
+    <string name="confirmation_label_hora">HORA</string>
 </resources>

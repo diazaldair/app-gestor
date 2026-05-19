@@ -1,8 +1,10 @@
 package com.gestorplus.appgestor.domain.booking.usecase
 
-import com.gestorplus.appgestor.domain.booking.model.BookingSlot
-import com.gestorplus.appgestor.domain.booking.model.SlotPeriod
-import com.gestorplus.appgestor.domain.booking.repository.BookingRepository
+import com.gestorplus.appgestor.booking.domain.model.BookingSlot
+import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
+import com.gestorplus.appgestor.booking.domain.repository.BookingRepository
+import com.gestorplus.appgestor.booking.domain.usecase.GetAvailableSlotsUseCase
+import com.gestorplus.appgestor.booking.domain.usecase.ConfirmBookingUseCase
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

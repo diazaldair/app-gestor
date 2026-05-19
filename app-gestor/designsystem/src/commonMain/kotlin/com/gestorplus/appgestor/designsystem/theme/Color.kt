@@ -18,16 +18,16 @@ data class AppColors(
    val isLight: Boolean
 )
 
-// SoloBook Palette (Dark version for professional look)
+// SoloBook Palette - Slate/Dark Industrial Theme (Image match)
 val DarkPalette = AppColors(
-   primary = Color(0xFF3B82F6), // SoloBookPrimary
+   primary = Color(0xFF3B82F6), // SoloBook Blue
    onPrimary = Color.White,
-   background = Color(0xFF0F172A), // SoloBookBackground
-   surface = Color(0xFF1E293B), // SoloBookSurface
+   background = Color(0xFF0F172A), // Slate 900
+   surface = Color(0xFF1E293B), // Slate 800
    onSurface = Color.White,
    textPrimary = Color.White,
-   textSecondary = Color(0xFF94A3B8),
-   accent = Color(0xFF60A5FA),
+   textSecondary = Color(0xFF94A3B8), // Slate 400
+   accent = Color(0xFF60A5FA), // Slate 300
    error = Color(0xFFEF4444),
    success = Color(0xFF10B981),
    isLight = false

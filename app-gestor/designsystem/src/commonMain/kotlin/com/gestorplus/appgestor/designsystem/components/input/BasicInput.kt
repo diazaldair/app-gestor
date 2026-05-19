@@ -7,6 +7,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 
@@ -17,7 +18,8 @@ fun BasicInput(
    label: String,
    modifier: Modifier = Modifier,
    enabled: Boolean = true,
-   singleLine: Boolean = true
+   singleLine: Boolean = true,
+   minLines: Int = 1
 ) {
    OutlinedTextField(
        value = value,
@@ -25,25 +27,29 @@ fun BasicInput(
        modifier = modifier,
        enabled = enabled,
        singleLine = singleLine,
-       label = { Text(label) },
+       minLines = minLines,
+       label = { if (label.isNotBlank()) Text(label) },
        textStyle = AppTheme.typography.bodyMedium.copy(
-           color = AppTheme.colors.textPrimary
+           color = Color.White
        ),
        colors = OutlinedTextFieldDefaults.colors(
-           focusedTextColor = AppTheme.colors.textPrimary,
-           unfocusedTextColor = AppTheme.colors.textPrimary,
-           disabledTextColor = AppTheme.colors.textPrimary.copy(alpha = 0.38f),
+           focusedTextColor = Color.White,
+           unfocusedTextColor = Color.White,
+           disabledTextColor = Color.White.copy(alpha = 0.38f),
            focusedBorderColor = AppTheme.colors.primary,
-           unfocusedBorderColor = AppTheme.colors.textPrimary.copy(alpha = 0.5f),
-           disabledBorderColor = AppTheme.colors.textPrimary.copy(alpha = 0.12f),
+           unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+           disabledBorderColor = Color.White.copy(alpha = 0.12f),
            focusedLabelColor = AppTheme.colors.primary,
-           unfocusedLabelColor = AppTheme.colors.textPrimary.copy(alpha = 0.6f),
-           cursorColor = AppTheme.colors.primary,
+           unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
+           cursorColor = Color.White,
            selectionColors = TextSelectionColors(
                handleColor = AppTheme.colors.primary,
                backgroundColor = AppTheme.colors.primary.copy(alpha = 0.4f)
-           )
+           ),
+           focusedContainerColor = Color.Transparent,
+           unfocusedContainerColor = Color.Transparent,
+           disabledContainerColor = Color.Transparent
        ),
-       shape = RoundedCornerShape(8.dp)
+       shape = RoundedCornerShape(12.dp)
    )
 }

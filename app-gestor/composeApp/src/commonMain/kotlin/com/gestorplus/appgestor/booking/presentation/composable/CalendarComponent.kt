@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import org.jetbrains.compose.resources.stringResource
 import app_gestor.composeapp.generated.resources.*
 
@@ -37,7 +37,7 @@ fun CalendarComponent(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+            .background(Color(0xFF1E293B)) // Slate 800 - Match Image exactly
             .padding(16.dp)
     ) {
         // Month Selector Header
@@ -50,7 +50,7 @@ fun CalendarComponent(
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = stringResource(Res.string.common_prev),
-                    tint = Color.White
+                    tint = AppTheme.colors.primary
                 )
             }
             Text(
@@ -63,12 +63,10 @@ fun CalendarComponent(
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = stringResource(Res.string.common_next),
-                    tint = Color.White
+                    tint = AppTheme.colors.primary
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Day Labels
         val days = listOf(
@@ -80,50 +78,53 @@ fun CalendarComponent(
             Res.string.day_fri,
             Res.string.day_sat
         )
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+        ) {
             days.forEach { dayRes ->
                 Text(
                     text = stringResource(dayRes),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    color = TextSecondary,
+                    color = Color(0xFF94A3B8), // Slate 400 - Match Image
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Calendar Grid (Simulating October 2023)
-        val dates = (27..30).toList() + (1..14).toList()
+        // Complete Calendar Grid for October 2023
+        // Image 3 shows it starts with 27, 28, 29, 30 from previous month
+        val daysList = listOf(27, 28, 29, 30) + (1..31).toList()
         
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.height(180.dp),
-            userScrollEnabled = false
+            modifier = Modifier.height(280.dp),
+            userScrollEnabled = false,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(dates) { date ->
-                val isCurrentMonth = date in 1..31
-                val isSelected = date == selectedDate && isCurrentMonth
+            items(daysList) { day ->
+                val isFromPreviousMonth = day > 20 && daysList.indexOf(day) < 4
+                val isCurrentMonth = !isFromPreviousMonth
+                val isSelected = day == selectedDate && isCurrentMonth
                 
                 Box(
                     modifier = Modifier
                         .aspectRatio(1f)
-                        .padding(4.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isSelected) SelectedBlue else Color.Transparent)
-                        .clickable(enabled = isCurrentMonth) { onDateSelected(date) },
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isSelected) AppTheme.colors.primary else Color.Transparent)
+                        .clickable(enabled = isCurrentMonth) { onDateSelected(day) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = date.toString(),
+                        text = day.toString(),
                         color = when {
                             isSelected -> Color.White
-                            isCurrentMonth -> Color.White
-                            else -> TextSecondary.copy(alpha = 0.5f)
+                            isFromPreviousMonth -> Color(0xFF475569) // Muted slate for prev month
+                            else -> Color.White
                         },
-                        fontSize = 14.sp,
+                        fontSize = 15.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
