@@ -36,6 +36,7 @@ import app_gestor.composeapp.generated.resources.*
 fun OwnerDashboardScreen(
     onBack: () -> Unit,
     onNavigateToWorkingHours: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -57,7 +58,7 @@ fun OwnerDashboardScreen(
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
-                BottomNavigationBar()
+                BottomNavigationBar(onNavigateToProfile = onNavigateToProfile)
             },
             containerColor = AppTheme.colors.background
         ) { paddingValues ->
@@ -468,24 +469,24 @@ fun AgendaItem(
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(onNavigateToProfile: () -> Unit) {
     Surface(
         color = AppTheme.colors.background,
         border = androidx.compose.foundation.BorderStroke(0.5.dp, AppTheme.colors.textPrimary.copy(alpha = 0.1f))
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            NavigationItem(Icons.Default.DateRange, stringResource(Res.string.nav_calendar), true)
-            NavigationItem(Icons.Default.Person, stringResource(Res.string.nav_clients), false)
-            NavigationItem(Icons.Default.Info, stringResource(Res.string.nav_insights), false)
-            NavigationItem(Icons.Default.AccountCircle, stringResource(Res.string.nav_profile), false)
+            NavigationItem(Icons.Default.DateRange, stringResource(Res.string.nav_calendar), true, onClick = {})
+            NavigationItem(Icons.Default.Person, stringResource(Res.string.nav_clients), false, onClick = {})
+            NavigationItem(Icons.Default.Info, stringResource(Res.string.nav_insights), false, onClick = {})
+            NavigationItem(Icons.Default.AccountCircle, stringResource(Res.string.nav_profile), false, onClick = onNavigateToProfile)
         }
     }
 }
 
 @Composable
-private fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
+private fun NavigationItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean, onClick: () -> Unit) {
     val color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.textSecondary
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { /* TODO */ }) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { onClick() }) {
         Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(4.dp))
         Text(label, color = color, fontSize = 10.sp)

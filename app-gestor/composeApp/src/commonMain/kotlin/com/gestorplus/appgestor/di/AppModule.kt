@@ -11,6 +11,7 @@ val appModules: List<Module> = listOf(
     databaseModule,
     bookingModule,
     ownerModule,
+    profileModule,
     notificationModule,
     platformModule
 )

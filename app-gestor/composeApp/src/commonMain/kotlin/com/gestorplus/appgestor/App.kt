@@ -10,6 +10,7 @@ import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScr
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.presentation.landing.LandingScreen
+import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
@@ -19,7 +20,8 @@ enum class Screen {
     BusinessView,
     DoctorView,
     WorkingHours,
-    ScheduleGroupDetail
+    ScheduleGroupDetail,
+    Profile
 }
 
 @Composable
@@ -65,7 +67,8 @@ fun App() {
             Screen.BusinessView, Screen.DoctorView -> {
                 OwnerDashboardScreen(
                     onBack = { currentScreen = Screen.Landing },
-                    onNavigateToWorkingHours = { currentScreen = Screen.WorkingHours }
+                    onNavigateToWorkingHours = { currentScreen = Screen.WorkingHours },
+                    onNavigateToProfile = { currentScreen = Screen.Profile }
                 )
             }
             Screen.WorkingHours -> {
@@ -77,6 +80,11 @@ fun App() {
             Screen.ScheduleGroupDetail -> {
                 ScheduleGroupDetailScreen(
                     onBack = { currentScreen = Screen.WorkingHours }
+                )
+            }
+            Screen.Profile -> {
+                ProfileScreen(
+                    onBack = { currentScreen = Screen.BusinessView }
                 )
             }
         }
