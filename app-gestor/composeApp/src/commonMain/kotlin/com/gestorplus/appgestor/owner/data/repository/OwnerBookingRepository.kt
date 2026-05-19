@@ -4,7 +4,7 @@ import com.gestorplus.appgestor.data.local.dao.BookingDao
 import com.gestorplus.appgestor.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.core.util.DateTimeUtils
-import com.gestorplus.appgestor.data.mapper.FirebaseMapper
+import com.gestorplus.appgestor.owner.data.mapper.OwnerMapper
 import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.owner.domain.model.Booking
 import com.gestorplus.appgestor.owner.domain.repository.OwnerRepository
@@ -14,17 +14,17 @@ import kotlinx.coroutines.flow.map
 class OwnerBookingRepository(
     private val bookingDao: BookingDao,
     private val firebaseManager: FirebaseManager,
-    private val firebaseMapper: FirebaseMapper
+    private val ownerMapper: OwnerMapper
 ) : OwnerRepository {
 
     override fun getBookings(): Flow<List<Booking>> {
         return bookingDao.getAllBookings().map { entities ->
-            entities.map { it.toDomain() }
+            entities.map { ownerMapper.toDomain(it) }
         }
     }
 
     override suspend fun addBooking(booking: Booking) {
-        val entity = booking.toEntity()
+        val entity = ownerMapper.toEntity(booking)
         bookingDao.insertBooking(entity)
         
         try {
@@ -34,7 +34,7 @@ class OwnerBookingRepository(
                 status = booking.status
             )
             val dataPath = "bookings/${booking.id}"
-            firebaseManager.saveData(dataPath, firebaseMapper.toPipedString(dto))
+            firebaseManager.saveData(dataPath, ownerMapper.toPipedString(dto))
         } catch (e: Exception) {
             // Offline-first: already saved in Room
         }
@@ -51,7 +51,7 @@ class OwnerBookingRepository(
             
             allRemoteData.forEach { (date, slots) ->
                 (slots as? Map<String, String>)?.forEach { (slotId, value) ->
-                    val dto = firebaseMapper.parseBooking(value)
+                    val dto = ownerMapper.parseBooking(value)
                     val slotIndex = slotId.toIntOrNull() ?: 0
                     val dateInt = date.toIntOrNull() ?: 0
                     val booking = BookingEntity(
@@ -103,25 +103,3 @@ class OwnerBookingRepository(
         return firebaseManager.getFirebaseLogs(path)
     }
 }
-
-// Mapper extension functions
-fun BookingEntity.toDomain(): Booking = Booking(
-    id = id,
-    clientName = clientName,
-    serviceName = serviceName,
-    timestamp = timestamp,
-    durationMinutes = durationMinutes,
-    status = status,
-    price = price
-)
-
-fun Booking.toEntity(categoryColor: Long = 0xFF6200EE): BookingEntity = BookingEntity(
-    id = id,
-    clientName = clientName,
-    serviceName = serviceName,
-    timestamp = timestamp,
-    durationMinutes = durationMinutes,
-    status = status,
-    price = price,
-    categoryColor = categoryColor
-)

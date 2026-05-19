@@ -1,5 +1,6 @@
 package com.gestorplus.appgestor.di
 
+import com.gestorplus.appgestor.owner.data.mapper.OwnerMapper
 import com.gestorplus.appgestor.owner.data.repository.OwnerBookingRepository
 import com.gestorplus.appgestor.owner.domain.repository.OwnerRepository
 import com.gestorplus.appgestor.owner.domain.usecase.*
@@ -9,6 +10,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val ownerModule = module {
+    single { OwnerMapper() }
     single<OwnerRepository> { OwnerBookingRepository(get(), get(), get()) }
     
     factoryOf(::GetOwnerBookingsUseCase)

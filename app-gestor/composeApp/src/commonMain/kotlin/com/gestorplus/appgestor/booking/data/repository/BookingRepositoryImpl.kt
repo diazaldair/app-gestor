@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.booking.data.repository
 
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.data.mapper.FirebaseMapper
+import com.gestorplus.appgestor.booking.data.mapper.BookingMapper
 import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.booking.domain.model.BookingSlot
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
@@ -9,7 +9,7 @@ import com.gestorplus.appgestor.booking.domain.repository.BookingRepository
 
 class BookingRepositoryImpl(
     private val firebaseManager: FirebaseManager,
-    private val firebaseMapper: FirebaseMapper
+    private val bookingMapper: BookingMapper
 ) : BookingRepository {
 
     override suspend fun getAvailableSlots(date: Int): List<BookingSlot> {
@@ -17,13 +17,8 @@ class BookingRepositoryImpl(
         
         if (remoteSlots != null) {
             return remoteSlots.map { (id, value) ->
-                val dto = firebaseMapper.parseSlot(value.toString())
-                BookingSlot(
-                    id = id,
-                    time = dto.time,
-                    isAvailable = dto.isAvailable,
-                    period = dto.period
-                )
+                val dto = bookingMapper.parseSlot(value.toString())
+                bookingMapper.toDomain(id, dto)
             }
         }
 
