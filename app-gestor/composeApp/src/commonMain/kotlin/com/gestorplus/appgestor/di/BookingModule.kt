@@ -17,9 +17,9 @@ val bookingModule = module {
     single { BookingService(get()) }
     single { BookingRemoteDatasource(get()) }
     single<BookingRepository> { BookingRepositoryImpl(get(), get()) }
-    
+
     factoryOf(::GetAvailableSlotsUseCase)
     factoryOf(::ConfirmBookingUseCase)
-    
+
     viewModelOf(::BookingViewModel)
 }

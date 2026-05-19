@@ -1,266 +1,233 @@
 package com.gestorplus.appgestor.booking.presentation.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gestorplus.appgestor.designsystem.theme.DsTheme
+import com.gestorplus.appgestor.booking.presentation.state.*
+import com.gestorplus.appgestor.booking.presentation.viewmodel.BookingViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
-private val DarkBackground = Color(0xFF0F172A)
-private val SurfaceColor = Color(0xFF1E293B)
-private val PrimaryBlue = Color(0xFF3B82F6)
-private val LightBlue = Color(0xFF93C5FD)
+private val DarkBackground = Color(0xFF0D1117)
+private val CardBackground = Color(0xFF161B22)
+private val AccentBlue = Color(0xFF2F81F7)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingConfirmationScreen(
     onBack: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    viewModel: BookingViewModel = koinViewModel()
 ) {
-    var notes by remember { mutableStateOf("") }
-    
-    DsTheme {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("Confirmación", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = DarkBackground)
-                )
-            },
-            containerColor = DarkBackground,
-            bottomBar = {
-                ConfirmationBottomBar()
-            }
-        ) { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Progress Bars
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    repeat(3) { index ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(4.dp)
-                                .background(if (index <= 1) LightBlue else Color.White.copy(alpha = 0.2f), RoundedCornerShape(2.dp))
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Service Card
-                ServiceDetailCard()
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Notes Section
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Notes, null, tint = Color.Gray, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Notas adicionales o peticiones", color = Color.White, fontWeight = FontWeight.Bold)
-                }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                OutlinedTextField(
-                    value = notes,
-                    onValueChange = { notes = it },
-                    modifier = Modifier.fillMaxWidth().height(120.dp),
-                    placeholder = { Text("Ej. Indique si tiene alguna alergia médica o síntomas específicos...", color = Color.Gray, fontSize = 14.sp) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryBlue.copy(alpha = 0.5f),
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
-                        focusedContainerColor = SurfaceColor.copy(alpha = 0.3f),
-                        unfocusedContainerColor = SurfaceColor.copy(alpha = 0.3f)
-                    )
-                )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Price Breakdown
-                PriceBreakdownSection()
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Buttons
-                Button(
-                    onClick = onConfirm,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = LightBlue)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Confirmar Reserva", color = Color(0xFF1E3A8A), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Default.CheckCircleOutline, null, tint = Color(0xFF1E3A8A))
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Surface(
-                    onClick = onBack,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White.copy(alpha = 0.05f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text("Volver y editar", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(32.dp))
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is BookingEfffect.NavigateBack -> onBack()
+                is BookingEfffect.BookingConfirmed -> onConfirm()
+                else -> {}
             }
         }
     }
+
+    BookingConfirmationContent(
+        state = state,
+        onEvent = { viewModel.onEvent(it) }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceDetailCard() {
-    Surface(
-        color = SurfaceColor.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column {
-            Box(modifier = Modifier.fillMaxWidth().height(160.dp)) {
-                // Placeholder for background image
-                Box(modifier = Modifier.fillMaxSize().background(
-                    Brush.verticalGradient(listOf(Color.DarkGray, Color.Black))
-                ))
-                
-                Column(modifier = Modifier.padding(16.dp).align(Alignment.BottomStart)) {
-                    Surface(
-                        color = PrimaryBlue.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(20.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryBlue.copy(alpha = 0.4f))
-                    ) {
-                        Text(
-                            "PREMIUM SERVICE", 
-                            color = LightBlue, 
-                            fontSize = 10.sp, 
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                        )
+fun BookingConfirmationContent(
+    state: BookingUiState,
+    onEvent: (BookingEvent) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Confirmar Cita", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold) },
+                navigationIcon = {
+                    IconButton(onClick = { onEvent(BookingEvent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.Gray)
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = DarkBackground)
+            )
+        },
+        containerColor = DarkBackground,
+        bottomBar = {
+            Box(modifier = Modifier.padding(20.dp).navigationBarsPadding()) {
+                Button(
+                    onClick = { onEvent(BookingEvent.OnConfirmBooking) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                    enabled = !state.isLoading
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Confirmar Reserva", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(20.dp))
+                        }
+                    }
+                }
+            }
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(10.dp))
+            
+            // Progress indicators
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(4) { index ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(3.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(if (index <= 2) AccentBlue else Color.Gray.copy(alpha = 0.3f))
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Text(
+                "DETALLES DE LA CITA",
+                color = Color.Gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Card(
+                colors = CardDefaults.cardColors(containerColor = CardBackground),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    DetailRow(Icons.Default.MedicalServices, "SERVICIO", "Consulta General")
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color.Gray.copy(alpha = 0.1f))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DetailRow(Icons.Default.CalendarToday, "FECHA", "Jueves 24 Oct", Modifier.weight(1f))
+                        DetailRow(Icons.Default.AccessTime, "HORA", "10:00 AM", Modifier.weight(1f))
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color.Gray.copy(alpha = 0.1f))
+                    DetailRow(Icons.Default.LocationOn, "LUGAR", "Av ...")
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Text(
+                "INFORMACIÓN DE COSTO",
+                color = Color.Gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Card(
+                colors = CardDefaults.cardColors(containerColor = CardBackground),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(AccentBlue.copy(alpha = 0.1f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Payments, contentDescription = null, tint = AccentBlue)
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text("Costo Total", color = Color.White, fontSize = 16.sp)
+                    }
                     Text(
-                        "Consulta de Cardiología General", 
-                        color = Color.White, 
-                        fontSize = 18.sp, 
+                        "$85.00",
+                        color = AccentBlue,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
             
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(48.dp).background(Color.Gray.copy(alpha = 0.2f), CircleShape))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text("CARDIÓLOGO ESPECIALISTA", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        Text("Dr. Alejandro Mendoza", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(20.dp))
-                
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    DetailItem(Icons.Default.CalendarToday, "Oct 5, 2023", modifier = Modifier.weight(1f))
-                    DetailItem(Icons.Default.AccessTime, "10:00 AM", modifier = Modifier.weight(1f))
-                }
-            }
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                "El pago se realizará directamente en el local el día de su cita.",
+                color = Color.Gray,
+                fontSize = 13.sp,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
 
 @Composable
-fun DetailItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String, modifier: Modifier = Modifier) {
+private fun DetailRow(icon: ImageVector, label: String, value: String, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, tint = Color.White, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(12.dp))
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.White.copy(alpha = 0.05f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+        }
+        Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text("CARDIÓLOGO ESPECIALISTA", color = Color.Gray, fontSize = 8.sp, fontWeight = FontWeight.Bold)
-            Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(label, color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
         }
-    }
-}
-
-@Composable
-fun PriceBreakdownSection() {
-    Surface(
-        color = Color.Transparent,
-        shape = RoundedCornerShape(12.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            PriceRow("Consulta Médica", "$80.00")
-            Spacer(modifier = Modifier.height(12.dp))
-            PriceRow("Electrocardiograma (ECG)", "$45.00")
-        }
-    }
-}
-
-@Composable
-fun PriceRow(label: String, price: String) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-        Text(price, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun ConfirmationBottomBar() {
-    Surface(color = DarkBackground, border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.White.copy(alpha = 0.05f))) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp, horizontal = 24.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            ConfirmationNavItem(Icons.Default.Home, "Inicio", false)
-            ConfirmationNavItem(Icons.Default.CalendarToday, "Citas", true)
-            ConfirmationNavItem(Icons.Default.Person, "Perfil", false)
-            ConfirmationNavItem(Icons.Default.Settings, "Ajustes", false)
-        }
-    }
-}
-
-@Composable
-fun ConfirmationNavItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isSelected: Boolean) {
-    val color = if (isSelected) LightBlue else Color.Gray
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, label, tint = color, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(label, color = color, fontSize = 10.sp)
     }
 }
