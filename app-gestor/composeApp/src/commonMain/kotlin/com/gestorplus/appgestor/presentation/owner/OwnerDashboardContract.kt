@@ -1,11 +1,11 @@
 package com.gestorplus.appgestor.presentation.owner
 
 import androidx.compose.runtime.Immutable
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import com.gestorplus.appgestor.domain.owner.model.Booking
 
 @Immutable
 data class OwnerDashboardState(
-    val bookings: List<BookingEntity> = emptyList(),
+    val bookings: List<Booking> = emptyList(),
     val firebaseLogs: List<String> = emptyList(),
     val isLoadingLogs: Boolean = false,
     val isSyncing: Boolean = false,

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import com.gestorplus.appgestor.core.util.DateTimeUtils
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import com.gestorplus.appgestor.domain.owner.model.Booking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import androidx.compose.foundation.lazy.grid.items
@@ -348,7 +348,7 @@ fun CalendarDayItem(day: Int, isSelected: Boolean, hasAppointments: Boolean, onS
 
 @Composable
 fun AgendaSection(
-    bookings: List<BookingEntity>,
+    bookings: List<Booking>,
     onAccept: (String) -> Unit,
     onReject: (String) -> Unit
 ) {

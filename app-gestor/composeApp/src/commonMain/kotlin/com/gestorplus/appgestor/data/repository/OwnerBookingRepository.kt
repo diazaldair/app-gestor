@@ -6,17 +6,26 @@ import com.gestorplus.appgestor.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.core.util.DateTimeUtils
 import com.gestorplus.appgestor.data.mapper.FirebaseMapper
 import com.gestorplus.appgestor.data.booking.model.FirebaseBookingDto
+import com.gestorplus.appgestor.domain.owner.model.Booking
+import com.gestorplus.appgestor.domain.owner.repository.OwnerRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class OwnerBookingRepository(
     private val bookingDao: BookingDao,
     private val firebaseManager: FirebaseManager,
     private val firebaseMapper: FirebaseMapper
-) {
-    fun getBookings(): Flow<List<BookingEntity>> = bookingDao.getAllBookings()
+) : OwnerRepository {
 
-    suspend fun addBooking(booking: BookingEntity) {
-        bookingDao.insertBooking(booking)
+    override fun getBookings(): Flow<List<Booking>> {
+        return bookingDao.getAllBookings().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun addBooking(booking: Booking) {
+        val entity = booking.toEntity()
+        bookingDao.insertBooking(entity)
         
         try {
             val dto = FirebaseBookingDto(
@@ -31,13 +40,13 @@ class OwnerBookingRepository(
         }
     }
 
-    suspend fun updateStatus(bookingId: String, newStatus: String) {
+    override suspend fun updateStatus(bookingId: String, newStatus: String) {
         bookingDao.updateBookingStatus(bookingId, newStatus)
         // Note: For simplicity, update only status field in Firebase if path matches
         firebaseManager.saveData("bookings/$bookingId/status", newStatus)
     }
 
-    suspend fun syncAllBookings() {
+    override suspend fun syncAllBookings() {
         try {
             val allRemoteData = firebaseManager.getData("bookings") ?: return
             
@@ -64,8 +73,11 @@ class OwnerBookingRepository(
         }
     }
 
-    suspend fun syncInitialConfig() {
+    override suspend fun initializeAndSyncConfig(defaults: Map<String, String>) {
         try {
+            firebaseManager.initializeRemoteConfig(defaults)
+            firebaseManager.fetchAndActivate()
+            
             val syncClient = firebaseManager.getString("sync_client_name")
             val syncService = firebaseManager.getString("sync_client_service")
             val syncPrice = firebaseManager.getString("sync_price").toDoubleOrNull() ?: 99.9
@@ -87,4 +99,30 @@ class OwnerBookingRepository(
             // Keep local data if fetch fails
         }
     }
+
+    override suspend fun getFirebaseLogs(path: String): List<String> {
+        return firebaseManager.getFirebaseLogs(path)
+    }
 }
+
+// Mapper extension functions
+fun BookingEntity.toDomain(): Booking = Booking(
+    id = id,
+    clientName = clientName,
+    serviceName = serviceName,
+    timestamp = timestamp,
+    durationMinutes = durationMinutes,
+    status = status,
+    price = price
+)
+
+fun Booking.toEntity(categoryColor: Long = 0xFF6200EE): BookingEntity = BookingEntity(
+    id = id,
+    clientName = clientName,
+    serviceName = serviceName,
+    timestamp = timestamp,
+    durationMinutes = durationMinutes,
+    status = status,
+    price = price,
+    categoryColor = categoryColor
+)

@@ -2,9 +2,8 @@ package com.gestorplus.appgestor.presentation.owner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
-import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
+import com.gestorplus.appgestor.domain.owner.model.Booking
+import com.gestorplus.appgestor.domain.owner.usecase.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,8 +20,11 @@ import com.gestorplus.appgestor.core.util.DateTimeUtils
 import kotlinx.datetime.*
 
 class OwnerDashboardViewModel(
-    private val repository: OwnerBookingRepository,
-    private val firebaseManager: FirebaseManager
+    private val getOwnerBookingsUseCase: GetOwnerBookingsUseCase,
+    private val acceptBookingUseCase: AcceptBookingUseCase,
+    private val rejectBookingUseCase: RejectBookingUseCase,
+    private val syncBookingsUseCase: SyncBookingsUseCase,
+    private val getFirebaseLogsUseCase: GetFirebaseLogsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OwnerDashboardState())
@@ -36,7 +38,7 @@ class OwnerDashboardViewModel(
     val selectedDate = _selectedDate.asStateFlow()
 
     // Escuchamos los cambios en Room y filtramos por fecha seleccionada
-    val bookings: StateFlow<List<BookingEntity>> = repository.getBookings()
+    val bookings: StateFlow<List<Booking>> = getOwnerBookingsUseCase()
         .combine(_selectedDate) { allBookings, date ->
             allBookings.filter { booking ->
                 val bInstant = Instant.fromEpochMilliseconds(booking.timestamp)
@@ -56,7 +58,7 @@ class OwnerDashboardViewModel(
     }
 
     private fun observeBookings() {
-        repository.getBookings()
+        getOwnerBookingsUseCase()
             .onEach { bookings ->
                 _state.update { it.copy(bookings = bookings) }
             }
@@ -67,7 +69,7 @@ class OwnerDashboardViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isSyncing = true) }
             try {
-                repository.syncAllBookings()
+                syncBookingsUseCase()
             } catch (e: Exception) {
                 _effect.emit(OwnerDashboardEffect.ShowSnackbar("Error syncing bookings"))
             } finally {
@@ -105,14 +107,14 @@ class OwnerDashboardViewModel(
 
     private fun acceptBooking(id: String) {
         viewModelScope.launch {
-            repository.updateStatus(id, "CONFIRMED")
+            acceptBookingUseCase(id)
             _effect.emit(OwnerDashboardEffect.ShowSnackbar("Booking accepted"))
         }
     }
 
     private fun rejectBooking(id: String) {
         viewModelScope.launch {
-            repository.updateStatus(id, "REJECTED")
+            rejectBookingUseCase(id)
             _effect.emit(OwnerDashboardEffect.ShowSnackbar("Booking rejected"))
         }
     }
@@ -121,7 +123,7 @@ class OwnerDashboardViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoadingLogs = true) }
             try {
-                val logs = firebaseManager.getFirebaseLogs("app_logs")
+                val logs = getFirebaseLogsUseCase("app_logs")
                 _state.update { it.copy(firebaseLogs = logs.reversed(), isLoadingLogs = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoadingLogs = false) }

@@ -3,8 +3,7 @@ package com.gestorplus.appgestor
 import androidx.compose.runtime.*
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.data.repository.OwnerBookingRepository
+import com.gestorplus.appgestor.domain.owner.usecase.InitializeAndSyncConfigUseCase
 import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
 import com.gestorplus.appgestor.presentation.owner.WorkingHoursScreen
 import com.gestorplus.appgestor.presentation.owner.ScheduleGroupDetailScreen
@@ -25,8 +24,7 @@ enum class Screen {
 
 @Composable
 fun App() {
-    val firebaseManager: FirebaseManager = koinInject()
-    val repository: OwnerBookingRepository = koinInject()
+    val initializeAndSyncConfigUseCase: InitializeAndSyncConfigUseCase = koinInject()
     
     // Simple state-based navigation
     var currentScreen by remember { mutableStateOf(Screen.Landing) }
@@ -38,11 +36,7 @@ fun App() {
             "sync_client_service" to "Consultoría Gratuita",
             "sync_price" to "0.0"
         )
-        firebaseManager.initializeRemoteConfig(defaults)
-        firebaseManager.fetchAndActivate()
-        
-        // Sincronizamos con Room
-        repository.syncInitialConfig()
+        initializeAndSyncConfigUseCase(defaults)
     }
 
     DsTheme(
