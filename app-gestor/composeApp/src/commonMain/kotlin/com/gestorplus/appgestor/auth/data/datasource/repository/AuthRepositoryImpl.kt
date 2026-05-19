@@ -30,6 +30,16 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun registerDoctor(name: String, email: String, password: String): Result<UserSession> {
+        return try {
+            val userDto = remoteDatasource.registerDoctor(name, email, password)
+            localDatasource.saveSession(userDto)
+            Result.success(mapper.toDomain(userDto))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun logout(): Result<Unit> {
         return try {
             localDatasource.clearSession()

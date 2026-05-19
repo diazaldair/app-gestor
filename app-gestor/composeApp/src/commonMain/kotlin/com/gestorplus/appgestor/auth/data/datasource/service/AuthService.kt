@@ -4,12 +4,17 @@ import com.gestorplus.appgestor.data.datasource.FirebaseManager
 
 class AuthService(private val firebaseManager: FirebaseManager) {
     suspend fun loginWithEmail(email: String, password: String): String {
-        // En una app real, esto llama a Firebase Auth REST API o SDK.
-        // Simulamos guardando los logs o un registro de sesión.
         val sessionPath = "auth/last_login"
         firebaseManager.saveData(sessionPath, "$email|${System.currentTimeMillis()}")
-        
-        // Retornamos un token simulado
         return "token_simulado_${email.hashCode()}"
+    }
+
+    suspend fun registerDoctor(name: String, email: String, password: String): String {
+        // Simulamos el registro guardando datos en Firebase DB
+        val doctorPath = "doctors/uid_${email.hashCode()}"
+        firebaseManager.saveData("$doctorPath/name", name)
+        firebaseManager.saveData("$doctorPath/email", email)
+        firebaseManager.saveData("$doctorPath/registeredAt", System.currentTimeMillis().toString())
+        return "token_register_simulado_${email.hashCode()}"
     }
 }

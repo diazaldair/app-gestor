@@ -11,12 +11,14 @@ import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
 import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
+import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
     Landing,
     Login,
+    Register,
     ClientView,
     BookingConfirmation,
     BusinessView,
@@ -70,8 +72,21 @@ fun App() {
                         }
                     },
                     onNavigateToRegister = {
-                        // En el futuro irá a la pantalla de registro
-                        currentScreen = Screen.Landing
+                        currentScreen = Screen.Register
+                    }
+                )
+            }
+            Screen.Register -> {
+                RegisterScreen(
+                    onNavigateToHome = {
+                        if (selectedRole == "PATIENT") {
+                            currentScreen = Screen.ClientView
+                        } else {
+                            currentScreen = Screen.DoctorView
+                        }
+                    },
+                    onNavigateToLogin = {
+                        currentScreen = Screen.Login
                     }
                 )
             }
