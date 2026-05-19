@@ -12,6 +12,7 @@ import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationS
 import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
 import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
+import com.gestorplus.appgestor.owner.presentation.setup.screen.WorkspaceSetupIntroScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
@@ -19,6 +20,7 @@ enum class Screen {
     Landing,
     Login,
     Register,
+    WorkspaceSetupIntro,
     ClientView,
     BookingConfirmation,
     BusinessView,
@@ -68,7 +70,7 @@ fun App() {
                         if (selectedRole == "PATIENT") {
                             currentScreen = Screen.ClientView
                         } else {
-                            currentScreen = Screen.DoctorView
+                            currentScreen = Screen.WorkspaceSetupIntro
                         }
                     },
                     onNavigateToRegister = {
@@ -82,11 +84,18 @@ fun App() {
                         if (selectedRole == "PATIENT") {
                             currentScreen = Screen.ClientView
                         } else {
-                            currentScreen = Screen.DoctorView
+                            currentScreen = Screen.WorkspaceSetupIntro
                         }
                     },
                     onNavigateToLogin = {
                         currentScreen = Screen.Login
+                    }
+                )
+            }
+            Screen.WorkspaceSetupIntro -> {
+                WorkspaceSetupIntroScreen(
+                    onNavigateToNextStep = {
+                        currentScreen = Screen.DoctorView
                     }
                 )
             }

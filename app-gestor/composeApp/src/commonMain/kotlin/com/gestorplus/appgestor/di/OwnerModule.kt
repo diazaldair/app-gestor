@@ -8,6 +8,7 @@ import com.gestorplus.appgestor.owner.data.datasource.service.OwnerService
 import com.gestorplus.appgestor.owner.domain.repository.OwnerRepository
 import com.gestorplus.appgestor.owner.domain.usecase.*
 import com.gestorplus.appgestor.owner.presentation.viewmodel.OwnerDashboardViewModel
+import com.gestorplus.appgestor.owner.presentation.setup.viewmodel.WorkspaceSetupIntroViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -27,4 +28,5 @@ val ownerModule = module {
     factoryOf(::GetFirebaseLogsUseCase)
     
     viewModelOf(::OwnerDashboardViewModel)
+    viewModelOf(::WorkspaceSetupIntroViewModel)
 }
