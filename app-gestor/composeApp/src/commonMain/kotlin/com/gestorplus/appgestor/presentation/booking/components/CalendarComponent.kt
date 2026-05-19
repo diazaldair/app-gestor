@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.presentation.booking.theme.SelectedBlue
 import com.gestorplus.appgestor.presentation.booking.theme.TextSecondary
+import org.jetbrains.compose.resources.stringResource
+import app_gestor.composeapp.generated.resources.*
 
 @Composable
 fun CalendarComponent(
@@ -47,7 +49,11 @@ fun CalendarComponent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { /* Previous Month */ }) {
-                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Prev", tint = Color.White)
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowLeft,
+                    contentDescription = stringResource(Res.string.common_prev),
+                    tint = Color.White
+                )
             }
             Text(
                 text = month,
@@ -56,18 +62,30 @@ fun CalendarComponent(
                 fontWeight = FontWeight.Bold
             )
             IconButton(onClick = { /* Next Month */ }) {
-                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next", tint = Color.White)
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = stringResource(Res.string.common_next),
+                    tint = Color.White
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Day Labels
-        val days = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+        val days = listOf(
+            Res.string.day_sun,
+            Res.string.day_mon,
+            Res.string.day_tue,
+            Res.string.day_wed,
+            Res.string.day_thu,
+            Res.string.day_fri,
+            Res.string.day_sat
+        )
         Row(modifier = Modifier.fillMaxWidth()) {
-            days.forEach { day ->
+            days.forEach { dayRes ->
                 Text(
-                    text = day,
+                    text = stringResource(dayRes),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     color = TextSecondary,
@@ -80,12 +98,11 @@ fun CalendarComponent(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Calendar Grid (Simulating October 2023)
-        // Starts on Sunday Oct 1st
-        val dates = (27..30).toList() + (1..14).toList() // Showing partial for simplicity like the image
+        val dates = (27..30).toList() + (1..14).toList()
         
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.height(180.dp), // Fixed height for simplicity
+            modifier = Modifier.height(180.dp),
             userScrollEnabled = false
         ) {
             items(dates) { date ->

@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 import java.net.URI
 
@@ -9,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.firebase.app.distribution)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
@@ -23,6 +22,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -32,6 +32,20 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            // Configuración de Firebase App Distribution para Release
+            configure<com.google.firebase.appdistribution.gradle.AppDistributionExtension> {
+                artifactType = "APK"
+                releaseNotes = "Nueva versión estable de GestorPlus."
+                groups = "testers-externos"
+            }
+        }
+        getByName("debug") {
+            // Configuración opcional para distribuir builds de desarrollo
+            configure<com.google.firebase.appdistribution.gradle.AppDistributionExtension> {
+                artifactType = "APK"
+                releaseNotes = "Build de desarrollo con correcciones de UI."
+                testers = "dev-team@gestorplus.com"
+            }
         }
     }
     compileOptions {
@@ -93,8 +107,8 @@ kotlin {
             
             // Koin Core y Compose
             implementation(libs.koin.core)
-            implementation("io.insert-koin:koin-compose:4.0.1")
-            implementation("io.insert-koin:koin-compose-viewmodel:4.0.1")
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             // Room
             implementation(libs.androidx.room.runtime)
@@ -105,6 +119,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
@@ -115,6 +130,12 @@ dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
+
+    // UI Testing con accessors normalizados
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 // Tarea para descargar traducciones de Loco compatible con Gradle 8+
