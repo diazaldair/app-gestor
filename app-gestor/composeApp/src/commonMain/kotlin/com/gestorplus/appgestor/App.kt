@@ -9,7 +9,7 @@ import com.gestorplus.appgestor.owner.presentation.screen.WorkingHoursScreen
 import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
-import com.gestorplus.appgestor.presentation.landing.LandingScreen
+import com.gestorplus.appgestor.onboarding.presentation.screen.LandingScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
@@ -47,9 +47,8 @@ fun App() {
         when (currentScreen) {
             Screen.Landing -> {
                 LandingScreen(
-                    onNavigateToClient = { currentScreen = Screen.ClientView },
-                    onNavigateToBusiness = { currentScreen = Screen.BusinessView },
-                    onNavigateToDoctor = { currentScreen = Screen.DoctorView }
+                    onNavigateToPatient = { currentScreen = Screen.ClientView },
+                    onNavigateToProfessional = { currentScreen = Screen.DoctorView }
                 )
             }
             Screen.ClientView -> {
