@@ -1,9 +1,0 @@
-package com.gestorplus.appgestor.domain.owner.usecase
-
-import com.gestorplus.appgestor.domain.owner.repository.OwnerRepository
-
-class RejectBookingUseCase(private val repository: OwnerRepository) {
-    suspend operator fun invoke(bookingId: String) {
-        repository.updateStatus(bookingId, "REJECTED")
-    }
-}

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.gestorplus.appgestor.domain.booking.usecase.GetAvailableSlotsUseCase
+import com.gestorplus.appgestor.booking.domain.usecase.GetAvailableSlotsUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

@@ -3,12 +3,12 @@ package com.gestorplus.appgestor
 import androidx.compose.runtime.*
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
-import com.gestorplus.appgestor.domain.owner.usecase.InitializeAndSyncConfigUseCase
-import com.gestorplus.appgestor.presentation.owner.OwnerDashboardScreen
-import com.gestorplus.appgestor.presentation.owner.WorkingHoursScreen
-import com.gestorplus.appgestor.presentation.owner.ScheduleGroupDetailScreen
-import com.gestorplus.appgestor.presentation.booking.BookingScreen
-import com.gestorplus.appgestor.presentation.booking.BookingConfirmationScreen
+import com.gestorplus.appgestor.owner.domain.usecase.InitializeAndSyncConfigUseCase
+import com.gestorplus.appgestor.owner.presentation.screen.OwnerDashboardScreen
+import com.gestorplus.appgestor.owner.presentation.screen.WorkingHoursScreen
+import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScreen
+import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
+import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.presentation.landing.LandingScreen
 import org.koin.compose.koinInject
 

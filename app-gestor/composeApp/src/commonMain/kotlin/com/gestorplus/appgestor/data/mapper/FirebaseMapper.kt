@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.data.mapper
 
-import com.gestorplus.appgestor.data.booking.model.FirebaseBookingDto
-import com.gestorplus.appgestor.domain.booking.model.SlotPeriod
+import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
+import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
 
 /**
  * Mapper to handle parsing and formatting of Firebase Realtime Database strings.
