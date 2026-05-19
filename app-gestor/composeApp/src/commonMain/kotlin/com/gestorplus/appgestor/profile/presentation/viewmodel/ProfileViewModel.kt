@@ -14,10 +14,10 @@ class ProfileViewModel(
     private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileState())
+    private val _state = MutableStateFlow(ProfileUiState())
     val state = _state.asStateFlow()
 
-    private val _effect = MutableSharedFlow<ProfileEffect>()
+    private val _effect = MutableSharedFlow<ProfileEfffect>()
     val effect = _effect.asSharedFlow()
 
     init {
@@ -103,9 +103,9 @@ class ProfileViewModel(
         _state.update { it.copy(isLoading = false, isEditing = false) }
         
         if (result.isSuccess) {
-            _effect.emit(ProfileEffect.ShowSnackbar("¡Perfil actualizado con éxito!"))
+            _effect.emit(ProfileEfffect.ShowSnackbar("¡Perfil actualizado con éxito!"))
         } else {
-            _effect.emit(ProfileEffect.ShowSnackbar("Error al guardar cambios localmente."))
+            _effect.emit(ProfileEfffect.ShowSnackbar("Error al guardar cambios localmente."))
         }
     }
 }

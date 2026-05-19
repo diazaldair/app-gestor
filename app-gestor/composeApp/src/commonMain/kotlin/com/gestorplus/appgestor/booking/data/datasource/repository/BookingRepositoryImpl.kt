@@ -1,19 +1,18 @@
-package com.gestorplus.appgestor.booking.data.repository
+package com.gestorplus.appgestor.booking.data.datasource.repository
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.booking.data.mapper.BookingMapper
-import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
+import com.gestorplus.appgestor.booking.data.datasource.datasource.BookingRemoteDatasource
+import com.gestorplus.appgestor.booking.data.datasource.mapper.BookingMapper
 import com.gestorplus.appgestor.booking.domain.model.BookingSlot
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
 import com.gestorplus.appgestor.booking.domain.repository.BookingRepository
 
 class BookingRepositoryImpl(
-    private val firebaseManager: FirebaseManager,
+    private val bookingRemoteDatasource: BookingRemoteDatasource,
     private val bookingMapper: BookingMapper
 ) : BookingRepository {
 
     override suspend fun getAvailableSlots(date: Int): List<BookingSlot> {
-        val remoteSlots = firebaseManager.getData("available_slots/$date")
+        val remoteSlots = bookingRemoteDatasource.getAvailableSlots(date)
         
         if (remoteSlots != null) {
             return remoteSlots.map { (id, value) ->
@@ -28,8 +27,7 @@ class BookingRepositoryImpl(
 
     override suspend fun confirmBooking(date: Int, slot: String): Result<Unit> {
         return try {
-            val dto = FirebaseBookingDto(status = "CONFIRMED")
-            firebaseManager.saveData("bookings/$date/$slot", "CLIENT_ID_MOCK|CONFIRMED")
+            bookingRemoteDatasource.confirmBooking(date, slot)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

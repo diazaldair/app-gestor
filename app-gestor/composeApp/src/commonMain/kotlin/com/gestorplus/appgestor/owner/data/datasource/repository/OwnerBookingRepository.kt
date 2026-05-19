@@ -1,31 +1,33 @@
-package com.gestorplus.appgestor.owner.data.repository
+package com.gestorplus.appgestor.owner.data.datasource.repository
 
-import com.gestorplus.appgestor.data.local.dao.BookingDao
+import com.gestorplus.appgestor.booking.data.datasource.dto.FirebaseBookingDto
+import com.gestorplus.appgestor.core.util.DateTimeUtils
 import com.gestorplus.appgestor.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.core.util.DateTimeUtils
-import com.gestorplus.appgestor.owner.data.mapper.OwnerMapper
-import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
+import com.gestorplus.appgestor.owner.data.datasource.datasource.OwnerLocalDatasource
+import com.gestorplus.appgestor.owner.data.datasource.datasource.OwnerRemoteDatasource
+import com.gestorplus.appgestor.owner.data.datasource.mapper.OwnerMapper
 import com.gestorplus.appgestor.owner.domain.model.Booking
 import com.gestorplus.appgestor.owner.domain.repository.OwnerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class OwnerBookingRepository(
-    private val bookingDao: BookingDao,
-    private val firebaseManager: FirebaseManager,
+    private val localDatasource: OwnerLocalDatasource,
+    private val remoteDatasource: OwnerRemoteDatasource,
+    private val firebaseManager: FirebaseManager, // For RemoteConfig and log fetching
     private val ownerMapper: OwnerMapper
 ) : OwnerRepository {
 
     override fun getBookings(): Flow<List<Booking>> {
-        return bookingDao.getAllBookings().map { entities ->
+        return localDatasource.getBookingsFlow().map { entities ->
             entities.map { ownerMapper.toDomain(it) }
         }
     }
 
     override suspend fun addBooking(booking: Booking) {
         val entity = ownerMapper.toEntity(booking)
-        bookingDao.insertBooking(entity)
+        localDatasource.saveBookings(listOf(entity))
         
         try {
             val dto = FirebaseBookingDto(
@@ -33,23 +35,29 @@ class OwnerBookingRepository(
                 serviceName = booking.serviceName,
                 status = booking.status
             )
-            val dataPath = "bookings/${booking.id}"
-            firebaseManager.saveData(dataPath, ownerMapper.toPipedString(dto))
+            remoteDatasource.updateBooking(booking.id.split("-").first().toIntOrNull() ?: 0, booking.id.split("-").last(), ownerMapper.toPipedString(dto))
         } catch (e: Exception) {
             // Offline-first: already saved in Room
         }
     }
 
     override suspend fun updateStatus(bookingId: String, newStatus: String) {
-        bookingDao.updateBookingStatus(bookingId, newStatus)
-        firebaseManager.saveData("bookings/$bookingId/status", newStatus)
+        localDatasource.updateBookingStatus(bookingId, newStatus)
+        val parts = bookingId.split("-")
+        if (parts.size >= 2) {
+            val date = parts[0].toIntOrNull() ?: 0
+            val slot = parts[1]
+            firebaseManager.saveData("bookings/$date/$slot/status", newStatus)
+        } else {
+            firebaseManager.saveData("bookings/$bookingId/status", newStatus)
+        }
     }
 
     override suspend fun syncAllBookings() {
         try {
-            val allRemoteData = firebaseManager.getData("bookings") ?: return
+            val bookingsRoot = firebaseManager.getData("bookings") ?: return
             
-            allRemoteData.forEach { (date, slots) ->
+            bookingsRoot.forEach { (date, slots) ->
                 (slots as? Map<String, String>)?.forEach { (slotId, value) ->
                     val dto = ownerMapper.parseBooking(value)
                     val slotIndex = slotId.toIntOrNull() ?: 0
@@ -64,7 +72,7 @@ class OwnerBookingRepository(
                         price = 0.0,
                         categoryColor = 0xFF6200EE
                     )
-                    bookingDao.insertBooking(booking)
+                    localDatasource.saveBookings(listOf(booking))
                 }
             }
         } catch (e: Exception) {
@@ -92,7 +100,7 @@ class OwnerBookingRepository(
                     price = syncPrice,
                     categoryColor = 0xFF00BCD4
                 )
-                bookingDao.insertBooking(configBooking)
+                localDatasource.saveBookings(listOf(configBooking))
             }
         } catch (e: Exception) {
             // Keep local data if fetch fails

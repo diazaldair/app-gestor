@@ -47,7 +47,7 @@ fun OwnerDashboardScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is OwnerDashboardEffect.ShowSnackbar -> {
+                is OwnerDashboardEfffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)
                 }
             }

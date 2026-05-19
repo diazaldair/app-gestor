@@ -1,21 +1,21 @@
-package com.gestorplus.appgestor.profile.data.repository
+package com.gestorplus.appgestor.profile.data.datasource.repository
 
-import com.gestorplus.appgestor.data.local.dao.UserProfileDao
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.profile.data.mapper.ProfileMapper
+import com.gestorplus.appgestor.profile.data.datasource.datasource.ProfileLocalDatasource
+import com.gestorplus.appgestor.profile.data.datasource.datasource.ProfileRemoteDatasource
+import com.gestorplus.appgestor.profile.data.datasource.mapper.ProfileMapper
 import com.gestorplus.appgestor.profile.domain.model.UserProfile
 import com.gestorplus.appgestor.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ProfileRepositoryImpl(
-    private val profileDao: UserProfileDao,
-    private val firebaseManager: FirebaseManager,
+    private val localDatasource: ProfileLocalDatasource,
+    private val remoteDatasource: ProfileRemoteDatasource,
     private val profileMapper: ProfileMapper
 ) : ProfileRepository {
 
     override fun getUserProfile(): Flow<UserProfile?> {
-        return profileDao.getProfile().map { entity ->
+        return localDatasource.getProfileFlow().map { entity ->
             entity?.let { profileMapper.toDomain(it) }
         }
     }
@@ -23,12 +23,11 @@ class ProfileRepositoryImpl(
     override suspend fun saveUserProfile(profile: UserProfile): Result<Unit> {
         return try {
             val entity = profileMapper.toEntity(profile)
-            profileDao.insertOrUpdate(entity)
+            localDatasource.saveProfile(entity)
             
             // Sync to Firebase for real-time updates!
-            val dataPath = "profile/owner_profile"
             val pipedData = "${profile.name}|${profile.email}|${profile.phone}|${profile.description}|${profile.imageUrl}"
-            firebaseManager.saveData(dataPath, pipedData)
+            remoteDatasource.saveProfile(pipedData)
             
             Result.success(Unit)
         } catch (e: Exception) {

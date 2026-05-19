@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.profile.data.mapper
+package com.gestorplus.appgestor.profile.data.datasource.mapper
 
 import com.gestorplus.appgestor.data.local.entity.UserProfileEntity
 import com.gestorplus.appgestor.profile.domain.model.UserProfile

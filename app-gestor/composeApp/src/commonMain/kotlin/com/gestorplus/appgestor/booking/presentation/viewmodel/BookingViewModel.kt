@@ -18,10 +18,10 @@ class BookingViewModel(
     private val confirmBookingUseCase: ConfirmBookingUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(BookingState())
+    private val _state = MutableStateFlow(BookingUiState())
     val state = _state.asStateFlow()
 
-    private val _effect = MutableSharedFlow<BookingEffect>()
+    private val _effect = MutableSharedFlow<BookingEfffect>()
     val effect = _effect.asSharedFlow()
 
     init {
@@ -60,15 +60,15 @@ class BookingViewModel(
                     )
                     _state.update { it.copy(isLoading = false) }
                     if (result.isSuccess) {
-                        _effect.emit(BookingEffect.BookingConfirmed)
+                        _effect.emit(BookingEfffect.BookingConfirmed)
                     } else {
-                        _effect.emit(BookingEffect.ShowError("Failed to confirm booking"))
+                        _effect.emit(BookingEfffect.ShowError("Failed to confirm booking"))
                     }
                 }
             }
             is BookingEvent.OnBackClicked -> {
                 viewModelScope.launch {
-                    _effect.emit(BookingEffect.NavigateBack)
+                    _effect.emit(BookingEfffect.NavigateBack)
                 }
             }
         }

@@ -1,6 +1,6 @@
-package com.gestorplus.appgestor.booking.data.mapper
+package com.gestorplus.appgestor.booking.data.datasource.mapper
 
-import com.gestorplus.appgestor.booking.data.dto.FirebaseBookingDto
+import com.gestorplus.appgestor.booking.data.datasource.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.booking.domain.model.BookingSlot
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
 

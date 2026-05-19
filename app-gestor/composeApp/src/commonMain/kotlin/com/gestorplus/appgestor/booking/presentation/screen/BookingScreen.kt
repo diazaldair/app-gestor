@@ -47,8 +47,8 @@ fun BookingScreen(
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is BookingEffect.NavigateBack -> onBack()
-                is BookingEffect.BookingConfirmed -> onConfirm()
+                is BookingEfffect.NavigateBack -> onBack()
+                is BookingEfffect.BookingConfirmed -> onConfirm()
                 else -> { /* Handle others if needed */ }
             }
         }

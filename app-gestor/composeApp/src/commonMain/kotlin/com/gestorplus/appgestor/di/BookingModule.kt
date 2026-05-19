@@ -1,7 +1,9 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.booking.data.mapper.BookingMapper
-import com.gestorplus.appgestor.booking.data.repository.BookingRepositoryImpl
+import com.gestorplus.appgestor.booking.data.datasource.datasource.BookingRemoteDatasource
+import com.gestorplus.appgestor.booking.data.datasource.mapper.BookingMapper
+import com.gestorplus.appgestor.booking.data.datasource.repository.BookingRepositoryImpl
+import com.gestorplus.appgestor.booking.data.datasource.service.BookingService
 import com.gestorplus.appgestor.booking.domain.repository.BookingRepository
 import com.gestorplus.appgestor.booking.domain.usecase.ConfirmBookingUseCase
 import com.gestorplus.appgestor.booking.domain.usecase.GetAvailableSlotsUseCase
@@ -12,6 +14,8 @@ import org.koin.dsl.module
 
 val bookingModule = module {
     single { BookingMapper() }
+    single { BookingService(get()) }
+    single { BookingRemoteDatasource(get()) }
     single<BookingRepository> { BookingRepositoryImpl(get(), get()) }
     
     factoryOf(::GetAvailableSlotsUseCase)

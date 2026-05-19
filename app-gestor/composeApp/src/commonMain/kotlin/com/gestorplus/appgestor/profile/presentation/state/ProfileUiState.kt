@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.profile.presentation.state
 
-data class ProfileState(
+data class ProfileUiState(
     val name: String = "",
     val imageUrl: String = "",
     val email: String = "",

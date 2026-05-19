@@ -1,11 +1,7 @@
-package com.gestorplus.appgestor.booking.data.dto
+package com.gestorplus.appgestor.booking.data.datasource.dto
 
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
 
-/**
- * Data Transfer Object for Firebase Realtime Database.
- * Represents the raw structure stored in the database.
- */
 data class FirebaseBookingDto(
     val clientName: String = "Unknown",
     val serviceName: String = "General Service",

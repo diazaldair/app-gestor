@@ -40,10 +40,10 @@ fun ProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is ProfileEffect.ShowSnackbar -> {
+                is ProfileEfffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)
                 }
-                ProfileEffect.NavigateNext -> {
+                ProfileEfffect.NavigateNext -> {
                     onBack()
                 }
             }
@@ -231,7 +231,7 @@ fun ProfileAvatarHeader(
 
 @Composable
 fun ProfileFormSection(
-    state: ProfileState,
+    state: ProfileUiState,
     onNameChanged: (String) -> Unit,
     onEmailChanged: (String) -> Unit,
     onPhoneChanged: (String) -> Unit,

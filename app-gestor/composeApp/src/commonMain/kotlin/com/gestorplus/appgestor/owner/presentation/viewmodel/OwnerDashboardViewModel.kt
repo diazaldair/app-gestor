@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.gestorplus.appgestor.core.util.DateTimeUtils
 import kotlinx.datetime.*
 
 class OwnerDashboardViewModel(
@@ -28,10 +27,10 @@ class OwnerDashboardViewModel(
     private val getFirebaseLogsUseCase: GetFirebaseLogsUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(OwnerDashboardState())
+    private val _state = MutableStateFlow(OwnerDashboardUiState())
     val state = _state.asStateFlow()
 
-    private val _effect = MutableSharedFlow<OwnerDashboardEffect>()
+    private val _effect = MutableSharedFlow<OwnerDashboardEfffect>()
     val effect = _effect.asSharedFlow()
 
     // Estado para el calendario: por defecto hoy
@@ -72,7 +71,7 @@ class OwnerDashboardViewModel(
             try {
                 syncBookingsUseCase()
             } catch (e: Exception) {
-                _effect.emit(OwnerDashboardEffect.ShowSnackbar("Error syncing bookings"))
+                _effect.emit(OwnerDashboardEfffect.ShowSnackbar("Error syncing bookings"))
             } finally {
                 _state.update { it.copy(isSyncing = false) }
             }
@@ -108,14 +107,14 @@ class OwnerDashboardViewModel(
     private fun acceptBooking(id: String) {
         viewModelScope.launch {
             acceptBookingUseCase(id)
-            _effect.emit(OwnerDashboardEffect.ShowSnackbar("Booking accepted"))
+            _effect.emit(OwnerDashboardEfffect.ShowSnackbar("Booking accepted"))
         }
     }
 
     private fun rejectBooking(id: String) {
         viewModelScope.launch {
             rejectBookingUseCase(id)
-            _effect.emit(OwnerDashboardEffect.ShowSnackbar("Booking rejected"))
+            _effect.emit(OwnerDashboardEfffect.ShowSnackbar("Booking rejected"))
         }
     }
 
@@ -127,7 +126,7 @@ class OwnerDashboardViewModel(
                 _state.update { it.copy(firebaseLogs = logs.reversed(), isLoadingLogs = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoadingLogs = false) }
-                _effect.emit(OwnerDashboardEffect.ShowSnackbar("Error loading logs"))
+                _effect.emit(OwnerDashboardEfffect.ShowSnackbar("Error loading logs"))
             }
         }
     }
