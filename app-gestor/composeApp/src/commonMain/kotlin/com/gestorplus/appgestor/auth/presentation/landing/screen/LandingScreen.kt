@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.onboarding.presentation.screen
+package com.gestorplus.appgestor.auth.presentation.landing.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,14 +27,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
-import com.gestorplus.appgestor.designsystem.theme.AppTheme
-import com.gestorplus.appgestor.onboarding.presentation.state.LandingEfffect
-import com.gestorplus.appgestor.onboarding.presentation.state.LandingEvent
-import com.gestorplus.appgestor.onboarding.presentation.viewmodel.LandingViewModel
+import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEfffect
+import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEvent
+import com.gestorplus.appgestor.auth.presentation.landing.viewmodel.LandingViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
-// Paleta de colores Premium de la Landing Page
 private val DarkBgStart = Color(0xFF0F172A)
 private val DarkBgEnd = Color(0xFF020617)
 private val BrandBlue = Color(0xFF3B82F6)
@@ -78,7 +76,6 @@ fun LandingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Header (Espacio superior e info de marca)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -113,7 +110,6 @@ fun LandingScreen(
                     )
                 }
 
-                // Cuerpo Central (Eslogan y descripción)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -152,7 +148,6 @@ fun LandingScreen(
                     )
                 }
 
-                // Selector de Perfiles (Card Glassmorphic)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -171,7 +166,6 @@ fun LandingScreen(
                         modifier = Modifier.padding(bottom = 20.dp)
                     )
 
-                    // Botón Paciente (Azul Primario)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -207,7 +201,6 @@ fun LandingScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Botón Profesional (Gris Oscuro Glass)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -244,7 +237,6 @@ fun LandingScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Servidores Activos Indicador
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
@@ -253,7 +245,7 @@ fun LandingScreen(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(RoundedCornerShape(3.dp))
-                                .background(Color(0xFF10B981)) // Verde activo
+                                .background(Color(0xFF10B981))
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -266,7 +258,6 @@ fun LandingScreen(
                     }
                 }
 
-                // Footer (Versión e información)
                 Text(
                     text = "VERSION ${state.version}  •  SECURE CONNECTED",
                     color = Color.White.copy(alpha = 0.3f),

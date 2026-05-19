@@ -9,12 +9,14 @@ import com.gestorplus.appgestor.owner.presentation.screen.WorkingHoursScreen
 import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
-import com.gestorplus.appgestor.onboarding.presentation.screen.LandingScreen
+import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
+import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
     Landing,
+    Login,
     ClientView,
     BookingConfirmation,
     BusinessView,
@@ -30,6 +32,7 @@ fun App() {
     
     // Simple state-based navigation
     var currentScreen by remember { mutableStateOf(Screen.Landing) }
+    var selectedRole by remember { mutableStateOf("PATIENT") } // "PATIENT" o "PROFESSIONAL"
 
     LaunchedEffect(Unit) {
         val defaults = mapOf(
@@ -47,8 +50,29 @@ fun App() {
         when (currentScreen) {
             Screen.Landing -> {
                 LandingScreen(
-                    onNavigateToPatient = { currentScreen = Screen.ClientView },
-                    onNavigateToProfessional = { currentScreen = Screen.DoctorView }
+                    onNavigateToPatient = { 
+                        selectedRole = "PATIENT"
+                        currentScreen = Screen.Login 
+                    },
+                    onNavigateToProfessional = { 
+                        selectedRole = "PROFESSIONAL"
+                        currentScreen = Screen.Login 
+                    }
+                )
+            }
+            Screen.Login -> {
+                LoginScreen(
+                    onNavigateToHome = {
+                        if (selectedRole == "PATIENT") {
+                            currentScreen = Screen.ClientView
+                        } else {
+                            currentScreen = Screen.DoctorView
+                        }
+                    },
+                    onNavigateToRegister = {
+                        // En el futuro irá a la pantalla de registro
+                        currentScreen = Screen.Landing
+                    }
                 )
             }
             Screen.ClientView -> {

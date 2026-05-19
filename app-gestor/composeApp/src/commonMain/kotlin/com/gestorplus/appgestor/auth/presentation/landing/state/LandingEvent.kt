@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.onboarding.presentation.state
+package com.gestorplus.appgestor.auth.presentation.landing.state
 
 sealed interface LandingEvent {
     data object OnPatientSelected : LandingEvent

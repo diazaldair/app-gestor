@@ -1,0 +1,83 @@
+package com.gestorplus.appgestor.auth.presentation.login.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.gestorplus.appgestor.auth.domain.usecase.LoginWithEmailUseCase
+import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
+import com.gestorplus.appgestor.auth.presentation.login.state.LoginEvent
+import com.gestorplus.appgestor.auth.presentation.login.state.LoginUiState
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class LoginViewModel(
+    private val loginWithEmailUseCase: LoginWithEmailUseCase
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(LoginUiState())
+    val state = _state.asStateFlow()
+
+    private val _effect = MutableSharedFlow<LoginEfffect>()
+    val effect = _effect.asSharedFlow()
+
+    fun onEvent(event: LoginEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is LoginEvent.EmailChanged -> {
+                    _state.update { it.copy(email = event.value, errorMessage = null) }
+                }
+                is LoginEvent.PasswordChanged -> {
+                    _state.update { it.copy(password = event.value, errorMessage = null) }
+                }
+                LoginEvent.TogglePasswordVisibility -> {
+                    _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+                }
+                LoginEvent.OnForgotPasswordClicked -> {
+                    _effect.emit(LoginEfffect.ShowSnackbar("Funcionalidad para recuperar contraseña próximamente."))
+                }
+                LoginEvent.OnSubmitClicked -> {
+                    submitLogin()
+                }
+                LoginEvent.OnGoogleLoginClicked -> {
+                    _state.update { it.copy(isLoading = true) }
+                    // Simular login con Google
+                    kotlinx.coroutines.delay(1000)
+                    _state.update { it.copy(isLoading = false) }
+                    _effect.emit(LoginEfffect.NavigateToHome)
+                }
+                LoginEvent.OnAppleLoginClicked -> {
+                    _effect.emit(LoginEfffect.ShowSnackbar("Login con Apple no disponible en esta versión."))
+                }
+                LoginEvent.OnCreateAccountClicked -> {
+                    _effect.emit(LoginEfffect.NavigateToRegister)
+                }
+            }
+        }
+    }
+
+    private suspend fun submitLogin() {
+        val email = _state.value.email
+        val password = _state.value.password
+
+        if (email.isBlank() || password.isBlank()) {
+            _state.update { it.copy(errorMessage = "Por favor, completa todos los campos.") }
+            return
+        }
+
+        _state.update { it.copy(isLoading = true) }
+        val result = loginWithEmailUseCase(email, password)
+        _state.update { it.copy(isLoading = false) }
+
+        result.fold(
+            onSuccess = {
+                _effect.emit(LoginEfffect.NavigateToHome)
+            },
+            onFailure = { error ->
+                _state.update { it.copy(errorMessage = error.message ?: "Credenciales inválidas.") }
+            }
+        )
+    }
+}

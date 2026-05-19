@@ -14,5 +14,5 @@ val appModules: List<Module> = listOf(
     profileModule,
     notificationModule,
     platformModule,
-    onboardingModule
+    authModule
 )

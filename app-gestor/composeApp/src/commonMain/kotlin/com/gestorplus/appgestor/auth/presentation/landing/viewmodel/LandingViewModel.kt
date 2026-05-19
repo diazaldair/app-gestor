@@ -1,10 +1,10 @@
-package com.gestorplus.appgestor.onboarding.presentation.viewmodel
+package com.gestorplus.appgestor.auth.presentation.landing.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gestorplus.appgestor.onboarding.presentation.state.LandingEfffect
-import com.gestorplus.appgestor.onboarding.presentation.state.LandingEvent
-import com.gestorplus.appgestor.onboarding.presentation.state.LandingUiState
+import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEfffect
+import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEvent
+import com.gestorplus.appgestor.auth.presentation.landing.state.LandingUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
