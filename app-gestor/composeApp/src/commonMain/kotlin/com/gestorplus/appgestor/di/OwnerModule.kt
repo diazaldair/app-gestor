@@ -9,6 +9,7 @@ import com.gestorplus.appgestor.owner.domain.repository.OwnerRepository
 import com.gestorplus.appgestor.owner.domain.usecase.*
 import com.gestorplus.appgestor.owner.presentation.viewmodel.OwnerDashboardViewModel
 import com.gestorplus.appgestor.owner.presentation.setup.viewmodel.WorkspaceSetupIntroViewModel
+import com.gestorplus.appgestor.owner.presentation.setup.viewmodel.WorkspaceSetupProfileViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -29,4 +30,5 @@ val ownerModule = module {
     
     viewModelOf(::OwnerDashboardViewModel)
     viewModelOf(::WorkspaceSetupIntroViewModel)
+    viewModelOf(::WorkspaceSetupProfileViewModel)
 }
