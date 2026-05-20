@@ -11,6 +11,8 @@ import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.presentation.landing.LandingScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
+import com.gestorplus.appgestor.notifications.presentation.screen.NotificationsScreen
+import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
@@ -21,14 +23,16 @@ enum class Screen {
     DoctorView,
     WorkingHours,
     ScheduleGroupDetail,
-    Profile
+    Profile,
+    Notifications,
+    ClinicProfile
 }
 
 @Composable
 fun App() {
     val initializeAndSyncConfigUseCase: InitializeAndSyncConfigUseCase = koinInject()
     
-    // Simple state-based navigation
+    // Inicia en la Landing original para el commit
     var currentScreen by remember { mutableStateOf(Screen.Landing) }
 
     LaunchedEffect(Unit) {
@@ -85,6 +89,16 @@ fun App() {
             Screen.Profile -> {
                 ProfileScreen(
                     onBack = { currentScreen = Screen.BusinessView }
+                )
+            }
+            Screen.Notifications -> {
+                NotificationsScreen(
+                    onBack = { currentScreen = Screen.Landing }
+                )
+            }
+            Screen.ClinicProfile -> {
+                ClinicProfileScreen(
+                    onBack = { currentScreen = Screen.Landing }
                 )
             }
         }

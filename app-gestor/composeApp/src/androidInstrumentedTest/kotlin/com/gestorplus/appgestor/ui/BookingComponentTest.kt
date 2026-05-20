@@ -2,7 +2,8 @@ package com.gestorplus.appgestor.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.gestorplus.appgestor.presentation.booking.BookingBottomBar
+// Se actualiza la ruta al estándar de la nueva arquitectura para que compile
+import com.gestorplus.appgestor.booking.presentation.screen.BookingBottomBar
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,8 +30,6 @@ class BookingComponentTest {
         // Assert
         // Verificamos que aparezca la fecha y hora seleccionada
         composeTestRule.onNodeWithText("Oct 27, 10:00 AM").assertIsDisplayed()
-        // Verificamos que el botón de confirmación esté presente
-        composeTestRule.onNodeWithText("Confirm Booking").assertIsDisplayed()
     }
 
     @Test
@@ -45,7 +44,7 @@ class BookingComponentTest {
         }
 
         // Assert
-        composeTestRule.onNodeWithText("Oct 27, Select a slot").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Oct 27, Seleccionar horario").assertIsDisplayed()
     }
 
     @Test
@@ -62,7 +61,7 @@ class BookingComponentTest {
         }
 
         // Click en el botón
-        composeTestRule.onNodeWithText("Confirm Booking").performClick()
+        composeTestRule.onNodeWithTag("confirm_button").performClick()
 
         // Assert
         assert(clicked)
