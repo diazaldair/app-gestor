@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -381,7 +382,7 @@ fun WorkspaceSetupProfileScreen(
                                     color = linePaintColor,
                                     start = androidx.compose.ui.geometry.Offset(0f, y),
                                     end = androidx.compose.ui.geometry.Offset(w, y),
-                                    style = gridStroke
+                                    strokeWidth = 1f
                                 )
                             }
 
@@ -393,7 +394,7 @@ fun WorkspaceSetupProfileScreen(
                                     color = linePaintColor,
                                     start = androidx.compose.ui.geometry.Offset(xTop, 0f),
                                     end = androidx.compose.ui.geometry.Offset(xBottom, h),
-                                    style = gridStroke
+                                    strokeWidth = 1f
                                 )
                             }
                         }

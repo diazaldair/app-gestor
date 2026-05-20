@@ -45,4 +45,20 @@ class OwnerMapper {
     fun toPipedString(dto: FirebaseBookingDto): String {
         return "${dto.clientName}|${dto.serviceName}|${dto.status}"
     }
+
+    fun toFirebaseString(profile: com.gestorplus.appgestor.owner.domain.model.WorkspaceProfile): String {
+        // En un caso real usaríamos kotlinx.serialization.
+        // Aquí hacemos un guardado simple usando delimitadores o formato JSON manual básico
+        return """
+            {
+                "clinicName": "${profile.clinicName}",
+                "fullName": "${profile.fullName}",
+                "specialities": "${profile.specialities.joinToString(",")}",
+                "biography": "${profile.biography}",
+                "exactAddress": "${profile.exactAddress}",
+                "references": "${profile.references}",
+                "galleryImages": "${profile.galleryImages.joinToString(",")}"
+            }
+        """.trimIndent()
+    }
 }

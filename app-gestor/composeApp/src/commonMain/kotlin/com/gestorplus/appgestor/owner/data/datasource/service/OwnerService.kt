@@ -14,4 +14,8 @@ class OwnerService(private val firebaseManager: FirebaseManager) {
     suspend fun getLogs(): List<Any>? {
         return firebaseManager.getData("logs") as? List<Any>
     }
+
+    suspend fun saveWorkspaceProfile(uid: String, data: String) {
+        firebaseManager.saveData("workspaces/$uid/profile", data)
+    }
 }

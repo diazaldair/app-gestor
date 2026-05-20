@@ -14,4 +14,8 @@ class OwnerRemoteDatasource(private val ownerService: OwnerService) {
     suspend fun getLogs(): List<Any>? {
         return ownerService.getLogs()
     }
+
+    suspend fun saveWorkspaceProfile(uid: String, data: String) {
+        ownerService.saveWorkspaceProfile(uid, data)
+    }
 }

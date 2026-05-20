@@ -27,6 +27,7 @@ val ownerModule = module {
     factoryOf(::SyncBookingsUseCase)
     factoryOf(::InitializeAndSyncConfigUseCase)
     factoryOf(::GetFirebaseLogsUseCase)
+    factoryOf(::SaveWorkspaceProfileUseCase)
     
     viewModelOf(::OwnerDashboardViewModel)
     viewModelOf(::WorkspaceSetupIntroViewModel)

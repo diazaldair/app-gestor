@@ -110,4 +110,16 @@ class OwnerBookingRepository(
     override suspend fun getFirebaseLogs(path: String): List<String> {
         return firebaseManager.getFirebaseLogs(path)
     }
+
+    override suspend fun saveWorkspaceProfile(profile: com.gestorplus.appgestor.owner.domain.model.WorkspaceProfile): Result<Unit> {
+        return try {
+            val dataString = ownerMapper.toFirebaseString(profile)
+            // Simulamos un UID de usuario actual, o lo obtenemos de auth
+            val currentUid = "current_user_123"
+            remoteDatasource.saveWorkspaceProfile(currentUid, dataString)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

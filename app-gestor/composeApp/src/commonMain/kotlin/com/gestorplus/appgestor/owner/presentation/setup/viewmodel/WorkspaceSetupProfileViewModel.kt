@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.gestorplus.appgestor.owner.domain.usecase.SaveWorkspaceProfileUseCase
 
-class WorkspaceSetupProfileViewModel : ViewModel() {
+class WorkspaceSetupProfileViewModel(
+    private val saveWorkspaceProfileUseCase: SaveWorkspaceProfileUseCase
+) : ViewModel() {
 
     private val _state = MutableStateFlow(WorkspaceSetupProfileUiState())
     val state = _state.asStateFlow()
@@ -79,13 +82,32 @@ class WorkspaceSetupProfileViewModel : ViewModel() {
                     }
                 }
                 WorkspaceSetupProfileEvent.OnContinueClicked -> {
-                    if (_state.value.clinicName.isBlank() || _state.value.fullName.isBlank()) {
+                    val currentState = _state.value
+                    if (currentState.clinicName.isBlank() || currentState.fullName.isBlank()) {
                         _state.update { it.copy(errorMessage = "Por favor, completa los campos requeridos.") }
                     } else {
                         _state.update { it.copy(isLoading = true) }
-                        kotlinx.coroutines.delay(1000)
+                        
+                        val profile = com.gestorplus.appgestor.owner.domain.model.WorkspaceProfile(
+                            clinicName = currentState.clinicName,
+                            fullName = currentState.fullName,
+                            specialities = currentState.specialities,
+                            biography = currentState.biography,
+                            exactAddress = currentState.exactAddress,
+                            references = currentState.references,
+                            galleryImages = currentState.galleryImages
+                        )
+                        
+                        val result = saveWorkspaceProfileUseCase(profile)
+                        
                         _state.update { it.copy(isLoading = false) }
-                        _effect.emit(WorkspaceSetupProfileEfffect.NavigateToServices)
+                        
+                        if (result.isSuccess) {
+                            _effect.emit(WorkspaceSetupProfileEfffect.NavigateToServices)
+                        } else {
+                            _state.update { it.copy(errorMessage = result.exceptionOrNull()?.message ?: "Error al guardar") }
+                            _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar("Error al guardar el perfil"))
+                        }
                     }
                 }
                 WorkspaceSetupProfileEvent.OnBackClicked -> {
