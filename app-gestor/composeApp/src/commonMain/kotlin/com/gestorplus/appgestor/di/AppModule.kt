@@ -13,5 +13,7 @@ val appModules: List<Module> = listOf(
     ownerModule,
     profileModule,
     notificationModule,
+    notificationsFeatureModule,
+    clinicProfileFeatureModule,
     platformModule
 )
