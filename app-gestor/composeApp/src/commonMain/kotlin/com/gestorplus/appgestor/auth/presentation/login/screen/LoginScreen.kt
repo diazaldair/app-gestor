@@ -254,6 +254,20 @@ fun LoginScreen(
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Bypass Button for Dev
+                        Button(
+                            onClick = { onNavigateToHome() }, // Directly navigate to onboarding bypassing ViewModel logic
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)), // Green color to stand out
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                        ) {
+                            Text("Entrar como Doctor (Demo)", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        }
+
                         // Social Divider
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

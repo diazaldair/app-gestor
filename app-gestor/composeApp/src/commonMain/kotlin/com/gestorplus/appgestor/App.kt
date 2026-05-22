@@ -13,7 +13,10 @@ import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
 import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.owner.presentation.setup.screen.WorkspaceSetupIntroScreen
-import com.gestorplus.appgestor.owner.presentation.setup.screen.WorkspaceSetupProfileScreen
+import com.gestorplus.appgestor.owner.setup_profile.presentation.screen.WorkspaceSetupProfileScreen
+import com.gestorplus.appgestor.owner.setup_schedule.presentation.screen.WorkspaceSetupScheduleScreen
+import com.gestorplus.appgestor.owner.setup_service.presentation.screen.WorkspaceSetupServiceScreen
+import com.gestorplus.appgestor.owner.setup_success.presentation.screen.WorkspaceSetupSuccessScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
 
@@ -23,6 +26,9 @@ enum class Screen {
     Register,
     WorkspaceSetupIntro,
     WorkspaceSetupProfile,
+    WorkspaceSetupSchedule,
+    WorkspaceSetupService,
+    WorkspaceSetupSuccess,
     ClientView,
     BookingConfirmation,
     BusinessView,
@@ -104,10 +110,37 @@ fun App() {
             Screen.WorkspaceSetupProfile -> {
                 WorkspaceSetupProfileScreen(
                     onNavigateToNextStep = {
-                        currentScreen = Screen.DoctorView
+                        currentScreen = Screen.WorkspaceSetupSchedule
                     },
                     onNavigateBack = {
                         currentScreen = Screen.WorkspaceSetupIntro
+                    }
+                )
+            }
+            Screen.WorkspaceSetupSchedule -> {
+                WorkspaceSetupScheduleScreen(
+                    onNavigateToNextStep = {
+                        currentScreen = Screen.WorkspaceSetupService
+                    },
+                    onNavigateBack = {
+                        currentScreen = Screen.WorkspaceSetupProfile
+                    }
+                )
+            }
+            Screen.WorkspaceSetupService -> {
+                WorkspaceSetupServiceScreen(
+                    onNavigateToNextStep = {
+                        currentScreen = Screen.WorkspaceSetupSuccess
+                    },
+                    onNavigateBack = {
+                        currentScreen = Screen.WorkspaceSetupSchedule
+                    }
+                )
+            }
+            Screen.WorkspaceSetupSuccess -> {
+                WorkspaceSetupSuccessScreen(
+                    onNavigateToDashboard = {
+                        currentScreen = Screen.DoctorView
                     }
                 )
             }
