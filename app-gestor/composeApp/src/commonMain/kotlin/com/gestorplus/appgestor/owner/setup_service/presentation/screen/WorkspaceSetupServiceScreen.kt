@@ -142,8 +142,9 @@ fun WorkspaceSetupServiceScreen(
                         onValueChange = { viewModel.onEvent(WorkspaceSetupServiceEvent.ServiceNameChanged(it)) },
                         placeholder = { Text("Ej. Consulta Médica General", color = Color.White.copy(alpha = 0.3f)) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = InputFieldBg,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = InputFieldBg,
+                            unfocusedContainerColor = InputFieldBg,
                             unfocusedBorderColor = GlassBorder,
                             focusedBorderColor = BrandBlue,
                             focusedTextColor = Color.White,
@@ -165,8 +166,9 @@ fun WorkspaceSetupServiceScreen(
                         onValueChange = { viewModel.onEvent(WorkspaceSetupServiceEvent.DescriptionChanged(it)) },
                         placeholder = { Text("Describe brevemente de qué trata este servicio...", color = Color.White.copy(alpha = 0.3f)) },
                         modifier = Modifier.fillMaxWidth().height(100.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = InputFieldBg,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = InputFieldBg,
+                            unfocusedContainerColor = InputFieldBg,
                             unfocusedBorderColor = GlassBorder,
                             focusedBorderColor = BrandBlue,
                             focusedTextColor = Color.White,
@@ -187,8 +189,9 @@ fun WorkspaceSetupServiceScreen(
                                 onValueChange = { viewModel.onEvent(WorkspaceSetupServiceEvent.PriceChanged(it)) },
                                 placeholder = { Text("0.00", color = Color.White.copy(alpha = 0.3f)) },
                                 trailingIcon = { Text("$", color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(end = 12.dp)) },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    containerColor = InputFieldBg,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = InputFieldBg,
+                                    unfocusedContainerColor = InputFieldBg,
                                     unfocusedBorderColor = GlassBorder,
                                     focusedBorderColor = BrandBlue,
                                     focusedTextColor = Color.White,
@@ -205,7 +208,7 @@ fun WorkspaceSetupServiceScreen(
                                 onValueChange = { },
                                 enabled = false,
                                 trailingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.White.copy(alpha = 0.3f)) },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     disabledContainerColor = InputFieldBg.copy(alpha = 0.4f),
                                     disabledBorderColor = GlassBorder.copy(alpha = 0.2f),
                                     disabledTextColor = Color.White.copy(alpha = 0.5f)

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,7 @@ import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import com.gestorplus.appgestor.core.util.DateTimeUtils
 import com.gestorplus.appgestor.owner.dashboard.domain.model.Booking
-import com.gestorplus.appgestor.owner.presentation.viewmodel.OwnerDashboardViewModel
+import com.gestorplus.appgestor.owner.dashboard.presentation.viewmodel.OwnerDashboardViewModel
 import com.gestorplus.appgestor.owner.dashboard.presentation.state.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber

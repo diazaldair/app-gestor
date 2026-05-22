@@ -3,8 +3,8 @@ package com.gestorplus.appgestor
 import androidx.compose.runtime.*
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
-import com.gestorplus.appgestor.owner.domain.usecase.InitializeAndSyncConfigUseCase
-import com.gestorplus.appgestor.owner.presentation.screen.OwnerDashboardScreen
+import com.gestorplus.appgestor.owner.setup_intro.domain.usecase.InitializeAndSyncConfigUseCase
+import com.gestorplus.appgestor.owner.dashboard.presentation.screen.OwnerDashboardScreen
 import com.gestorplus.appgestor.owner.presentation.screen.WorkingHoursScreen
 import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
@@ -12,7 +12,7 @@ import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationS
 import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
 import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
-import com.gestorplus.appgestor.owner.presentation.setup.screen.WorkspaceSetupIntroScreen
+import com.gestorplus.appgestor.owner.setup_intro.presentation.screen.WorkspaceSetupIntroScreen
 import com.gestorplus.appgestor.owner.setup_profile.presentation.screen.WorkspaceSetupProfileScreen
 import com.gestorplus.appgestor.owner.setup_schedule.presentation.screen.WorkspaceSetupScheduleScreen
 import com.gestorplus.appgestor.owner.setup_service.presentation.screen.WorkspaceSetupServiceScreen
