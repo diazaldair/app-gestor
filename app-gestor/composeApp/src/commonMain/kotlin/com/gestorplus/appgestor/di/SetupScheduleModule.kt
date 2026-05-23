@@ -1,8 +1,8 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.setup_schedule.data.datasource.datasource.SetupScheduleRemoteDatasource
-import com.gestorplus.appgestor.owner.setup_schedule.data.datasource.repository.SetupScheduleRepositoryImpl
-import com.gestorplus.appgestor.owner.setup_schedule.data.datasource.service.SetupScheduleService
+import com.gestorplus.appgestor.owner.setup_schedule.data.datasource.SetupScheduleRemoteDatasource
+import com.gestorplus.appgestor.owner.setup_schedule.data.repository.SetupScheduleRepositoryImpl
+import com.gestorplus.appgestor.owner.setup_schedule.data.datasource.SetupScheduleService
 import com.gestorplus.appgestor.owner.setup_schedule.domain.repository.SetupScheduleRepository
 import com.gestorplus.appgestor.owner.setup_schedule.domain.usecase.SaveWorkspaceScheduleUseCase
 import com.gestorplus.appgestor.owner.setup_schedule.presentation.viewmodel.WorkspaceSetupScheduleViewModel
@@ -18,7 +18,7 @@ val setupScheduleModule = module {
     single { SetupScheduleRemoteDatasource(get()) }
 
     // 3. Repositorio
-    single<SetupScheduleRepository> { SetupScheduleRepositoryImpl(get()) }
+    single<SetupScheduleRepository> { SetupScheduleRepositoryImpl(get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceScheduleUseCase)

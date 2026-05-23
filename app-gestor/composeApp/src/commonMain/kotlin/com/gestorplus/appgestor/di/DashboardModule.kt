@@ -1,10 +1,10 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.dashboard.data.datasource.datasource.DashboardLocalDatasource
-import com.gestorplus.appgestor.owner.dashboard.data.datasource.datasource.DashboardRemoteDatasource
-import com.gestorplus.appgestor.owner.dashboard.data.datasource.mapper.DashboardMapper
-import com.gestorplus.appgestor.owner.dashboard.data.datasource.repository.DashboardRepositoryImpl
-import com.gestorplus.appgestor.owner.dashboard.data.datasource.service.DashboardService
+import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardLocalDatasource
+import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardRemoteDatasource
+import com.gestorplus.appgestor.owner.dashboard.data.mapper.DashboardMapper
+import com.gestorplus.appgestor.owner.dashboard.data.repository.DashboardRepositoryImpl
+import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardService
 import com.gestorplus.appgestor.owner.dashboard.domain.repository.DashboardRepository
 import com.gestorplus.appgestor.owner.dashboard.domain.usecase.*
 import com.gestorplus.appgestor.owner.dashboard.presentation.viewmodel.OwnerDashboardViewModel

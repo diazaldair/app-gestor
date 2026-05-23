@@ -1,5 +1,8 @@
 package com.gestorplus.appgestor.owner.setup_profile.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WorkspaceProfile(
     val clinicName: String,
     val fullName: String,

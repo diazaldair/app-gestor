@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.setup_success.data.datasource.datasource.SetupSuccessLocalDatasource
-import com.gestorplus.appgestor.owner.setup_success.data.datasource.repository.SetupSuccessRepositoryImpl
+import com.gestorplus.appgestor.owner.setup_success.data.datasource.SetupSuccessLocalDatasource
+import com.gestorplus.appgestor.owner.setup_success.data.repository.SetupSuccessRepositoryImpl
 import com.gestorplus.appgestor.owner.setup_success.domain.repository.SetupSuccessRepository
 import com.gestorplus.appgestor.owner.setup_success.domain.usecase.GetRegisteredClinicNameUseCase
 import com.gestorplus.appgestor.owner.setup_success.presentation.viewmodel.WorkspaceSetupSuccessViewModel

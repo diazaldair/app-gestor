@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.firebase.app.distribution)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -84,6 +85,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
             implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.auth)
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
             implementation(libs.firebase.messaging)
@@ -116,6 +118,9 @@ kotlin {
 
             // Datetime
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+
+            // Serialization
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -181,6 +181,7 @@ fun WorkspaceSetupIntroScreen(
                             shape = RoundedCornerShape(14.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(bottom = 32.dp)
                                 .height(54.dp)
                         ) {
                             if (state.isLoading) {

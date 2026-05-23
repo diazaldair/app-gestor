@@ -1,8 +1,8 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.setup_profile.data.datasource.datasource.SetupProfileRemoteDatasource
-import com.gestorplus.appgestor.owner.setup_profile.data.datasource.repository.SetupProfileRepositoryImpl
-import com.gestorplus.appgestor.owner.setup_profile.data.datasource.service.SetupProfileService
+import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasource
+import com.gestorplus.appgestor.owner.setup_profile.data.repository.SetupProfileRepositoryImpl
+import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileService
 import com.gestorplus.appgestor.owner.setup_profile.domain.repository.SetupProfileRepository
 import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.SaveWorkspaceProfileUseCase
 import com.gestorplus.appgestor.owner.setup_profile.presentation.viewmodel.WorkspaceSetupProfileViewModel
@@ -18,7 +18,7 @@ val setupProfileModule = module {
     single { SetupProfileRemoteDatasource(get()) }
 
     // 3. Repositorio
-    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get()) }
+    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceProfileUseCase)

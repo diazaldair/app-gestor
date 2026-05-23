@@ -1,8 +1,8 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.setup_service.data.datasource.datasource.SetupServiceRemoteDatasource
-import com.gestorplus.appgestor.owner.setup_service.data.datasource.repository.SetupServiceRepositoryImpl
-import com.gestorplus.appgestor.owner.setup_service.data.datasource.service.SetupServiceService
+import com.gestorplus.appgestor.owner.setup_service.data.datasource.SetupServiceRemoteDatasource
+import com.gestorplus.appgestor.owner.setup_service.data.repository.SetupServiceRepositoryImpl
+import com.gestorplus.appgestor.owner.setup_service.data.datasource.SetupServiceService
 import com.gestorplus.appgestor.owner.setup_service.domain.repository.SetupServiceRepository
 import com.gestorplus.appgestor.owner.setup_service.domain.usecase.SaveWorkspaceServiceUseCase
 import com.gestorplus.appgestor.owner.setup_service.presentation.viewmodel.WorkspaceSetupServiceViewModel
@@ -18,7 +18,7 @@ val setupServiceModule = module {
     single { SetupServiceRemoteDatasource(get()) }
 
     // 3. Repositorio
-    single<SetupServiceRepository> { SetupServiceRepositoryImpl(get()) }
+    single<SetupServiceRepository> { SetupServiceRepositoryImpl(get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceServiceUseCase)

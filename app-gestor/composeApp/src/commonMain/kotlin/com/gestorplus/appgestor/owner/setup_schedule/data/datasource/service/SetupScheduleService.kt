@@ -1,9 +1,0 @@
-package com.gestorplus.appgestor.owner.setup_schedule.data.datasource.service
-
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
-
-class SetupScheduleService(private val firebaseManager: FirebaseManager) {
-    suspend fun saveWorkspaceSchedule(uid: String, data: String) {
-        firebaseManager.saveData("workspaces/$uid/schedule", data)
-    }
-}

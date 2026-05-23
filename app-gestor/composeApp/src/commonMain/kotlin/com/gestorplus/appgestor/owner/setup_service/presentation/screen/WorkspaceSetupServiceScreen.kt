@@ -344,8 +344,8 @@ fun WorkspaceSetupServiceScreen(
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(54.dp)
                             .padding(bottom = 32.dp)
+                            .height(54.dp)
                     ) {
                         if (state.isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))

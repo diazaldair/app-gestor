@@ -28,4 +28,19 @@ actual class FirebaseManager actual constructor() {
         println("Firebase iOS: getData not yet implemented")
         return null
     }
+
+    actual suspend fun registerUserWithEmail(email: String, password: String): String {
+        println("Firebase iOS: registerUserWithEmail not yet implemented")
+        throw Exception("Auth no soportada en iOS aún")
+    }
+
+    actual suspend fun loginUserWithEmail(email: String, password: String): String {
+        println("Firebase iOS: loginUserWithEmail not yet implemented")
+        throw Exception("Auth no soportada en iOS aún")
+    }
+
+    actual fun getCurrentUserUid(): String? {
+        println("Firebase iOS: getCurrentUserUid not yet implemented")
+        return null
+    }
 }

@@ -1,8 +1,8 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.owner.setup_intro.data.datasource.datasource.SetupIntroRemoteDatasource
-import com.gestorplus.appgestor.owner.setup_intro.data.datasource.repository.SetupIntroRepositoryImpl
-import com.gestorplus.appgestor.owner.setup_intro.data.datasource.service.SetupIntroService
+import com.gestorplus.appgestor.owner.setup_intro.data.datasource.SetupIntroRemoteDatasource
+import com.gestorplus.appgestor.owner.setup_intro.data.repository.SetupIntroRepositoryImpl
+import com.gestorplus.appgestor.owner.setup_intro.data.datasource.SetupIntroService
 import com.gestorplus.appgestor.owner.setup_intro.domain.repository.SetupIntroRepository
 import com.gestorplus.appgestor.owner.setup_intro.domain.usecase.InitializeAndSyncConfigUseCase
 import com.gestorplus.appgestor.owner.setup_intro.presentation.viewmodel.WorkspaceSetupIntroViewModel

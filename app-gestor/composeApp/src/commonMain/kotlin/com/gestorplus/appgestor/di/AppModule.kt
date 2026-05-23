@@ -16,6 +16,7 @@ val appModules: List<Module> = listOf(
     setupServiceModule,
     setupSuccessModule,
     dashboardModule,
+    homeModule,
     profileModule,
     notificationModule,
     platformModule,

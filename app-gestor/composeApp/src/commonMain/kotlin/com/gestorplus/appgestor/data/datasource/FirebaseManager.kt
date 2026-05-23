@@ -9,4 +9,9 @@ expect class FirebaseManager() {
     fun getString(key: String): String
     suspend fun getFirebaseLogs(path: String): List<String>
     suspend fun getData(path: String): Map<String, Any>?
+    
+    // Auth
+    suspend fun registerUserWithEmail(email: String, password: String): String
+    suspend fun loginUserWithEmail(email: String, password: String): String
+    fun getCurrentUserUid(): String?
 }

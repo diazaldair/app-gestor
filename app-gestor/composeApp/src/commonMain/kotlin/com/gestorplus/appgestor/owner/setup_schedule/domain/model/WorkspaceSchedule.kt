@@ -1,5 +1,8 @@
 package com.gestorplus.appgestor.owner.setup_schedule.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WorkspaceSchedule(
     val workingDays: List<String>,       // ["L", "M", "X", "J", "V"]
     val morningStart: String,            // "08:00"

@@ -64,4 +64,22 @@ actual class FirebaseManager actual constructor() {
             null
         }
     }
+
+    // Auth
+    actual suspend fun registerUserWithEmail(email: String, password: String): String {
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Fallo al crear el usuario en Firebase Auth")
+    }
+
+    actual suspend fun loginUserWithEmail(email: String, password: String): String {
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        val result = auth.signInWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Credenciales incorrectas o usuario no encontrado")
+    }
+
+    actual fun getCurrentUserUid(): String? {
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        return auth.currentUser?.uid
+    }
 }
