@@ -15,6 +15,9 @@ actual val platformModule: Module = module {
         getDatabaseBuilder(androidContext())
     }
 
+    // Preferencias Locales
+    single { com.gestorplus.appgestor.core.persistence.LocalPreferences(androidContext()) }
+
     // Notificaciones
     single { NotificationHelper(androidContext()) }
     single<NotificationRepository> { NotificationRepositoryImpl(androidContext(), get()) }

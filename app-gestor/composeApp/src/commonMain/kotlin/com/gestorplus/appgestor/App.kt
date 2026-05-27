@@ -19,8 +19,16 @@ import com.gestorplus.appgestor.owner.setup_service.presentation.screen.Workspac
 import com.gestorplus.appgestor.owner.setup_success.presentation.screen.WorkspaceSetupSuccessScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import org.koin.compose.koinInject
+import com.gestorplus.appgestor.onboarding.presentation.screen.OnboardingScreen
+import com.gestorplus.appgestor.onboarding.domain.usecase.IsOnboardingCompletedUseCase
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.request.crossfade
 
 enum class Screen {
+    Onboarding,
+    OnboardingFinished,
     Landing,
     Login,
     Register,
@@ -41,10 +49,24 @@ enum class Screen {
 @Composable
 fun App() {
     val initializeAndSyncConfigUseCase: InitializeAndSyncConfigUseCase = koinInject()
+    val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = koinInject()
     
     // Simple state-based navigation
-    var currentScreen by remember { mutableStateOf(Screen.Landing) }
+    var currentScreen by remember { 
+        mutableStateOf(
+            if (isOnboardingCompletedUseCase()) Screen.OnboardingFinished else Screen.Onboarding
+        ) 
+    }
     var selectedRole by remember { mutableStateOf("PATIENT") } // "PATIENT" o "PROFESSIONAL"
+
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components {
+                add(KtorNetworkFetcherFactory())
+            }
+            .crossfade(true)
+            .build()
+    }
 
     LaunchedEffect(Unit) {
         val defaults = mapOf(
@@ -60,6 +82,27 @@ fun App() {
         mode = ThemeMode.DARK
     ) {
         when (currentScreen) {
+            Screen.Onboarding -> {
+                OnboardingScreen(
+                    onNavigateToHome = { currentScreen = Screen.OnboardingFinished }
+                )
+            }
+            Screen.OnboardingFinished -> {
+                Box(
+                    modifier = Modifier.fillMaxSize().background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("¡Onboarding Finalizado!", fontSize = 24.sp, color = Color.Black)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Has llegado al final del flujo.", fontSize = 16.sp, color = Color.Gray)
+                        Spacer(modifier = Modifier.height(32.dp))
+                        androidx.compose.material3.Button(onClick = { currentScreen = Screen.Landing }) {
+                            Text("Ir al Proyecto Real")
+                        }
+                    }
+                }
+            }
             Screen.Landing -> {
                 LandingScreen(
                     onNavigateToPatient = { 

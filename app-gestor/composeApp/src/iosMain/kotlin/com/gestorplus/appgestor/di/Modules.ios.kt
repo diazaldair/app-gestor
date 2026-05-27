@@ -15,4 +15,7 @@ actual val platformModule: Module = module {
             factory = { AppDatabase::class.instantiateImpl() } // Necesario para iOS
         )
     }
+    
+    // Preferencias Locales
+    single { com.gestorplus.appgestor.core.persistence.LocalPreferences() }
 }
