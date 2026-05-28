@@ -2,7 +2,7 @@ package com.gestorplus.appgestor.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.gestorplus.appgestor.presentation.booking.BookingBottomBar
+import com.gestorplus.appgestor.booking.presentation.screen.BookingBottomBar
 import org.junit.Rule
 import org.junit.Test
 
