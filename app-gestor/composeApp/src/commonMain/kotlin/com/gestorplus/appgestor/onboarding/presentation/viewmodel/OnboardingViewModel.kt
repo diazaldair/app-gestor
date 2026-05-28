@@ -30,6 +30,10 @@ class OnboardingViewModel(
         loadConfig()
     }
 
+    fun resetToFirstSlide() {
+        _state.update { it.copy(currentIndex = 0) }
+    }
+
     private fun loadConfig() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, language = getDeviceLanguage()) }

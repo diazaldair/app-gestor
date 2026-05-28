@@ -61,6 +61,10 @@ fun OnboardingScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.resetToFirstSlide()
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 OnboardingEffect.NavigateToHome -> onNavigateToHome()
@@ -101,7 +105,6 @@ fun OnboardingScreen(
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Top Bar
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -113,12 +116,19 @@ fun OnboardingScreen(
                                         .size(40.dp)
                                         .clip(CircleShape)
                                         .background(Color.White)
-                                        .clickable { viewModel.onEvent(OnboardingEvent.OnPreviousClicked) },
+                                        .clickable {
+                                            viewModel.onEvent(OnboardingEvent.OnPreviousClicked)
+                                        },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Previous",
+                                        contentDescription = localizedText(
+                                            language = state.language,
+                                            es = "Anterior",
+                                            en = "Previous",
+                                            fr = "Pr\u00e9c\u00e9dent"
+                                        ),
                                         tint = TextDark
                                     )
                                 }
@@ -136,7 +146,12 @@ fun OnboardingScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = if (state.language == "es") "Omitir" else if (state.language == "fr") "Passer" else "Skip",
+                                    text = localizedText(
+                                        language = state.language,
+                                        es = "Omitir",
+                                        en = "Skip",
+                                        fr = "Passer"
+                                    ),
                                     color = TextGray,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium
@@ -198,7 +213,6 @@ fun OnboardingScreen(
 
                         Spacer(modifier = Modifier.height(32.dp))
 
-                        // Action Button
                         Button(
                             onClick = {
                                 if (state.isLastSlide) {
@@ -213,33 +227,51 @@ fun OnboardingScreen(
                                 .fillMaxWidth()
                                 .height(54.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                val buttonText = if (state.isLastSlide) {
-                                    if (state.language == "es") "Iniciar" else if (state.language == "fr") "Commencer" else "Start"
-                                } else {
-                                    if (state.language == "es") "Siguiente" else if (state.language == "fr") "Suivant" else "Next"
-                                }
-                                
-                                Text(
-                                    text = buttonText,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
+                            val buttonText = if (state.isLastSlide) {
+                                localizedText(
+                                    language = state.language,
+                                    es = "Iniciar",
+                                    en = "Start",
+                                    fr = "Commencer"
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White
+                            } else {
+                                localizedText(
+                                    language = state.language,
+                                    es = "Siguiente",
+                                    en = "Next",
+                                    fr = "Suivant"
                                 )
                             }
+
+                            Text(
+                                text = buttonText,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private fun localizedText(
+    language: String,
+    es: String,
+    en: String,
+    fr: String
+): String {
+    return when (language) {
+        "es" -> es
+        "fr" -> fr
+        else -> en
     }
 }

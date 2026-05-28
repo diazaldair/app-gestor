@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.auth.presentation.landing.screen
+package com.gestorplus.appgestor.home.presentation.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -20,34 +20,29 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.RocketLaunch
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEfffect
-import com.gestorplus.appgestor.auth.presentation.landing.state.LandingEvent
-import com.gestorplus.appgestor.auth.presentation.landing.viewmodel.LandingViewModel
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
-import kotlinx.coroutines.flow.collectLatest
-import org.koin.compose.viewmodel.koinViewModel
 
 private val LightBgStart = Color(0xFFEBF8FF)
 private val LightBgEnd = Color(0xFFFFFFFF)
@@ -59,23 +54,10 @@ private val BorderBlue = Color(0xFFBFDBFE)
 private val SuccessGreen = Color(0xFF10B981)
 
 @Composable
-fun LandingScreen(
-    onNavigateToPatient: () -> Unit,
-    onNavigateToProfessional: () -> Unit,
-    onNavigateToOnboarding: () -> Unit,
-    viewModel: LandingViewModel = koinViewModel()
+fun HomeScreen(
+    onNavigateToProfiles: () -> Unit,
+    onNavigateToOnboarding: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.effect.collectLatest { effect ->
-            when (effect) {
-                LandingEfffect.NavigateToPatientFlow -> onNavigateToPatient()
-                LandingEfffect.NavigateToProfessionalFlow -> onNavigateToProfessional()
-            }
-        }
-    }
-
     DsTheme {
         Box(
             modifier = Modifier
@@ -108,7 +90,7 @@ fun LandingScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.DateRange,
+                                imageVector = Icons.Default.Business,
                                 contentDescription = null,
                                 tint = PrimaryBlue,
                                 modifier = Modifier.size(24.dp)
@@ -117,13 +99,13 @@ fun LandingScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "SoloBook",
+                                text = "GestorPlus",
                                 color = TextDark,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "Agenda y reservas",
+                                text = "Tu negocio, organizado",
                                 color = TextGray,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium
@@ -147,7 +129,7 @@ fun LandingScreen(
                         )
                         Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            text = state.statusText,
+                            text = "LISTO",
                             color = TextGray,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
@@ -155,27 +137,27 @@ fun LandingScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(38.dp))
+                Spacer(modifier = Modifier.height(34.dp))
 
                 Box(
                     modifier = Modifier
-                        .size(128.dp)
+                        .size(132.dp)
                         .clip(CircleShape)
                         .background(SoftBlue),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        imageVector = Icons.Default.RocketLaunch,
                         contentDescription = null,
                         tint = PrimaryBlue,
-                        modifier = Modifier.size(68.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(26.dp))
 
                 Text(
-                    text = "Gestiona tus reservas sin complicaciones",
+                    text = "Transforma tu manera de trabajar",
                     color = TextDark,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -186,15 +168,15 @@ fun LandingScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Elige tu perfil para continuar con citas, horarios y servicios desde un solo lugar.",
+                    text = "Gestiona proyectos, prioridades y colaboración en equipo desde un solo lugar.",
                     color = TextGray,
                     fontSize = 15.sp,
                     textAlign = TextAlign.Center,
                     lineHeight = 22.sp,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    modifier = Modifier.padding(horizontal = 10.dp)
                 )
 
-                Spacer(modifier = Modifier.height(34.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
                 Column(
                     modifier = Modifier
@@ -202,133 +184,122 @@ fun LandingScreen(
                         .clip(RoundedCornerShape(24.dp))
                         .background(Color.White)
                         .border(1.dp, BorderBlue, RoundedCornerShape(24.dp))
-                        .padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = "SELECCIONA TU PERFIL",
-                        color = TextGray,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.5.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    HomeFeature(
+                        icon = Icons.Default.Business,
+                        title = "Organiza tu negocio",
+                        description = "Ordena proyectos, tareas y prioridades con claridad."
                     )
-
-                    OutlinedButton(
-                        onClick = onNavigateToOnboarding,
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = PrimaryBlue
-                        ),
-                        border = BorderStroke(1.dp, PrimaryBlue),
-                        shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Replay,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Volver a ver onboarding",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    ProfileOption(
-                        label = "Soy Paciente",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        backgroundColor = PrimaryBlue,
-                        contentColor = Color.White,
-                        onClick = { viewModel.onEvent(LandingEvent.OnPatientSelected) }
+                    HomeFeature(
+                        icon = Icons.Default.Groups,
+                        title = "Trabaja en equipo",
+                        description = "Mantén a todos sincronizados en tiempo real."
                     )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    ProfileOption(
-                        label = "Soy Profesional",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.MedicalServices,
-                                contentDescription = null,
-                                tint = PrimaryBlue,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        backgroundColor = SoftBlue,
-                        contentColor = TextDark,
-                        borderColor = BorderBlue,
-                        onClick = { viewModel.onEvent(LandingEvent.OnProfessionalSelected) }
+                    HomeFeature(
+                        icon = Icons.Default.TaskAlt,
+                        title = "Empieza hoy",
+                        description = "Da el siguiente paso y configura tu perfil."
                     )
                 }
 
-                Text(
-                    text = "VERSION ${state.version}",
-                    color = TextGray.copy(alpha = 0.7f),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 1.sp,
-                    modifier = Modifier.padding(top = 28.dp, bottom = 12.dp),
-                    textAlign = TextAlign.Center
-                )
+                Spacer(modifier = Modifier.height(22.dp))
+
+                Button(
+                    onClick = onNavigateToProfiles,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                ) {
+                    Text(
+                        text = "Continuar",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedButton(
+                    onClick = onNavigateToOnboarding,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryBlue),
+                    border = BorderStroke(1.dp, PrimaryBlue),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Replay,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Volver a ver onboarding",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ProfileOption(
-    label: String,
-    icon: @Composable () -> Unit,
-    backgroundColor: Color,
-    contentColor: Color,
-    borderColor: Color? = null,
-    onClick: () -> Unit
+private fun HomeFeature(
+    icon: ImageVector,
+    title: String,
+    description: String
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(backgroundColor)
-            .then(
-                if (borderColor != null) {
-                    Modifier.border(1.dp, borderColor, RoundedCornerShape(16.dp))
-                } else {
-                    Modifier
-                }
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .background(Color(0xFFF8FAFC))
+            .clickable(enabled = false) {}
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            icon()
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = label,
-                color = contentColor,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(SoftBlue),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = PrimaryBlue,
+                modifier = Modifier.size(22.dp)
             )
         }
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
-            contentDescription = null,
-            tint = contentColor
-        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = title,
+                color = TextDark,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(3.dp))
+            Text(
+                text = description,
+                color = TextGray,
+                fontSize = 13.sp,
+                lineHeight = 18.sp
+            )
+        }
     }
 }
