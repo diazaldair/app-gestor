@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.owner.dashboard.data.mapper
 
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import com.gestorplus.appgestor.core.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.booking.data.datasource.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.owner.dashboard.domain.model.Booking
 

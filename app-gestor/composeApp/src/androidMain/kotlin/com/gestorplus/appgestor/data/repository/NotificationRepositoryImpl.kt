@@ -1,11 +1,11 @@
-package com.gestorplus.appgestor.data.repository
+package com.gestorplus.appgestor.core.data.repository
 
 import android.content.Context
 import android.util.Log
 import com.gestorplus.appgestor.core.firebase.getToken
 import com.gestorplus.appgestor.core.notification.NotificationHelper
-import com.gestorplus.appgestor.domain.notification.NotificationRepository
-import com.gestorplus.appgestor.domain.notification.PushNotification
+import com.gestorplus.appgestor.notification.domain.NotificationRepository
+import com.gestorplus.appgestor.notification.domain.PushNotification
 
 class NotificationRepositoryImpl(
     private val context: Context,

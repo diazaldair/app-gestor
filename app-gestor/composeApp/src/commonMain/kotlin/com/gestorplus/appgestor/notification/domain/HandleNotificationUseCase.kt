@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.domain.notification
+package com.gestorplus.appgestor.notification.domain
 
 class HandleNotificationUseCase(
     private val repository: NotificationRepository

@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.domain.notification.HandleNotificationUseCase
+import com.gestorplus.appgestor.notification.domain.HandleNotificationUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

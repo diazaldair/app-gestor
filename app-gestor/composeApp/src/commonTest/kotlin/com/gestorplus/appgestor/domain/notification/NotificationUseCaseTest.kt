@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.domain.notification
+package com.gestorplus.appgestor.notification.domain
 
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

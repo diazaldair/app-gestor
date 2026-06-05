@@ -1,7 +1,7 @@
-package com.gestorplus.appgestor.data.local.dao
+package com.gestorplus.appgestor.core.data.local.dao
 
 import androidx.room.*
-import com.gestorplus.appgestor.data.local.entity.BookingDraftEntity
+import com.gestorplus.appgestor.core.data.local.entity.BookingDraftEntity
 
 @Dao
 interface BookingDraftDao {

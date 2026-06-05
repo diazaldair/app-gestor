@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.gestorplus.appgestor.core.firebase.getToken
 import com.gestorplus.appgestor.core.work.LogScheduler
-import com.gestorplus.appgestor.data.repository.EventRepository
+import com.gestorplus.appgestor.core.data.repository.EventRepository
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 

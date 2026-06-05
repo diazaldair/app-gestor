@@ -2,7 +2,7 @@ package com.gestorplus.appgestor.owner.dashboard.data.repository
 
 import com.gestorplus.appgestor.booking.data.datasource.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.core.util.DateTimeUtils
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import com.gestorplus.appgestor.core.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardLocalDatasource
 import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardRemoteDatasource
 import com.gestorplus.appgestor.owner.dashboard.data.mapper.DashboardMapper

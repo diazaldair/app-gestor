@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.data.local.dao.EventLogDao
+import com.gestorplus.appgestor.core.data.local.dao.EventLogDao
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

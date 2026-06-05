@@ -1,8 +1,8 @@
 package com.gestorplus.appgestor.core.data.notification
 
 import android.util.Log
-import com.gestorplus.appgestor.domain.notification.HandleNotificationUseCase
-import com.gestorplus.appgestor.domain.notification.PushNotification
+import com.gestorplus.appgestor.notification.domain.HandleNotificationUseCase
+import com.gestorplus.appgestor.notification.domain.PushNotification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope

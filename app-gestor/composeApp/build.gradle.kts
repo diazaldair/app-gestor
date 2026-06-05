@@ -88,6 +88,7 @@ kotlin {
             implementation(libs.firebase.auth)
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
+            implementation(libs.firebase.storage)
             implementation(libs.firebase.messaging)
             implementation(libs.kotlinx.coroutines.play.services)
             

@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.data.local
+package com.gestorplus.appgestor.core.data.local
 
 import android.content.Context
 import androidx.room.Room

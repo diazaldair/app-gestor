@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.gestorplus.appgestor.MainActivity
-import com.gestorplus.appgestor.domain.notification.PushNotification
+import com.gestorplus.appgestor.notification.domain.PushNotification
 
 class NotificationHelper(private val context: Context) {
 

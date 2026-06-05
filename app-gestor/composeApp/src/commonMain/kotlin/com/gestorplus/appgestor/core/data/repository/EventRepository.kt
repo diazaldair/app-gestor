@@ -1,7 +1,7 @@
-package com.gestorplus.appgestor.data.repository
+package com.gestorplus.appgestor.core.data.repository
 
-import com.gestorplus.appgestor.data.local.dao.EventLogDao
-import com.gestorplus.appgestor.data.local.entity.EventLogEntity
+import com.gestorplus.appgestor.core.data.local.dao.EventLogDao
+import com.gestorplus.appgestor.core.data.local.entity.EventLogEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

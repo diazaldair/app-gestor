@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.owner.dashboard.data.datasource
 
-import com.gestorplus.appgestor.data.local.dao.BookingDao
-import com.gestorplus.appgestor.data.local.entity.BookingEntity
+import com.gestorplus.appgestor.core.data.local.dao.BookingDao
+import com.gestorplus.appgestor.core.data.local.entity.BookingEntity
 import kotlinx.coroutines.flow.Flow
 
 class DashboardLocalDatasource(private val bookingDao: BookingDao) {

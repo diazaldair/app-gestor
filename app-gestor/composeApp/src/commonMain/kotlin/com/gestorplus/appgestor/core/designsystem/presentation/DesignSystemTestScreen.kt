@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.presentation
+package com.gestorplus.appgestor.core.designsystem.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
