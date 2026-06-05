@@ -36,6 +36,9 @@ import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.owner.setup_profile.presentation.state.WorkspaceSetupProfileEfffect
 import com.gestorplus.appgestor.owner.setup_profile.presentation.state.WorkspaceSetupProfileEvent
 import com.gestorplus.appgestor.owner.setup_profile.presentation.viewmodel.WorkspaceSetupProfileViewModel
+import com.gestorplus.appgestor.util.rememberImagePicker
+import coil3.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -56,6 +59,9 @@ fun WorkspaceSetupProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val imagePicker = rememberImagePicker { uri ->
+        viewModel.onEvent(WorkspaceSetupProfileEvent.PhotoSelected(uri))
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -476,7 +482,7 @@ fun WorkspaceSetupProfileScreen(
                                     .size(90.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(InputFieldBg)
-                                    .clickable { viewModel.onEvent(WorkspaceSetupProfileEvent.AddPhotoClicked) }
+                                    .clickable { imagePicker.pickImage() }
                                     .drawBehind {
                                         drawRoundRect(
                                             color = GlassBorder,
@@ -524,15 +530,11 @@ fun WorkspaceSetupProfileScreen(
                                     .background(Color(0xFF334155))
                                     .border(1.dp, GlassBorder, RoundedCornerShape(12.dp))
                             ) {
-                                // Dibujamos gradiente o simulación para que se vea premium
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(
-                                            Brush.verticalGradient(
-                                                colors = listOf(Color(0xFF475569), Color(0xFF1E293B))
-                                            )
-                                        )
+                                AsyncImage(
+                                    model = image,
+                                    contentDescription = "Foto de galería",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
                                 )
 
                                 // Botón eliminar cruz roja

@@ -70,10 +70,11 @@ class WorkspaceSetupProfileViewModel(
                 is WorkspaceSetupProfileEvent.ReferencesChanged -> {
                     _state.update { it.copy(references = event.value) }
                 }
-                WorkspaceSetupProfileEvent.AddPhotoClicked -> {
-                    val photoId = "simulated_photo_${System.currentTimeMillis()}"
-                    _state.update {
-                        it.copy(galleryImages = it.galleryImages + photoId)
+                is WorkspaceSetupProfileEvent.PhotoSelected -> {
+                    if (event.uri.isNotBlank()) {
+                        _state.update {
+                            it.copy(galleryImages = it.galleryImages + event.uri)
+                        }
                     }
                 }
                 is WorkspaceSetupProfileEvent.RemovePhotoClicked -> {

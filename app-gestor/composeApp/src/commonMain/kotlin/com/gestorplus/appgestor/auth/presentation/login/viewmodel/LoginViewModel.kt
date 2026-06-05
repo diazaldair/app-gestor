@@ -42,11 +42,7 @@ class LoginViewModel(
                     submitLogin()
                 }
                 LoginEvent.OnGoogleLoginClicked -> {
-                    _state.update { it.copy(isLoading = true) }
-                    // Simular login con Google
-                    kotlinx.coroutines.delay(1000)
-                    _state.update { it.copy(isLoading = false) }
-                    _effect.emit(LoginEfffect.NavigateToHome)
+                    _effect.emit(LoginEfffect.ShowSnackbar("Login con Google en desarrollo."))
                 }
                 LoginEvent.OnAppleLoginClicked -> {
                     _effect.emit(LoginEfffect.ShowSnackbar("Login con Apple no disponible en esta versión."))

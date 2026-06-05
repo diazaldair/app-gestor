@@ -39,6 +39,11 @@ actual class FirebaseManager actual constructor() {
         throw Exception("Auth no soportada en iOS aún")
     }
 
+    actual suspend fun uploadImage(localPath: String): String {
+        println("Firebase iOS: uploadImage not yet implemented")
+        throw Exception("Storage no soportado en iOS aún")
+    }
+
     actual fun getCurrentUserUid(): String? {
         println("Firebase iOS: getCurrentUserUid not yet implemented")
         return null

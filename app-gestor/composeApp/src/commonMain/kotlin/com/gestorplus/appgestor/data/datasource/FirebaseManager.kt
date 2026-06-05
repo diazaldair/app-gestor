@@ -10,6 +10,9 @@ expect class FirebaseManager() {
     suspend fun getFirebaseLogs(path: String): List<String>
     suspend fun getData(path: String): Map<String, Any>?
     
+    // Storage
+    suspend fun uploadImage(localPath: String): String
+
     // Auth
     suspend fun registerUserWithEmail(email: String, password: String): String
     suspend fun loginUserWithEmail(email: String, password: String): String

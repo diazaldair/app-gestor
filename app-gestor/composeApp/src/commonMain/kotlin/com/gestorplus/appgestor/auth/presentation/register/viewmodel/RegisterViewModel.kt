@@ -45,10 +45,7 @@ class RegisterViewModel(
                     submitRegister()
                 }
                 RegisterEvent.OnGoogleRegisterClicked -> {
-                    _state.update { it.copy(isLoading = true) }
-                    kotlinx.coroutines.delay(1000)
-                    _state.update { it.copy(isLoading = false) }
-                    _effect.emit(RegisterEfffect.NavigateToHome)
+                    _effect.emit(RegisterEfffect.ShowSnackbar("Registro con Google próximamente."))
                 }
                 RegisterEvent.OnLoginClicked -> {
                     _effect.emit(RegisterEfffect.NavigateToLogin)
@@ -62,6 +59,28 @@ class RegisterViewModel(
         val email = _state.value.email
         val password = _state.value.password
         val confirmPassword = _state.value.confirmPassword
+
+        if (fullName.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            _state.update { it.copy(errorMessage = "Todos los campos son obligatorios.") }
+            return
+        }
+
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+        if (!emailRegex.matches(email)) {
+            _state.update { it.copy(errorMessage = "Formato de correo inválido.") }
+            return
+        }
+
+        val passwordRegex = "^(?=.*[0-9])(?=.*[A-Z]).{8,}$".toRegex()
+        if (!passwordRegex.matches(password)) {
+            _state.update { it.copy(errorMessage = "La contraseña debe tener 8 caracteres, 1 mayúscula y 1 número.") }
+            return
+        }
+
+        if (password != confirmPassword) {
+            _state.update { it.copy(errorMessage = "Las contraseñas no coinciden.") }
+            return
+        }
 
         _state.update { it.copy(isLoading = true) }
         val result = registerDoctorUseCase(fullName, email, password, confirmPassword)

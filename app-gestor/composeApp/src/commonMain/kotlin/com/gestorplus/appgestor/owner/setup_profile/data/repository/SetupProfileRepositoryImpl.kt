@@ -14,7 +14,16 @@ class SetupProfileRepositoryImpl(
 
     override suspend fun saveWorkspaceProfile(profile: WorkspaceProfile): Result<Unit> {
         return try {
-            val dataString = Json.encodeToString(profile)
+            val uploadedImages = profile.galleryImages.map { path ->
+                if (path.startsWith("http") || path.startsWith("https")) {
+                    path
+                } else {
+                    firebaseManager.uploadImage(path)
+                }
+            }
+            val updatedProfile = profile.copy(galleryImages = uploadedImages)
+
+            val dataString = Json.encodeToString(updatedProfile)
             val currentUid = firebaseManager.getCurrentUserUid() ?: throw Exception("Usuario no autenticado")
             remoteDatasource.saveWorkspaceProfile(currentUid, dataString)
             Result.success(Unit)

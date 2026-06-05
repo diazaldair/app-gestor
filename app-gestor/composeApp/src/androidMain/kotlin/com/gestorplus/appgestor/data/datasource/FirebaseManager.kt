@@ -78,6 +78,23 @@ actual class FirebaseManager actual constructor() {
         return result.user?.uid ?: throw Exception("Credenciales incorrectas o usuario no encontrado")
     }
 
+    // Storage
+    actual suspend fun uploadImage(localPath: String): String {
+        return try {
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference
+            val fileName = "images/${System.currentTimeMillis()}_${localPath.substringAfterLast("/")}"
+            val imageRef = storageRef.child(fileName)
+            val uri = android.net.Uri.parse(localPath)
+            
+            imageRef.putFile(uri).await()
+            val downloadUrl = imageRef.downloadUrl.await()
+            downloadUrl.toString()
+        } catch (e: Exception) {
+            Log.e("Firebase_Storage", "Error subiendo imagen: ${e.message}")
+            throw Exception("Fallo al subir la imagen a Storage")
+        }
+    }
+
     actual fun getCurrentUserUid(): String? {
         val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
         return auth.currentUser?.uid

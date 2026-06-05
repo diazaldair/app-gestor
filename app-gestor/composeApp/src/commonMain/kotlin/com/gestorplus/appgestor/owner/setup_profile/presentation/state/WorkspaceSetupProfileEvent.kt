@@ -10,7 +10,7 @@ sealed interface WorkspaceSetupProfileEvent {
     data object FixLocationClicked : WorkspaceSetupProfileEvent
     data class ExactAddressChanged(val value: String) : WorkspaceSetupProfileEvent
     data class ReferencesChanged(val value: String) : WorkspaceSetupProfileEvent
-    data object AddPhotoClicked : WorkspaceSetupProfileEvent
+    data class PhotoSelected(val uri: String) : WorkspaceSetupProfileEvent
     data class RemovePhotoClicked(val image: String) : WorkspaceSetupProfileEvent
     data object OnContinueClicked : WorkspaceSetupProfileEvent
     data object OnBackClicked : WorkspaceSetupProfileEvent
