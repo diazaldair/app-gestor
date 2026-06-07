@@ -41,11 +41,11 @@ android {
             }
         }
         getByName("debug") {
-            // Configuración opcional para distribuir builds de desarrollo
+            // Configuracion para distribucion interna a testers de QA
             configure<com.google.firebase.appdistribution.gradle.AppDistributionExtension> {
                 artifactType = "APK"
-                releaseNotes = "Build de desarrollo con correcciones de UI."
-                testers = "dev-team@gestorplus.com"
+                groups = "qa-testers"
+                releaseNotes = "Primera distribucion interna desde Firebase App Distribution"
             }
         }
     }
