@@ -51,12 +51,19 @@ class BookingViewModel(
             is BookingEvent.OnTimeSlotSelected -> {
                 _state.update { it.copy(selectedTimeSlot = event.slot) }
             }
+            is BookingEvent.OnNotesChanged -> {
+                _state.update { it.copy(additionalNotes = event.notes) }
+            }
             is BookingEvent.OnConfirmBooking -> {
                 viewModelScope.launch {
                     _state.update { it.copy(isLoading = true) }
                     val result = confirmBookingUseCase(
                         date = _state.value.selectedDate,
-                        slot = _state.value.selectedTimeSlot ?: ""
+                        slot = _state.value.selectedTimeSlot ?: "",
+                        notes = _state.value.additionalNotes,
+                        service = _state.value.serviceName,
+                        doctor = _state.value.doctorName,
+                        totalPrice = _state.value.totalPrice
                     )
                     _state.update { it.copy(isLoading = false) }
                     if (result.isSuccess) {

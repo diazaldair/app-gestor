@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.data.datasource
 
 expect class FirebaseManager() {
-    suspend fun saveData(path: String, value: String)
+    suspend fun saveData(path: String, value: Any)
     
     // Remote Config
     suspend fun initializeRemoteConfig(defaultValues: Map<String, Any>)

@@ -15,6 +15,8 @@ import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
+import com.gestorplus.appgestor.booking.presentation.screen.BookingSuccessScreen
+import com.gestorplus.appgestor.booking.presentation.screen.MyBookingsScreen
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.home.presentation.screen.HomeScreen
@@ -45,6 +47,8 @@ enum class Screen {
     WorkspaceSetupSuccess,
     ClientView,
     BookingConfirmation,
+    BookingSuccess,
+    MyBookings,
     BusinessView,
     DoctorView,
     WorkingHours,
@@ -208,7 +212,20 @@ fun App() {
             Screen.BookingConfirmation -> {
                 BookingConfirmationScreen(
                     onBack = { currentScreen = Screen.ClientView },
-                    onConfirm = { currentScreen = Screen.Home }
+                    onConfirm = { currentScreen = Screen.BookingSuccess }
+                )
+            }
+
+            Screen.BookingSuccess -> {
+                BookingSuccessScreen(
+                    onNavigateToMyBookings = { currentScreen = Screen.MyBookings },
+                    onNavigateToHome = { currentScreen = Screen.Home }
+                )
+            }
+
+            Screen.MyBookings -> {
+                MyBookingsScreen(
+                    onBack = { currentScreen = Screen.Home }
                 )
             }
 
@@ -250,12 +267,12 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "title": {
         "es": "\u00a1Organiza tu negocio!",
         "en": "Organize your business!",
-        "fr": "Organisez votre entreprise !"
+        "fr": "Organisez votre empresa !"
       },
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "G\u00e9rez facilement vos t\u00e2ches, projets et priorit\u00e9s avec GestorPlus."
+        "fr": "G\u00e9rez facilement vos t\u00e2ches, proyectos et priorit\u00e9s avec GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",

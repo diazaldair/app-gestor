@@ -7,7 +7,24 @@ class BookingRemoteDatasource(private val bookingService: BookingService) {
         return bookingService.getAvailableSlots(date)
     }
 
-    suspend fun confirmBooking(date: Int, slot: String) {
-        bookingService.saveBooking(date, slot, "CLIENT_ID_MOCK|CONFIRMED")
+    suspend fun confirmBooking(
+        date: Int,
+        slot: String,
+        notes: String,
+        service: String,
+        doctor: String,
+        totalPrice: Double
+    ) {
+        val bookingData = mapOf(
+            "date" to date,
+            "slot" to slot,
+            "notes" to notes,
+            "service" to service,
+            "doctor" to doctor,
+            "totalPrice" to totalPrice,
+            "status" to "PENDING",
+            "timestamp" to 123456789L // Use a proper timestamp if possible
+        )
+        bookingService.saveBooking(date, slot, bookingData)
     }
 }

@@ -7,7 +7,7 @@ class BookingService(private val firebaseManager: FirebaseManager) {
         return firebaseManager.getData("available_slots/$date") as? Map<String, Any>
     }
 
-    suspend fun saveBooking(date: Int, slot: String, value: String) {
+    suspend fun saveBooking(date: Int, slot: String, value: Any) {
         firebaseManager.saveData("bookings/$date/$slot", value)
     }
 }

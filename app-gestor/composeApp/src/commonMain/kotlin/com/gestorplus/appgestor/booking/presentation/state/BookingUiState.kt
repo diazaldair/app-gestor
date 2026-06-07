@@ -9,5 +9,23 @@ data class BookingUiState(
     val selectedTimeSlot: String? = null,
     val timeSlotsMorning: List<String> = emptyList(),
     val timeSlotsAfternoon: List<String> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    
+    // New fields for confirmation
+    val doctorName: String = "Dr. Alejandro Mendoza",
+    val doctorSpecialty: String = "CARDIÓLOGO ESPECIALISTA",
+    val serviceName: String = "Consulta de Cardiología General",
+    val serviceCategory: String = "PREMIUM SERVICE",
+    val additionalNotes: String = "",
+    val priceItems: List<PriceItem> = listOf(
+        PriceItem("Consulta Médica", 80.0),
+        PriceItem("Electrocardiograma (ECG)", 45.0)
+    )
+) {
+    val totalPrice: Double get() = priceItems.sumOf { it.amount }
+}
+
+data class PriceItem(
+    val description: String,
+    val amount: Double
 )

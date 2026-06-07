@@ -25,9 +25,16 @@ class BookingRepositoryImpl(
         return getDefaultSlots()
     }
 
-    override suspend fun confirmBooking(date: Int, slot: String): Result<Unit> {
+    override suspend fun confirmBooking(
+        date: Int,
+        slot: String,
+        notes: String,
+        service: String,
+        doctor: String,
+        totalPrice: Double
+    ): Result<Unit> {
         return try {
-            bookingRemoteDatasource.confirmBooking(date, slot)
+            bookingRemoteDatasource.confirmBooking(date, slot, notes, service, doctor, totalPrice)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
