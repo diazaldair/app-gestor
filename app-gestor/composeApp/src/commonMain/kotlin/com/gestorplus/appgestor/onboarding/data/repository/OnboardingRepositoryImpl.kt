@@ -48,55 +48,46 @@ class OnboardingRepositoryImpl(
     {
       "id": 1,
       "title": {
-        "es": "\u00a1Organiza tu negocio!",
-        "en": "Organize your business!",
-        "fr": "Organisez votre entreprise !"
+        "es": "Tu Consultorio Digital",
+        "en": "Your Digital Clinic"
       },
       "description": {
-        "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
-        "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "G\u00e9rez facilement vos t\u00e2ches, projets et priorit\u00e9s avec GestorPlus."
+        "es": "Configura tu perfil profesional, especialidades y servicios de forma centralizada.",
+        "en": "Configure your professional profile, specialties and services centrally."
       },
       "image_url": {
-        "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
-        "en": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
-        "fr": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png"
+        "es": "https://cdn-icons-png.flaticon.com/512/3304/3304567.png",
+        "en": "https://cdn-icons-png.flaticon.com/512/3304/3304567.png"
       }
     },
     {
       "id": 2,
       "title": {
-        "es": "Trabaja en equipo",
-        "en": "Teamwork",
-        "fr": "Travail d'\u00e9quipe"
+        "es": "Gesti\u00f3n de Citas \u00c1gil",
+        "en": "Agile Appointment Management"
       },
       "description": {
-        "es": "Colabora en tiempo real y mant\u00e9n a todo tu equipo sincronizado.",
-        "en": "Collaborate in real-time and keep your entire team in sync.",
-        "fr": "Collaborez en temps r\u00e9el et gardez toute votre \u00e9quipe synchronis\u00e9e."
+        "es": "Recibe solicitudes de reserva y organiza tu agenda diaria sin complicaciones.",
+        "en": "Receive booking requests and organize your daily schedule without complications."
       },
       "image_url": {
-        "es": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png",
-        "en": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png",
-        "fr": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png"
+        "es": "https://cdn-icons-png.flaticon.com/512/2693/2693507.png",
+        "en": "https://cdn-icons-png.flaticon.com/512/2693/2693507.png"
       }
     },
     {
       "id": 3,
       "title": {
-        "es": "Todo listo para empezar",
-        "en": "All ready to start",
-        "fr": "Tout est pr\u00eat"
+        "es": "Todo Bajo Control",
+        "en": "Everything Under Control"
       },
       "description": {
-        "es": "Transforma tu manera de trabajar desde hoy mismo.",
-        "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre fa\u00e7on de travailler d\u00e8s aujourd'hui."
+        "es": "Tus datos siempre seguros y sincronizados para que nunca pierdas informaci\u00f3n importante.",
+        "en": "Your data is always secure and synced so you never lose important information."
       },
       "image_url": {
-        "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",
-        "en": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",
-        "fr": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png"
+        "es": "https://cdn-icons-png.flaticon.com/512/1162/1162951.png",
+        "en": "https://cdn-icons-png.flaticon.com/512/1162/1162951.png"
       }
     }
   ]

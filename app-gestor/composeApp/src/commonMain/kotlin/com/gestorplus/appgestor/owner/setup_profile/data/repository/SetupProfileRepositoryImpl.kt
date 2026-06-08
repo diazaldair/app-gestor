@@ -5,7 +5,7 @@ import com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfil
 import com.gestorplus.appgestor.owner.setup_profile.domain.repository.SetupProfileRepository
 
 import kotlinx.serialization.json.Json
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class SetupProfileRepositoryImpl(
     private val remoteDatasource: SetupProfileRemoteDatasource,

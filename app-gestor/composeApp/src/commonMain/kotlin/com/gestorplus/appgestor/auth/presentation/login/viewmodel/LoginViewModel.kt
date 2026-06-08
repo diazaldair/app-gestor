@@ -58,11 +58,6 @@ class LoginViewModel(
         val email = _state.value.email
         val password = _state.value.password
 
-        if (email.isBlank() || password.isBlank()) {
-            _state.update { it.copy(errorMessage = "Por favor, completa todos los campos.") }
-            return
-        }
-
         _state.update { it.copy(isLoading = true) }
         val result = loginWithEmailUseCase(email, password)
         _state.update { it.copy(isLoading = false) }

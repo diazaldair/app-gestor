@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.auth.data.datasource.service
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class AuthService(private val firebaseManager: FirebaseManager) {
     suspend fun loginWithEmail(email: String, password: String): String {

@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.domain.booking.usecase
+package com.gestorplus.appgestor.booking.domain.usecase
 
 import com.gestorplus.appgestor.booking.domain.model.BookingSlot
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod

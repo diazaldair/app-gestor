@@ -84,31 +84,26 @@ class WorkspaceSetupProfileViewModel(
                 }
                 WorkspaceSetupProfileEvent.OnContinueClicked -> {
                     val currentState = _state.value
-                    if (currentState.clinicName.isBlank() || currentState.fullName.isBlank()) {
-                        _state.update { it.copy(errorMessage = "Por favor, completa los campos requeridos.") }
+                    _state.update { it.copy(isLoading = true) }
+                    
+                    val profile = com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfile(
+                        clinicName = currentState.clinicName,
+                        fullName = currentState.fullName,
+                        specialities = currentState.specialities,
+                        biography = currentState.biography,
+                        exactAddress = currentState.exactAddress,
+                        references = currentState.references,
+                        galleryImages = currentState.galleryImages
+                    )
+                    
+                    val result = saveWorkspaceProfileUseCase(profile)
+                    _state.update { it.copy(isLoading = false) }
+                    
+                    if (result.isSuccess) {
+                        _effect.emit(WorkspaceSetupProfileEfffect.NavigateToServices)
                     } else {
-                        _state.update { it.copy(isLoading = true) }
-                        
-                        val profile = com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfile(
-                            clinicName = currentState.clinicName,
-                            fullName = currentState.fullName,
-                            specialities = currentState.specialities,
-                            biography = currentState.biography,
-                            exactAddress = currentState.exactAddress,
-                            references = currentState.references,
-                            galleryImages = currentState.galleryImages
-                        )
-                        
-                        val result = saveWorkspaceProfileUseCase(profile)
-                        
-                        _state.update { it.copy(isLoading = false) }
-                        
-                        if (result.isSuccess) {
-                            _effect.emit(WorkspaceSetupProfileEfffect.NavigateToServices)
-                        } else {
-                            _state.update { it.copy(errorMessage = result.exceptionOrNull()?.message ?: "Error al guardar") }
-                            _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar("Error al guardar el perfil"))
-                        }
+                        _state.update { it.copy(errorMessage = result.exceptionOrNull()?.message ?: "Error al guardar") }
+                        _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar("Error al guardar el perfil"))
                     }
                 }
                 WorkspaceSetupProfileEvent.OnBackClicked -> {

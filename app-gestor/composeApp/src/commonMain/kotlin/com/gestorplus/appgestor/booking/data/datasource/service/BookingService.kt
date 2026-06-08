@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.booking.data.datasource.service
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class BookingService(private val firebaseManager: FirebaseManager) {
     suspend fun getAvailableSlots(date: Int): Map<String, Any>? {

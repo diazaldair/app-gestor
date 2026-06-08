@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.owner.setup_service.data.datasource
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class SetupServiceService(private val firebaseManager: FirebaseManager) {
     suspend fun saveWorkspaceService(uid: String, data: String) {

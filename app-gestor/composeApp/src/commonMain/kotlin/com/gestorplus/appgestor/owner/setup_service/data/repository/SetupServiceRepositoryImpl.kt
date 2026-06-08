@@ -5,7 +5,7 @@ import com.gestorplus.appgestor.owner.setup_service.domain.model.WorkspaceServic
 import com.gestorplus.appgestor.owner.setup_service.domain.repository.SetupServiceRepository
 
 import kotlinx.serialization.json.Json
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class SetupServiceRepositoryImpl(
     private val remoteDatasource: SetupServiceRemoteDatasource,

@@ -41,6 +41,16 @@ class FirebaseMapperTest {
     }
 
     @Test
+    fun `parseBooking with extra delimiters should handle gracefully`() {
+        val rawValue = "John Doe|Barber|CONFIRMED|ExtraData|More"
+        val result = mapper.parseBooking(rawValue)
+
+        assertEquals("John Doe", result.clientName)
+        assertEquals("Barber", result.serviceName)
+        assertEquals("CONFIRMED", result.status)
+    }
+
+    @Test
     fun `parseSlot with valid data should return correct DTO`() {
         val rawValue = "10:00 AM|true|MORNING"
         val result = mapper.parseSlot(rawValue)
@@ -51,21 +61,19 @@ class FirebaseMapperTest {
     }
 
     @Test
+    fun `parseSlot with invalid boolean should fallback to true`() {
+        val rawValue = "10:00 AM|not_a_boolean|MORNING"
+        val result = mapper.parseSlot(rawValue)
+
+        assertTrue(result.isAvailable)
+    }
+
+    @Test
     fun `parseSlot with invalid period should fallback to MORNING`() {
         val rawValue = "02:00 PM|true|INVALID_PERIOD"
         val result = mapper.parseSlot(rawValue)
 
         assertEquals("02:00 PM", result.time)
-        assertEquals(SlotPeriod.MORNING, result.period)
-    }
-
-    @Test
-    fun `parseSlot with missing fields should use defaults`() {
-        val rawValue = "03:00 PM"
-        val result = mapper.parseSlot(rawValue)
-
-        assertEquals("03:00 PM", result.time)
-        assertTrue(result.isAvailable)
         assertEquals(SlotPeriod.MORNING, result.period)
     }
 

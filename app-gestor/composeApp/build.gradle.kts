@@ -176,7 +176,7 @@ abstract class DownloadLocoTask : DefaultTask() {
             val destFolder = outputDir.get().dir(folderName).asFile
             if (!destFolder.exists()) destFolder.mkdirs()
             
-            val destinationFile = File(destFolder, "strings.xml")
+            val destinationFile = File(destFolder, "strings_loco.xml")
             
             try {
                 val content = URI(url).toURL().readText()

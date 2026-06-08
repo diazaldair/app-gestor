@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.profile.data.datasource.service
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class ProfileService(private val firebaseManager: FirebaseManager) {
     suspend fun saveProfile(pipedData: String) {

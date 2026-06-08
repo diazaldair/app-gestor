@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Loco xml export: Android strings
+ Project: App-Gestor
+ Locale: es-BO, Spanish (Bolivia)
+ Exported by: Marlon Marzo
+ Exported at: Mon, 08 Jun 2026 09:02:22 -0400
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="auth_login_title">Iniciar Sesión</string>
+    <string name="auth_login_email_label">Correo electrónico</string>
+    <string name="auth_login_password_label">Contraseña</string>
+    <string name="auth_login_button">Iniciar sesión</string>
+    <string name="auth_login_error_invalid">Credenciales incorrectas</string>
+    <string name="auth_login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="setup_profile_title">Perfil Profesional</string>
+    <string name="setup_profile_clinic_name">Nombre de la Clínica</string>
+    <string name="setup_profile_doctor_name">Nombre Completo</string>
+    <string name="setup_profile_speciality_hint">Añadir especialidad...</string>
+    <string name="setup_profile_gallery_title">Galería de Fotos</string>
+    <string name="setup_profile_continue">Continuar</string>
+    <string name="setup_schedule_title">Horarios</string>
+    <string name="setup_schedule_days_header">Días laborales</string>
+    <string name="setup_schedule_morning_shift">Turno Mañana</string>
+    <string name="setup_schedule_afternoon_shift">Turno Tarde</string>
+    <string name="setup_schedule_error_no_days">Selecciona al menos un día</string>
+    <string name="setup_service_title">Nuevo Servicio</string>
+    <string name="setup_service_name_label">Nombre del servicio</string>
+    <string name="setup_service_price_label">Precio</string>
+    <string name="setup_service_duration_label">Duración</string>
+    <string name="setup_service_finish">Finalizar Configuración</string>
+</resources>

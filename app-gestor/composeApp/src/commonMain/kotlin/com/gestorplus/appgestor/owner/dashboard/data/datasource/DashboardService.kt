@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.owner.dashboard.data.datasource
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class DashboardService(private val firebaseManager: FirebaseManager) {
     suspend fun getBookings(date: Int): Map<String, Any>? {

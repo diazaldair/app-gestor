@@ -5,7 +5,7 @@ import com.gestorplus.appgestor.owner.setup_schedule.domain.model.WorkspaceSched
 import com.gestorplus.appgestor.owner.setup_schedule.domain.repository.SetupScheduleRepository
 
 import kotlinx.serialization.json.Json
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class SetupScheduleRepositoryImpl(
     private val remoteDatasource: SetupScheduleRemoteDatasource,
