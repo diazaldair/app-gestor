@@ -16,7 +16,7 @@ import org.koin.dsl.module
 
 val notificationsModule = module {
     single { NotificationMapper() }
-    single { NotificationsService() }
+    single { NotificationsService(get()) }
     single { NotificationsLocalDatasource() }
     single { NotificationsRemoteDatasource(get()) }
     single<NotificationsRepository> { NotificationsRepositoryImpl(get(), get(), get(), get()) }

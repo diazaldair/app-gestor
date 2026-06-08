@@ -23,7 +23,7 @@ import com.gestorplus.appgestor.clinicProfile.presentation.viewmodel.ClinicProfi
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import app_gestor.composeapp.generated.resources.Res
+import app_gestor.composeapp.generated.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

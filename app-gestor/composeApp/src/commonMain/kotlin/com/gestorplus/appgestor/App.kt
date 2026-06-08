@@ -15,9 +15,11 @@ import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
+import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.home.presentation.screen.HomeScreen
+import com.gestorplus.appgestor.notifications.presentation.screen.NotificationsScreen
 import com.gestorplus.appgestor.onboarding.domain.usecase.IsOnboardingCompletedUseCase
 import com.gestorplus.appgestor.onboarding.presentation.screen.OnboardingScreen
 import com.gestorplus.appgestor.owner.dashboard.presentation.screen.OwnerDashboardScreen
@@ -52,8 +54,6 @@ enum class Screen {
     Profile,
     ClinicProfile,
     Notifications
-import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
-import com.gestorplus.appgestor.notifications.presentation.screen.NotificationsScreen
 }
 
 @Composable
@@ -80,8 +80,8 @@ fun App() {
     LaunchedEffect(Unit) {
         val defaults = mapOf(
             "primary_color" to "#6200EE",
-            "sync_client_name" to "Promoci\u00f3n de Verano",
-            "sync_client_service" to "Consultor\u00eda Gratuita",
+            "sync_client_name" to "Promoción de Verano",
+            "sync_client_service" to "Consultoría Gratuita",
             "sync_price" to "0.0",
             "onboarding_config" to DEFAULT_ONBOARDING_CONFIG
         )
@@ -264,14 +264,14 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
     {
       "id": 1,
       "title": {
-        "es": "\u00a1Organiza tu negocio!",
+        "es": "¡Organiza tu negocio!",
         "en": "Organize your business!",
         "fr": "Organisez votre entreprise !"
       },
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "G\u00e9rez facilement vos t\u00e2ches, projets et priorit\u00e9s avec GestorPlus."
+        "fr": "Gérez facilement vos tâches, proyectos et prioridades con GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
@@ -284,12 +284,12 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "title": {
         "es": "Trabaja en equipo",
         "en": "Teamwork",
-        "fr": "Travail d'\u00e9quipe"
+        "fr": "Travail d'équipe"
       },
       "description": {
-        "es": "Colabora en tiempo real y mant\u00e9n a todo tu equipo sincronizado.",
+        "es": "Colabora en tiempo real y mantén a todo tu equipo sincronizado.",
         "en": "Collaborate in real-time and keep your entire team in sync.",
-        "fr": "Collaborez en temps r\u00e9el et gardez toute votre \u00e9quipe synchronis\u00e9e."
+        "fr": "Collaborez en temps réel et gardez toute votre équipe synchronisée."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png",
@@ -302,12 +302,12 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "title": {
         "es": "Todo listo para empezar",
         "en": "All ready to start",
-        "fr": "Tout est pr\u00eat"
+        "fr": "Tout est prêt"
       },
       "description": {
         "es": "Transforma tu manera de trabajar desde hoy mismo.",
         "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre fa\u00e7on de travailler d\u00e8s aujourd'hui."
+        "fr": "Transformez votre façon de travailler dès aujourd'hui."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",

@@ -35,6 +35,17 @@ class NotificationsViewModel(
     private fun observeNotifications() {
         viewModelScope.launch {
             getNotificationsUseCase().collectLatest { list ->
+                // Debug: loaded notifications count
+                val loadedCount = list.size
+                val currentFilter = _state.value.filter
+                val filteredCount = when (currentFilter) {
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.All -> loadedCount
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.Appointments -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.APPOINTMENT_REQUEST }
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.Messages -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.REMINDER }
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.System -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.SYSTEM_UPDATE }
+                }
+                println("NotificationsViewModel: loadedCount=$loadedCount, filter=$currentFilter, filteredCount=$filteredCount")
+
                 _state.value = _state.value.copy(isLoading = false, notifications = list, error = null)
             }
         }
@@ -45,7 +56,19 @@ class NotificationsViewModel(
             is NotificationsEvent.Accept -> handleAccept(event.id)
             is NotificationsEvent.Decline -> handleDecline(event.id)
             is NotificationsEvent.MarkRead -> handleMarkRead(event.id)
-            is NotificationsEvent.ChangeFilter -> _state.value = _state.value.copy(filter = event.filter)
+            is NotificationsEvent.ChangeFilter -> {
+                _state.value = _state.value.copy(filter = event.filter)
+                // Recompute filtered count for debug
+                val list = _state.value.notifications
+                val currentFilter = event.filter
+                val afterFilter = when (currentFilter) {
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.All -> list.size
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.Appointments -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.APPOINTMENT_REQUEST }
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.Messages -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.REMINDER }
+                    com.gestorplus.appgestor.notifications.presentation.state.NotificationFilter.System -> list.count { it.type == com.gestorplus.appgestor.notifications.domain.model.NotificationType.SYSTEM_UPDATE }
+                }
+                println("NotificationsViewModel: filter changed to=$currentFilter, notifications after filter=$afterFilter")
+            }
             NotificationsEvent.Refresh -> observeNotifications()
         }
     }

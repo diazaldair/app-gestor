@@ -17,6 +17,10 @@ class ClinicProfileRepositoryImpl(
     override fun getClinicProfile(): Flow<ClinicProfile> = flow {
         // Offline-First strategy: Mocking flow for now
         val remoteDto = remoteDatasource.fetchProfile()
+        if (remoteDto == null) {
+            emit(ClinicProfile())
+            return@flow
+        }
         emit(mapper.toDomain(remoteDto))
     }
 

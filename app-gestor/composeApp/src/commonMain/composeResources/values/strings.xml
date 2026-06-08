@@ -82,6 +82,7 @@
     <string name="notifications_filter_system">System</string>
     <string name="notifications_section_today">TODAY</string>
     <string name="notifications_section_yesterday">YESTERDAY</string>
+    <string name="notifications_empty">No notifications</string>
     <string name="notifications_btn_accept">Accept</string>
     <string name="notifications_btn_decline">Decline</string>
     <string name="notifications_appointment_request">New appointment request</string>

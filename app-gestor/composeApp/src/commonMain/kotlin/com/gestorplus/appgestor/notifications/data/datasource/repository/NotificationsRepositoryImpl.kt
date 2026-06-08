@@ -17,20 +17,28 @@ class NotificationsRepositoryImpl(
 ) : NotificationsRepository {
 
     override fun getNotifications(): Flow<List<AppNotification>> = flow {
-        val uid = firebaseManager.getCurrentUserUid() ?: return@flow
+        val uid = firebaseManager.getCurrentUserUid()
+        if (uid == null) {
+            println("NotificationsRepository: current uid is null — emitting empty list")
+            emit(emptyList())
+            return@flow
+        }
+        println("NotificationsRepository: current uid = $uid")
         
         // Offline-First strategy
         val local = localDatasource.getCachedNotifications()
+        println("NotificationsRepository: local cache size = ${local.size}")
         if (local.isNotEmpty()) {
             emit(local.map { mapper.toDomain(it) })
         }
 
         try {
             val remote = remoteDatasource.getNotifications(uid)
+            println("NotificationsRepository: remote fetch size = ${remote.size}")
             localDatasource.cacheNotifications(remote)
             emit(remote.map { mapper.toDomain(it) })
         } catch (e: Exception) {
-            // Handle error
+            println("NotificationsRepository: error fetching remote notifications: ${e.message}")
         }
     }
 
