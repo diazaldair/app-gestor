@@ -49,7 +49,11 @@ enum class Screen {
     DoctorView,
     WorkingHours,
     ScheduleGroupDetail,
-    Profile
+    Profile,
+    ClinicProfile,
+    Notifications
+import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
+import com.gestorplus.appgestor.notifications.presentation.screen.NotificationsScreen
 }
 
 @Composable
@@ -236,6 +240,18 @@ fun App() {
             Screen.Profile -> {
                 ProfileScreen(
                     onBack = { currentScreen = Screen.BusinessView }
+                )
+            }
+
+            Screen.ClinicProfile -> {
+                ClinicProfileScreen(
+                    onNavigateBack = { currentScreen = Screen.Profile }
+                )
+            }
+
+            Screen.Notifications -> {
+                NotificationsScreen(
+                    onBack = { currentScreen = Screen.Profile }
                 )
             }
         }

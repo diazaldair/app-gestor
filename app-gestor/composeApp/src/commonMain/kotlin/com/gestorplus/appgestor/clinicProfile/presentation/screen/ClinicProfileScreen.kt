@@ -22,6 +22,8 @@ import com.gestorplus.appgestor.clinicProfile.presentation.state.ClinicProfileEv
 import com.gestorplus.appgestor.clinicProfile.presentation.viewmodel.ClinicProfileViewModel
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import app_gestor.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -44,7 +46,7 @@ fun ClinicProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ajustes de Perfil", style = AppTheme.typography.headlineLarge.copy(fontSize = 20.sp)) },
+                title = { Text(stringResource(Res.string.clinic_profile_title), style = AppTheme.typography.headlineLarge.copy(fontSize = 20.sp)) },
                 navigationIcon = {
                     IconButton(onClick = { viewModel.onEvent(ClinicProfileEvent.BackClicked) }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -73,19 +75,19 @@ fun ClinicProfileScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.BusinessCenter, contentDescription = null, tint = AppTheme.colors.primary, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("PERFIL DE LA CLÍNICA", color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(stringResource(Res.string.clinic_profile_section_info), color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             ClinicInputField(
-                label = "Nombre de la Clínica",
+                label = stringResource(Res.string.clinic_profile_name_label),
                 value = state.profile.name,
                 onValueChange = { viewModel.onEvent(ClinicProfileEvent.NameChanged(it)) }
             )
 
             ClinicInputField(
-                label = "Biografía",
+                label = stringResource(Res.string.clinic_profile_bio_label),
                 value = state.profile.biography,
                 onValueChange = { viewModel.onEvent(ClinicProfileEvent.BiographyChanged(it)) },
                 modifier = Modifier.height(120.dp),
@@ -94,7 +96,7 @@ fun ClinicProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Especialidades", color = AppTheme.colors.textSecondary, fontSize = 12.sp)
+            Text(stringResource(Res.string.clinic_profile_specialties_label), color = AppTheme.colors.textSecondary, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
             FlowRow(
@@ -115,7 +117,7 @@ fun ClinicProfileScreen(
                     colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("+ Añadir", color = AppTheme.colors.textSecondary, fontSize = 14.sp)
+                        Text(stringResource(Res.string.clinic_profile_add_specialty), color = AppTheme.colors.textSecondary, fontSize = 14.sp)
                     }
                 }
             }
@@ -126,7 +128,7 @@ fun ClinicProfileScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.LocationOn, contentDescription = null, tint = AppTheme.colors.primary, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("UBICACIÓN Y CONTACTO", color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(stringResource(Res.string.clinic_profile_section_location), color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -140,13 +142,13 @@ fun ClinicProfileScreen(
                     .background(AppTheme.colors.surface),
                 contentAlignment = Alignment.Center
             ) {
-                Text("MAPA INTERACTIVO", color = AppTheme.colors.textSecondary, fontSize = 12.sp)
+                Text(stringResource(Res.string.clinic_profile_map_placeholder), color = AppTheme.colors.textSecondary, fontSize = 12.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             ClinicInputField(
-                label = "Dirección exacta",
+                label = stringResource(Res.string.clinic_profile_address_label),
                 value = state.profile.address,
                 onValueChange = { viewModel.onEvent(ClinicProfileEvent.AddressChanged(it)) },
                 leadingIcon = { Icon(Icons.Default.Map, contentDescription = null, tint = AppTheme.colors.textSecondary) }
@@ -166,7 +168,7 @@ fun ClinicProfileScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Save, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Guardar Cambios", fontWeight = FontWeight.Bold)
+                        Text(stringResource(Res.string.clinic_profile_save_button), fontWeight = FontWeight.Bold)
                     }
                 }
             }

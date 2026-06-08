@@ -19,7 +19,9 @@ val appModules: List<Module> = listOf(
     dashboardModule,
     homeModule,
     profileModule,
+    clinicProfileModule,
     notificationModule,
+    notificationsModule,
     platformModule,
     authModule
 )
