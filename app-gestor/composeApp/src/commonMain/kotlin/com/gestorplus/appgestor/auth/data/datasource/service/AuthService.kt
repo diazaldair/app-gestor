@@ -1,28 +1,29 @@
 package com.gestorplus.appgestor.auth.data.datasource.service
 
+import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 
 class AuthService(private val firebaseManager: FirebaseManager) {
     suspend fun loginWithEmail(email: String, password: String): String {
-        // Hacemos login en Firebase Auth y obtenemos el UID
         val uid = firebaseManager.loginUserWithEmail(email, password)
         
-        // Opcional: Actualizar la última fecha de sesión en Realtime Database
+        // TODO: En una fase posterior, detectar el rol antes de actualizar el last_login
+        // Por ahora mantenemos la compatibilidad con el nodo doctors si existe
         val sessionPath = "doctors/$uid/last_login"
         firebaseManager.saveData(sessionPath, System.currentTimeMillis().toString())
         
         return uid
     }
 
-    suspend fun registerDoctor(name: String, email: String, password: String): String {
-        // Registramos en Firebase Auth y obtenemos el UID
+    suspend fun registerUser(name: String, email: String, password: String, role: UserRole): String {
         val uid = firebaseManager.registerUserWithEmail(email, password)
         
-        // Guardamos los metadatos en Firebase Realtime Database
-        val doctorPath = "doctors/$uid"
-        firebaseManager.saveData("$doctorPath/name", name)
-        firebaseManager.saveData("$doctorPath/email", email)
-        firebaseManager.saveData("$doctorPath/registeredAt", System.currentTimeMillis().toString())
+        val userPath = "${role.firebasePath}/$uid"
+        firebaseManager.saveData("$userPath/id", uid)
+        firebaseManager.saveData("$userPath/name", name)
+        firebaseManager.saveData("$userPath/email", email)
+        firebaseManager.saveData("$userPath/role", role.name)
+        firebaseManager.saveData("$userPath/registeredAt", System.currentTimeMillis().toString())
         
         return uid
     }

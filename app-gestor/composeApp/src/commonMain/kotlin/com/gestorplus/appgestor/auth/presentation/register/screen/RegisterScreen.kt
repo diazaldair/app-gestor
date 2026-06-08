@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gestorplus.appgestor.auth.domain.model.UserRole
+import com.gestorplus.appgestor.auth.presentation.util.AuthRoleTextProvider
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEfffect
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEvent
@@ -51,12 +53,18 @@ private val GoogleButtonBg = Color(0xFF1E293B)
 
 @Composable
 fun RegisterScreen(
+    role: UserRole,
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: RegisterViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val uiTexts = remember(role) { AuthRoleTextProvider.getTexts(role) }
+
+    LaunchedEffect(role) {
+        viewModel.setRole(role)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -109,13 +117,13 @@ fun RegisterScreen(
                                 .padding(bottom = 8.dp)
                         )
                         Text(
-                            text = "SoloBook Pro",
+                            text = uiTexts.appName,
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "GESTIÓN PROFESIONAL DE CITAS",
+                            text = uiTexts.registerSubtitle,
                             color = Color.White.copy(alpha = 0.4f),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -131,6 +139,14 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Text(
+                            text = uiTexts.registerTitle,
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
                         // Google Register Button
                         Row(
                             modifier = Modifier
@@ -180,7 +196,7 @@ fun RegisterScreen(
                         OutlinedTextField(
                             value = state.fullName,
                             onValueChange = { viewModel.onEvent(RegisterEvent.FullNameChanged(it)) },
-                            placeholder = { Text("Ej. Dr. Julián Castro", color = Color.White.copy(alpha = 0.3f)) },
+                            placeholder = { Text(uiTexts.namePlaceholder, color = Color.White.copy(alpha = 0.3f)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Person,
@@ -215,7 +231,7 @@ fun RegisterScreen(
                         OutlinedTextField(
                             value = state.email,
                             onValueChange = { viewModel.onEvent(RegisterEvent.EmailChanged(it)) },
-                            placeholder = { Text("julian@clinic.com", color = Color.White.copy(alpha = 0.3f)) },
+                            placeholder = { Text("usuario@email.com", color = Color.White.copy(alpha = 0.3f)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Email,

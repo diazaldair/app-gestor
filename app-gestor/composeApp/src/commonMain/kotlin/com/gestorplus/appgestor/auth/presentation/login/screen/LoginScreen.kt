@@ -33,6 +33,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gestorplus.appgestor.auth.domain.model.UserRole
+import com.gestorplus.appgestor.auth.presentation.util.AuthRoleTextProvider
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEvent
@@ -52,12 +54,14 @@ private val AppleButtonBg = Color(0xFF1E293B)
 
 @Composable
 fun LoginScreen(
+    role: UserRole,
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit,
     viewModel: LoginViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val uiTexts = remember(role) { AuthRoleTextProvider.getTexts(role) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -110,13 +114,13 @@ fun LoginScreen(
                                 .padding(bottom = 8.dp)
                         )
                         Text(
-                            text = "SoloBook Pro",
+                            text = uiTexts.appName,
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Gestión profesional de citas",
+                            text = uiTexts.subtitle,
                             color = Color.White.copy(alpha = 0.6f),
                             fontSize = 14.sp,
                             modifier = Modifier.padding(top = 4.dp)
@@ -146,7 +150,7 @@ fun LoginScreen(
                         OutlinedTextField(
                             value = state.email,
                             onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
-                            placeholder = { Text("nombre@empresa.com", color = Color.White.copy(alpha = 0.3f)) },
+                            placeholder = { Text("usuario@email.com", color = Color.White.copy(alpha = 0.3f)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Email,
@@ -265,7 +269,7 @@ fun LoginScreen(
                                 .fillMaxWidth()
                                 .height(50.dp)
                         ) {
-                            Text("Entrar como Doctor (Demo)", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text(uiTexts.demoButton, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
 
                         // Social Divider

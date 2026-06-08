@@ -8,6 +8,7 @@ import com.gestorplus.appgestor.auth.data.datasource.service.AuthService
 import com.gestorplus.appgestor.auth.domain.repository.AuthRepository
 import com.gestorplus.appgestor.auth.domain.usecase.LoginWithEmailUseCase
 import com.gestorplus.appgestor.auth.domain.usecase.RegisterDoctorUseCase
+import com.gestorplus.appgestor.auth.domain.usecase.RegisterPatientUseCase
 import com.gestorplus.appgestor.auth.presentation.landing.viewmodel.LandingViewModel
 import com.gestorplus.appgestor.auth.presentation.login.viewmodel.LoginViewModel
 import com.gestorplus.appgestor.auth.presentation.register.viewmodel.RegisterViewModel
@@ -26,6 +27,7 @@ val authModule = module {
     // UseCases
     factoryOf(::LoginWithEmailUseCase)
     factoryOf(::RegisterDoctorUseCase)
+    factoryOf(::RegisterPatientUseCase)
 
     // ViewModels
     viewModelOf(::LandingViewModel)

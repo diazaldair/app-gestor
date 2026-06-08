@@ -10,6 +10,7 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
+import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.auth.presentation.landing.screen.LandingScreen
 import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
@@ -62,7 +63,7 @@ fun App() {
             if (isOnboardingCompletedUseCase()) Screen.Home else Screen.Onboarding
         )
     }
-    var selectedRole by remember { mutableStateOf("PATIENT") }
+    var selectedRole by remember { mutableStateOf(UserRole.PATIENT) }
 
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -106,11 +107,11 @@ fun App() {
             Screen.Landing -> {
                 LandingScreen(
                     onNavigateToPatient = {
-                        selectedRole = "PATIENT"
+                        selectedRole = UserRole.PATIENT
                         currentScreen = Screen.Login
                     },
                     onNavigateToProfessional = {
-                        selectedRole = "PROFESSIONAL"
+                        selectedRole = UserRole.PROFESSIONAL
                         currentScreen = Screen.Login
                     },
                     onNavigateToOnboarding = {
@@ -121,8 +122,9 @@ fun App() {
 
             Screen.Login -> {
                 LoginScreen(
+                    role = selectedRole,
                     onNavigateToHome = {
-                        currentScreen = if (selectedRole == "PATIENT") {
+                        currentScreen = if (selectedRole == UserRole.PATIENT) {
                             Screen.ClientView
                         } else {
                             Screen.WorkspaceSetupIntro
@@ -136,8 +138,9 @@ fun App() {
 
             Screen.Register -> {
                 RegisterScreen(
+                    role = selectedRole,
                     onNavigateToHome = {
-                        currentScreen = if (selectedRole == "PATIENT") {
+                        currentScreen = if (selectedRole == UserRole.PATIENT) {
                             Screen.ClientView
                         } else {
                             Screen.WorkspaceSetupIntro
@@ -255,7 +258,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "G\u00e9rez facilement vos t\u00e2ches, projets et priorit\u00e9s avec GestorPlus."
+        "fr": "G\u00e9rez facilement vos t\u00e2ches, proyectos et priorit\u00e9s avec GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
@@ -291,7 +294,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Transforma tu manera de trabajar desde hoy mismo.",
         "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre fa\u00e7on de travailler d\u00e8s aujourd'hui."
+        "fr": "Transformez votre fa\u00e7on de trabajar d\u00e8s aujourd'hui."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",

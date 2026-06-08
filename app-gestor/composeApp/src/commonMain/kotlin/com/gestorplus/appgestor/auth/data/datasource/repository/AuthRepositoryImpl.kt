@@ -3,6 +3,7 @@ package com.gestorplus.appgestor.auth.data.datasource.repository
 import com.gestorplus.appgestor.auth.data.datasource.datasource.AuthLocalDatasource
 import com.gestorplus.appgestor.auth.data.datasource.datasource.AuthRemoteDatasource
 import com.gestorplus.appgestor.auth.data.datasource.mapper.AuthMapper
+import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.auth.domain.model.UserSession
 import com.gestorplus.appgestor.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +33,17 @@ class AuthRepositoryImpl(
 
     override suspend fun registerDoctor(name: String, email: String, password: String): Result<UserSession> {
         return try {
-            val userDto = remoteDatasource.registerDoctor(name, email, password)
+            val userDto = remoteDatasource.register(name, email, password, UserRole.PROFESSIONAL)
+            localDatasource.saveSession(userDto)
+            Result.success(mapper.toDomain(userDto))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun registerPatient(name: String, email: String, password: String): Result<UserSession> {
+        return try {
+            val userDto = remoteDatasource.register(name, email, password, UserRole.PATIENT)
             localDatasource.saveSession(userDto)
             Result.success(mapper.toDomain(userDto))
         } catch (e: Exception) {

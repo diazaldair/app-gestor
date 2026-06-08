@@ -2,7 +2,9 @@ package com.gestorplus.appgestor.auth.presentation.register.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.auth.domain.usecase.RegisterDoctorUseCase
+import com.gestorplus.appgestor.auth.domain.usecase.RegisterPatientUseCase
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEfffect
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEvent
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterUiState
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val registerDoctorUseCase: RegisterDoctorUseCase
+    private val registerDoctorUseCase: RegisterDoctorUseCase,
+    private val registerPatientUseCase: RegisterPatientUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterUiState())
@@ -22,6 +25,12 @@ class RegisterViewModel(
 
     private val _effect = MutableSharedFlow<RegisterEfffect>()
     val effect = _effect.asSharedFlow()
+
+    private var userRole: UserRole = UserRole.PROFESSIONAL
+
+    fun setRole(role: UserRole) {
+        userRole = role
+    }
 
     fun onEvent(event: RegisterEvent) {
         viewModelScope.launch {
@@ -83,7 +92,13 @@ class RegisterViewModel(
         }
 
         _state.update { it.copy(isLoading = true) }
-        val result = registerDoctorUseCase(fullName, email, password, confirmPassword)
+        
+        val result = if (userRole == UserRole.PATIENT) {
+            registerPatientUseCase(fullName, email, password, confirmPassword)
+        } else {
+            registerDoctorUseCase(fullName, email, password, confirmPassword)
+        }
+
         _state.update { it.copy(isLoading = false) }
 
         result.fold(
