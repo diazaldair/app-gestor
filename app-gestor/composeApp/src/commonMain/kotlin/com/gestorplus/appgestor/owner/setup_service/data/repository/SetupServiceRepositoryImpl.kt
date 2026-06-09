@@ -12,26 +12,24 @@ import kotlinx.serialization.json.Json
 class SetupServiceRepositoryImpl(
     private val remoteDatasource: SetupServiceRemoteDatasource,
     private val firebaseManager: FirebaseManager,
-    private val serviceDao: ServiceDao // Integración con el Dao de servicios
+    private val serviceDao: ServiceDao
 ) : SetupServiceRepository {
 
     override suspend fun saveWorkspaceService(service: WorkspaceService): Result<Unit> {
         return try {
             val currentUid = firebaseManager.getCurrentUserUid() ?: "anonymous"
             
-            // 1. Guardar en Remoto
             val dataString = Json.encodeToString(service)
             remoteDatasource.saveWorkspaceService(currentUid, dataString)
 
-            // 2. Guardar en Local para que aparezca en el Catálogo inmediatamente
             val serviceEntity = ServiceEntity(
-                id = "8", // Usamos el ID 8 solicitado para pruebas o uno dinámico
-                name = service.serviceName,
-                category = service.category,
+                id = "8", 
+                name = service.name,
+                category = "General", // WorkspaceService no tiene categoría, asignamos una por defecto
                 description = service.description,
-                price = service.price.toDoubleOrNull() ?: 0.0,
-                currency = "Bs",
-                durationMinutes = 60,
+                price = service.price, // Ya es Double, no necesita toDoubleOrNull
+                currency = service.currency,
+                durationMinutes = service.durationMinutes,
                 isActive = true,
                 imageUrl = null
             )

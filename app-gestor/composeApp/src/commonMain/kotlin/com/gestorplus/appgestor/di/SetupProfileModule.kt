@@ -1,7 +1,5 @@
 package com.gestorplus.appgestor.di
 
-import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
-import com.gestorplus.appgestor.core.persistence.LocalPreferences
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasource
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasourceImpl
 import com.gestorplus.appgestor.owner.setup_profile.data.repository.SetupProfileRepositoryImpl
@@ -14,18 +12,11 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val setupProfileModule = module {
-    // 1. Servicios
     single { SetupProfileService(get()) }
-
-    // 2. Fuentes de Datos (Datasources)
     single<SetupProfileRemoteDatasource> { SetupProfileRemoteDatasourceImpl(get()) }
-
-    // 3. Repositorio
-    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get()) }
-
-    // 4. Casos de Uso
+    // Inyectamos get() para el ClinicProfileDao que viene de DatabaseModule
+    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get(), get()) }
+    
     factoryOf(::SaveWorkspaceProfileUseCase)
-
-    // 5. ViewModel
     viewModelOf(::WorkspaceSetupProfileViewModel)
 }

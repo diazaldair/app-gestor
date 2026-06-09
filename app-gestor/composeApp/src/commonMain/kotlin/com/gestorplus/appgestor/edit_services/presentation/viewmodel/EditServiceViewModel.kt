@@ -27,29 +27,44 @@ class EditServiceViewModel(
             is EditServiceEvent.CategoryChanged -> _uiState.update { it.copy(category = event.category) }
             is EditServiceEvent.DescriptionChanged -> _uiState.update { it.copy(description = event.description) }
             is EditServiceEvent.PriceChanged -> _uiState.update { it.copy(price = event.price) }
+            is EditServiceEvent.DurationChanged -> _uiState.update { it.copy(hours = event.hours, minutes = event.minutes) }
             EditServiceEvent.SaveService -> saveChanges(onSuccess)
-            else -> {}
+            EditServiceEvent.DeleteService -> deleteService(onSuccess)
         }
     }
 
     private fun saveChanges(onSuccess: () -> Unit) {
         val state = _uiState.value
-        val serviceToSave = (currentService ?: ServiceModel(id = "8")).copy(
+        val totalMinutes = (state.hours * 60) + state.minutes
+        
+        val serviceToSave = (currentService ?: ServiceModel()).copy(
             name = state.name,
             category = state.category,
             description = state.description,
-            price = state.price.toDoubleOrNull() ?: 0.0
+            price = state.price.replace(",", ".").toDoubleOrNull() ?: 0.0,
+            durationMinutes = if (totalMinutes > 0) totalMinutes else 30
         )
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
             repository.saveService(serviceToSave).onSuccess {
-                delay(500) // Feedback visual
+                delay(500)
                 _uiState.update { it.copy(isSaving = false) }
                 onSuccess()
             }.onFailure {
                 _uiState.update { it.copy(isSaving = false) }
             }
+        }
+    }
+
+    private fun deleteService(onSuccess: () -> Unit) {
+        val serviceId = currentService?.id ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isDeleting = true) }
+            repository.deleteService(serviceId)
+            delay(500)
+            _uiState.update { it.copy(isDeleting = false) }
+            onSuccess()
         }
     }
 
@@ -60,17 +75,6 @@ class EditServiceViewModel(
             
             if (service != null) {
                 updateStateFromService(service)
-            } else {
-                // Crear un servicio por defecto para el ID 8 si no existe
-                val defaultService = ServiceModel(
-                    id = id,
-                    name = "Servicio Nuevo $id",
-                    category = "General",
-                    description = "Descripción del servicio...",
-                    price = 100.0
-                )
-                currentService = defaultService
-                updateStateFromService(defaultService)
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -78,12 +82,17 @@ class EditServiceViewModel(
 
     private fun updateStateFromService(service: ServiceModel) {
         currentService = service
+        val hours = service.durationMinutes / 60
+        val minutes = service.durationMinutes % 60
+        
         _uiState.update { it.copy(
             name = service.name,
             category = service.category,
             description = service.description,
-            price = service.price.toString(),
-            currency = service.currency
+            price = service.price.toString().replace(".", ","),
+            currency = service.currency,
+            hours = hours,
+            minutes = minutes
         )}
     }
 }

@@ -17,7 +17,8 @@ import org.koin.dsl.module
 val notificationsModule = module {
     single { NotificationMapper() }
     single { NotificationsService(get()) }
-    single { NotificationsLocalDatasource() }
+    // Ahora pasamos el DAO que viene de DatabaseModule
+    single { NotificationsLocalDatasource(get()) }
     single { NotificationsRemoteDatasource(get()) }
     single<NotificationsRepository> { NotificationsRepositoryImpl(get(), get(), get(), get()) }
 

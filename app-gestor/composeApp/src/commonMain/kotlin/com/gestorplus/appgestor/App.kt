@@ -15,6 +15,7 @@ import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
+import com.gestorplus.appgestor.booking.presentation.screen.BookingSuccessScreen
 import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
@@ -35,6 +36,9 @@ import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
 import com.gestorplus.appgestor.services.presentation.screen.ServicesCatalogScreen
 import com.gestorplus.appgestor.services_entry.presentation.screen.ServicesEntryScreen
 import com.gestorplus.appgestor.edit_services.presentation.screen.EditServiceScreen
+import com.gestorplus.appgestor.explore_clinics.presentation.ExploreClinicsScreen
+import com.gestorplus.appgestor.clinic_detail.presentation.ClinicDetailScreen
+import com.gestorplus.appgestor.my_bookings.presentation.MyBookingsScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
@@ -48,8 +52,12 @@ enum class Screen {
     WorkspaceSetupSchedule,
     WorkspaceSetupService,
     WorkspaceSetupSuccess,
-    ClientView,
+    ExploreClinics,
+    ClinicDetail,
+    SelectDateTime,
     BookingConfirmation,
+    BookingSuccess,
+    MyBookings,
     BusinessView,
     DoctorView,
     WorkingHours,
@@ -74,6 +82,8 @@ fun App() {
     }
     var selectedRole by remember { mutableStateOf("PATIENT") }
     var editingServiceId by remember { mutableStateOf<String?>(null) }
+    var selectedClinicId by remember { mutableStateOf<String?>(null) }
+    var selectedServiceId by remember { mutableStateOf<String?>(null) }
 
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -134,7 +144,7 @@ fun App() {
                 LoginScreen(
                     onNavigateToHome = {
                         currentScreen = if (selectedRole == "PATIENT") {
-                            Screen.ClientView
+                            Screen.ExploreClinics
                         } else {
                             Screen.WorkspaceSetupIntro
                         }
@@ -149,7 +159,7 @@ fun App() {
                 RegisterScreen(
                     onNavigateToHome = {
                         currentScreen = if (selectedRole == "PATIENT") {
-                            Screen.ClientView
+                            Screen.ExploreClinics
                         } else {
                             Screen.WorkspaceSetupIntro
                         }
@@ -209,17 +219,60 @@ fun App() {
                 )
             }
 
-            Screen.ClientView -> {
+            Screen.ExploreClinics -> {
+                ExploreClinicsScreen(
+                    onNavigateToClinicDetail = { clinicId ->
+                        selectedClinicId = clinicId
+                        currentScreen = Screen.ClinicDetail
+                    },
+                    onNavigateToMyAppointments = { 
+                        currentScreen = Screen.MyBookings
+                    },
+                    onNavigateToProfile = { /* TODO */ }
+                )
+            }
+
+            Screen.ClinicDetail -> {
+                ClinicDetailScreen(
+                    clinicId = selectedClinicId ?: "",
+                    onNavigateBack = { currentScreen = Screen.ExploreClinics },
+                    onNavigateToBooking = { clinicId, serviceId ->
+                        selectedClinicId = clinicId
+                        selectedServiceId = serviceId
+                        currentScreen = Screen.SelectDateTime
+                    }
+                )
+            }
+
+            Screen.SelectDateTime -> {
                 BookingScreen(
-                    onBack = { currentScreen = Screen.Home },
+                    clinicId = selectedClinicId ?: "",
+                    serviceId = selectedServiceId ?: "",
+                    onBack = { currentScreen = Screen.ClinicDetail },
                     onConfirm = { currentScreen = Screen.BookingConfirmation }
                 )
             }
 
             Screen.BookingConfirmation -> {
                 BookingConfirmationScreen(
-                    onBack = { currentScreen = Screen.ClientView },
-                    onConfirm = { currentScreen = Screen.Home }
+                    onBack = { currentScreen = Screen.SelectDateTime },
+                    onConfirm = { currentScreen = Screen.BookingSuccess }
+                )
+            }
+
+            Screen.BookingSuccess -> {
+                BookingSuccessScreen(
+                    clinicName = "SoloBook Health", 
+                    doctorImageUrl = null,
+                    onGoHome = { currentScreen = Screen.Home },
+                    onViewCalendar = { currentScreen = Screen.MyBookings }
+                )
+            }
+
+            Screen.MyBookings -> {
+                MyBookingsScreen(
+                    onNavigateToExplore = { currentScreen = Screen.ExploreClinics },
+                    onNavigateToProfile = { /* TODO */ }
                 )
             }
 
@@ -234,8 +287,7 @@ fun App() {
 
             Screen.WorkingHours -> {
                 WorkingHoursScreen(
-                    onBack = { currentScreen = Screen.ServicesEntry },
-                    onNavigateToGroupDetail = { currentScreen = Screen.ScheduleGroupDetail }
+                    onBack = { currentScreen = Screen.ServicesEntry }
                 )
             }
 
@@ -255,9 +307,10 @@ fun App() {
                 ServicesEntryScreen(
                     viewModel = koinInject(),
                     onBack = { currentScreen = Screen.BusinessView },
-                    onOpenMenu = { /* TODO */ },
                     onNavigateToCatalog = { currentScreen = Screen.ServicesCatalog },
-                    onNavigateToTurns = { currentScreen = Screen.WorkingHours }
+                    onNavigateToTurns = { currentScreen = Screen.WorkingHours },
+                    onNavigateToProfile = { currentScreen = Screen.ClinicProfile },
+                    onNavigateToNotifications = { currentScreen = Screen.Notifications }
                 )
             }
 
@@ -281,13 +334,13 @@ fun App() {
 
             Screen.ClinicProfile -> {
                 ClinicProfileScreen(
-                    onNavigateBack = { currentScreen = Screen.Profile }
+                    onNavigateBack = { currentScreen = Screen.ServicesEntry }
                 )
             }
 
             Screen.Notifications -> {
                 NotificationsScreen(
-                    onBack = { currentScreen = Screen.Profile }
+                    onBack = { currentScreen = Screen.ServicesEntry }
                 )
             }
         }
@@ -307,7 +360,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "Gérez facilement vos tâches, proyectos et priorités avec GestorPlus."
+        "fr": "Gérez facilement vos tareas, proyectos et priorités con GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
@@ -325,7 +378,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Colabora en tiempo real y mantén a todo tu equipo sincronizado.",
         "en": "Collaborate in real-time and keep your entire team in sync.",
-        "fr": "Collaborez en temps réel et gardez toute votre équipe synchronisée."
+        "fr": "Collaborez en temps réel et gardez toute votre equipo synchronisée."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png",
@@ -343,7 +396,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Transforma tu manera de trabajar desde hoy mismo.",
         "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre façon de travailler dès aujourd'hui."
+        "fr": "Transformez votre façon de trabajar dès aujourd'hui."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",

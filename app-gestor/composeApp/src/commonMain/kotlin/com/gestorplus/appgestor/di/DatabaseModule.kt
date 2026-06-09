@@ -12,4 +12,7 @@ val databaseModule = module {
     single { get<AppDatabase>().eventLogDao() }
     single { get<AppDatabase>().userProfileDao() }
     single { get<AppDatabase>().serviceDao() }
+    single { get<AppDatabase>().clinicProfileDao() }
+    single { get<AppDatabase>().notificationDao() }
+    single { get<AppDatabase>().shiftDao() }
 }

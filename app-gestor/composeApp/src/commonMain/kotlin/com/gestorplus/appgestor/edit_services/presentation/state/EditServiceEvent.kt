@@ -5,6 +5,7 @@ sealed interface EditServiceEvent {
     data class CategoryChanged(val category: String) : EditServiceEvent
     data class DescriptionChanged(val description: String) : EditServiceEvent
     data class PriceChanged(val price: String) : EditServiceEvent
+    data class DurationChanged(val hours: Int, val minutes: Int) : EditServiceEvent
     data object SaveService : EditServiceEvent
-    data object BackClicked : EditServiceEvent
+    data object DeleteService : EditServiceEvent
 }

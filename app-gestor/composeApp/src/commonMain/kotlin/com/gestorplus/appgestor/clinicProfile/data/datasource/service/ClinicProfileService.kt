@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.clinicProfile.data.datasource.service
 
 import com.gestorplus.appgestor.clinicProfile.data.datasource.dto.ClinicProfileDto
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
@@ -10,16 +10,21 @@ class ClinicProfileService(private val firebaseManager: FirebaseManager) {
 
     suspend fun getClinicProfile(ownerUid: String): ClinicProfileDto? {
         val data = firebaseManager.getData("clinics/$ownerUid") ?: return null
-        // Convert Map to JSON string then to DTO
-        val jsonString = json.encodeToString(data)
-        return json.decodeFromString<ClinicProfileDto>(jsonString)
+        return try {
+            val jsonString = json.encodeToString(data)
+            json.decodeFromString<ClinicProfileDto>(jsonString)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     suspend fun updateClinicProfile(ownerUid: String, dto: ClinicProfileDto) {
-        val jsonString = json.encodeToString(dto)
-        val dataMap = json.decodeFromString<Map<String, String>>(jsonString)
-        dataMap.forEach { (key, value) ->
-            firebaseManager.saveData("clinics/$ownerUid/$key", value)
+        dto.name?.let { firebaseManager.saveData("clinics/$ownerUid/name", it) }
+        dto.bio?.let { firebaseManager.saveData("clinics/$ownerUid/bio", it) }
+        dto.address?.let { firebaseManager.saveData("clinics/$ownerUid/address", it) }
+        dto.mapUrl?.let { firebaseManager.saveData("clinics/$ownerUid/mapUrl", it) }
+        dto.specialties?.let { 
+            firebaseManager.saveData("clinics/$ownerUid/specialties", json.encodeToString(it))
         }
     }
 }

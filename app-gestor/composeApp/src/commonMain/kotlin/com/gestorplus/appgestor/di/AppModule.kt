@@ -24,5 +24,8 @@ val appModules: List<Module> = listOf(
     notificationsModule,
     platformModule,
     authModule,
-    servicesModule
+    servicesModule,
+    exploreClinicsModule,
+    clinicDetailModule,
+    myBookingsModule
 )

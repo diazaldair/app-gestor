@@ -16,7 +16,7 @@ import org.koin.dsl.module
 val clinicProfileModule = module {
     single { ClinicProfileMapper() }
     single { ClinicProfileService(get()) }
-    single { ClinicProfileLocalDatasource() }
+    single { ClinicProfileLocalDatasource(get()) } // Pass get() for ClinicProfileDao
     single { ClinicProfileRemoteDatasource(get(), get()) }
     single<ClinicProfileRepository> { ClinicProfileRepositoryImpl(get(), get(), get()) }
 

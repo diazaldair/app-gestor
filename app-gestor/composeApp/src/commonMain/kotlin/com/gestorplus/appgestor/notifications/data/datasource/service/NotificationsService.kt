@@ -1,6 +1,6 @@
 package com.gestorplus.appgestor.notifications.data.datasource.service
 
-import com.gestorplus.appgestor.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.notifications.data.datasource.dto.NotificationDto
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString

@@ -34,7 +34,9 @@ fun ServicesEntryScreen(
     viewModel: ServicesEntryViewModel,
     onBack: () -> Unit,
     onNavigateToCatalog: () -> Unit,
-    onNavigateToTurns: () -> Unit
+    onNavigateToTurns: () -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToNotifications: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -45,23 +47,25 @@ fun ServicesEntryScreen(
                 TopAppBar(
                     title = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(Res.drawable.compose_multiplatform),
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp).clip(CircleShape)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .clickable { onNavigateToProfile() }
+                            ) {
+                                Image(
+                                    painter = painterResource(Res.drawable.compose_multiplatform),
+                                    contentDescription = "Perfil",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
                             Spacer(Modifier.width(12.dp))
                             Text("SoloBook Pro", color = AppTheme.colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
                     },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás", tint = AppTheme.colors.textPrimary)
-                        }
-                    },
                     actions = {
-                        IconButton(onClick = { }) {
-                            Icon(Icons.Default.NotificationsNone, null, tint = AppTheme.colors.textPrimary)
+                        IconButton(onClick = onNavigateToNotifications) {
+                            Icon(Icons.Default.NotificationsNone, "Notificaciones", tint = AppTheme.colors.textPrimary)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)

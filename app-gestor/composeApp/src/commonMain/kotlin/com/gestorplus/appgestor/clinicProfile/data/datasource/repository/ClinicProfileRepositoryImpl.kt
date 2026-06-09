@@ -15,16 +15,37 @@ class ClinicProfileRepositoryImpl(
 ) : ClinicProfileRepository {
 
     override fun getClinicProfile(): Flow<ClinicProfile> = flow {
-        // Offline-First strategy: Mocking flow for now
-        val remoteDto = remoteDatasource.fetchProfile()
-        if (remoteDto == null) {
-            emit(ClinicProfile())
-            return@flow
+        // 1. Emitir datos desde la caché local si existen
+        val cachedDto = localDatasource.getCachedProfile()
+        if (cachedDto != null) {
+            emit(mapper.toDomain(cachedDto))
         }
-        emit(mapper.toDomain(remoteDto))
+
+        try {
+            // 2. Intentar obtener datos desde el servidor
+            val remoteDto = remoteDatasource.fetchProfile()
+            if (remoteDto != null) {
+                // 3. Guardar en la caché local
+                localDatasource.saveProfile(remoteDto)
+                // 4. Emitir los datos actualizados
+                emit(mapper.toDomain(remoteDto))
+            } else if (cachedDto == null) {
+                // Si no hay nada en caché ni en remoto, emitir perfil vacío
+                emit(ClinicProfile())
+            }
+        } catch (e: Exception) {
+            // Si falla el remoto y no hay caché, asegurar que se emite algo
+            if (cachedDto == null) {
+                emit(ClinicProfile())
+            }
+        }
     }
 
     override suspend fun updateClinicProfile(profile: ClinicProfile) {
-        remoteDatasource.updateProfile(mapper.toDto(profile))
+        val dto = mapper.toDto(profile)
+        // 1. Actualizar en el servidor
+        remoteDatasource.updateProfile(dto)
+        // 2. Mantener la caché local sincronizada
+        localDatasource.saveProfile(dto)
     }
 }
