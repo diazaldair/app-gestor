@@ -1,11 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- Loco xml export: Android strings
- Project: Mobile
- Locale: es-BO, Spanish (Bolivia)
- Exported by: Marlon Tomas Marzo Fernandez
- Exported at: Wed, 22 Apr 2026 11:36:47 -0400
--->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
+    <string name="app_name">SoloBook</string>
     <string name="booking_title">Reservas</string>
+    <string name="booking_available_slots">Horarios Disponibles</string>
+    <string name="booking_selected_date_mock">Jueves, 5 de Octubre</string>
+    <string name="booking_timezone_est">EST</string>
+    <string name="booking_morning">MAÑANA</string>
+    <string name="booking_afternoon">TARDE</string>
+    <string name="booking_selected_slot_label">Horario Seleccionado</string>
+    <string name="booking_no_slot_selected">Selecciona un horario</string>
+    <string name="booking_confirm_button">Confirmar Reserva</string>
+    <string name="booking_error_confirm">Error al confirmar la reserva</string>
+    <string name="booking_month_short_oct">Oct %d</string>
+    <string name="booking_selected_slot_format">%1$s, %2$s</string>
+
+    <string name="owner_dashboard_title">Panel de Control</string>
+    <string name="owner_date_mock">Octubre 2023</string>
+    <string name="owner_agenda_today">Agenda • Hoy</string>
+    <string name="owner_block_day">Bloquear Día</string>
+    <string name="owner_no_bookings">No hay citas hoy</string>
+    <string name="owner_personal_time">TIEMPO PERSONAL</string>
+    <string name="owner_personal_time_desc">No disponible para reservas</string>
+    <string name="owner_error_sync">Error al sincronizar reservas</string>
+    <string name="owner_error_logs">Error al cargar registros</string>
+    <string name="owner_booking_accepted">Reserva aceptada</string>
+    <string name="owner_booking_rejected">Reserva rechazada</string>
+    <string name="owner_agenda_subtitle_format">%1$s • %2$d min</string>
+
+    <string name="status_confirmed">CONFIRMADO</string>
+    <string name="status_pending">PENDIENTE</string>
+    <string name="status_blocked">BLOQUEADO</string>
+
+    <string name="nav_calendar">Calendario</string>
+    <string name="nav_clients">Clientes</string>
+    <string name="nav_insights">Estadísticas</string>
+    <string name="nav_profile">Perfil</string>
+
+    <string name="common_back">Atrás</string>
+    <string name="common_prev">Anterior</string>
+    <string name="common_next">Siguiente</string>
+    <string name="common_settings">Ajustes</string>
+    <string name="common_loading">Cargando...</string>
+    <string name="common_send">Enviar Datos</string>
+    <string name="common_reset">Reiniciar</string>
+    <string name="common_details">Detalles</string>
+    <string name="common_message">Mensaje</string>
+
+    <!-- Clinic Profile -->
+    <string name="clinic_profile_title">Ajustes de Perfil</string>
+    <string name="clinic_profile_section_info">PERFIL DE LA CLÍNICA</string>
+    <string name="clinic_profile_name_label">Nombre de la Clínica</string>
+    <string name="clinic_profile_bio_label">Biografía</string>
+    <string name="clinic_profile_specialties_label">Especialidades</string>
+    <string name="clinic_profile_add_specialty">+ Añadir</string>
+    <string name="clinic_profile_section_location">UBICACIÓN Y CONTACTO</string>
+    <string name="clinic_profile_address_label">Dirección exacta</string>
+    <string name="clinic_profile_save_button">Guardar Cambios</string>
+    <string name="clinic_profile_error_name">El nombre de la clínica es requerido</string>
+    <string name="clinic_profile_error_bio">La biografía es requerida</string>
+    <string name="clinic_profile_error_address">La dirección es requerida</string>
+    <string name="clinic_profile_success_save">Perfil actualizado correctamente</string>
+    <string name="clinic_profile_map_placeholder">MAPA INTERACTIVO</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_filter_all">Todas</string>
+    <string name="notifications_filter_appointments">Citas</string>
+    <string name="notifications_filter_messages">Mensajes</string>
+    <string name="notifications_filter_system">Sistema</string>
+    <string name="notifications_section_today">HOY</string>
+    <string name="notifications_section_yesterday">AYER</string>
+    <string name="notifications_btn_accept">Aceptar</string>
+    <string name="notifications_btn_decline">Declinar</string>
+    <string name="notifications_appointment_request">Nueva solicitud de cita</string>
+    <string name="notifications_reminder">Recordatorio de cita</string>
+    <string name="notifications_system_update">Actualización del sistema</string>
+    <string name="notifications_success_accept">Cita aceptada</string>
+    <string name="notifications_success_decline">Cita declinada</string>
 </resources>

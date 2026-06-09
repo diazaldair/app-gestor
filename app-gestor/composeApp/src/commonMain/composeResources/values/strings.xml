@@ -57,4 +57,37 @@
     <string name="day_thu">THU</string>
     <string name="day_fri">FRI</string>
     <string name="day_sat">SAT</string>
+
+    <!-- Clinic Profile -->
+    <string name="clinic_profile_title">Profile Settings</string>
+    <string name="clinic_profile_section_info">CLINIC PROFILE</string>
+    <string name="clinic_profile_name_label">Clinic Name</string>
+    <string name="clinic_profile_bio_label">Biography</string>
+    <string name="clinic_profile_specialties_label">Specialties</string>
+    <string name="clinic_profile_add_specialty">+ Add</string>
+    <string name="clinic_profile_section_location">LOCATION &amp; CONTACT</string>
+    <string name="clinic_profile_address_label">Exact Address</string>
+    <string name="clinic_profile_save_button">Save Changes</string>
+    <string name="clinic_profile_error_name">Clinic name is required</string>
+    <string name="clinic_profile_error_bio">Biography is required</string>
+    <string name="clinic_profile_error_address">Address is required</string>
+    <string name="clinic_profile_success_save">Profile updated successfully</string>
+    <string name="clinic_profile_map_placeholder">INTERACTIVE MAP</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_filter_all">All</string>
+    <string name="notifications_filter_appointments">Appts</string>
+    <string name="notifications_filter_messages">Messages</string>
+    <string name="notifications_filter_system">System</string>
+    <string name="notifications_section_today">TODAY</string>
+    <string name="notifications_section_yesterday">YESTERDAY</string>
+    <string name="notifications_empty">No notifications</string>
+    <string name="notifications_btn_accept">Accept</string>
+    <string name="notifications_btn_decline">Decline</string>
+    <string name="notifications_appointment_request">New appointment request</string>
+    <string name="notifications_reminder">Appointment reminder</string>
+    <string name="notifications_system_update">System Update</string>
+    <string name="notifications_success_accept">Appointment accepted</string>
+    <string name="notifications_success_decline">Appointment declined</string>
 </resources>

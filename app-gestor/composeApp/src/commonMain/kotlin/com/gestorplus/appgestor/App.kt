@@ -15,9 +15,11 @@ import com.gestorplus.appgestor.auth.presentation.login.screen.LoginScreen
 import com.gestorplus.appgestor.auth.presentation.register.screen.RegisterScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingConfirmationScreen
 import com.gestorplus.appgestor.booking.presentation.screen.BookingScreen
+import com.gestorplus.appgestor.clinicProfile.presentation.screen.ClinicProfileScreen
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.designsystem.theme.ThemeMode
 import com.gestorplus.appgestor.home.presentation.screen.HomeScreen
+import com.gestorplus.appgestor.notifications.presentation.screen.NotificationsScreen
 import com.gestorplus.appgestor.onboarding.domain.usecase.IsOnboardingCompletedUseCase
 import com.gestorplus.appgestor.onboarding.presentation.screen.OnboardingScreen
 import com.gestorplus.appgestor.owner.dashboard.presentation.screen.OwnerDashboardScreen
@@ -55,7 +57,9 @@ enum class Screen {
     Profile,
     ServicesEntry,
     ServicesCatalog,
-    EditService
+    EditService,
+    ClinicProfile,
+    Notifications
 }
 
 @Composable
@@ -274,6 +278,18 @@ fun App() {
                     serviceId = editingServiceId ?: "8"
                 )
             }
+
+            Screen.ClinicProfile -> {
+                ClinicProfileScreen(
+                    onNavigateBack = { currentScreen = Screen.Profile }
+                )
+            }
+
+            Screen.Notifications -> {
+                NotificationsScreen(
+                    onBack = { currentScreen = Screen.Profile }
+                )
+            }
         }
     }
 }
@@ -327,7 +343,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Transforma tu manera de trabajar desde hoy mismo.",
         "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre façon de trabajar dès aujourd'hui."
+        "fr": "Transformez votre façon de travailler dès aujourd'hui."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",
