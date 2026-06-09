@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.services_entry.presentation.state.ServicesEntryUiState
 import com.gestorplus.appgestor.services_entry.presentation.viewmodel.ServicesEntryViewModel
 import org.jetbrains.compose.resources.painterResource
-import appprogramovil.composeapp.generated.resources.Res
-import appprogramovil.composeapp.generated.resources.compose_multiplatform
+import app_gestor.composeapp.generated.resources.Res
+import app_gestor.composeapp.generated.resources.compose_multiplatform
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

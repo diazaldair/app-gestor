@@ -5,6 +5,7 @@ import com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfil
 import com.gestorplus.appgestor.owner.setup_profile.domain.repository.SetupProfileRepository
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class SetupProfileRepositoryImpl(
@@ -14,17 +15,20 @@ class SetupProfileRepositoryImpl(
 
     override suspend fun saveWorkspaceProfile(profile: WorkspaceProfile): Result<Unit> {
         return try {
+            val currentUid = firebaseManager.getCurrentUserUid() 
+                ?: throw Exception("Usuario no autenticado")
+
             val uploadedImages = profile.galleryImages.map { path ->
-                if (path.startsWith("http") || path.startsWith("https")) {
+                if (path.startsWith("http")) {
                     path
                 } else {
                     firebaseManager.uploadImage(path)
                 }
             }
+            
             val updatedProfile = profile.copy(galleryImages = uploadedImages)
-
             val dataString = Json.encodeToString(updatedProfile)
-            val currentUid = firebaseManager.getCurrentUserUid() ?: throw Exception("Usuario no autenticado")
+
             remoteDatasource.saveWorkspaceProfile(currentUid, dataString)
             Result.success(Unit)
         } catch (e: Exception) {

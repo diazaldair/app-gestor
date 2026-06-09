@@ -1,6 +1,7 @@
 package com.gestorplus.appgestor.di
 
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasource
+import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasourceImpl
 import com.gestorplus.appgestor.owner.setup_profile.data.repository.SetupProfileRepositoryImpl
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileService
 import com.gestorplus.appgestor.owner.setup_profile.domain.repository.SetupProfileRepository
@@ -15,7 +16,7 @@ val setupProfileModule = module {
     single { SetupProfileService(get()) }
 
     // 2. Fuentes de Datos (Datasources)
-    single { SetupProfileRemoteDatasource(get()) }
+    single<SetupProfileRemoteDatasource> { SetupProfileRemoteDatasourceImpl(get()) }
 
     // 3. Repositorio
     single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get()) }

@@ -4,5 +4,5 @@ import java.util.Locale
 
 actual fun getDeviceLanguage(): String {
     val lang = Locale.getDefault().language
-    return if (lang in listOf("es", "en", "fr")) lang else "en"
+    return if (lang in listOf("es", "en")) lang else "en"
 }

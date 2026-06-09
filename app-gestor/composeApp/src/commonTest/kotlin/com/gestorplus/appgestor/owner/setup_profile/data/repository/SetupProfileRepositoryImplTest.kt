@@ -15,7 +15,7 @@ class FakeSetupProfileRemoteDatasource : SetupProfileRemoteDatasource {
     }
 }
 
-class FakeFirebaseManagerForRepo : FirebaseManager() {
+open class FakeFirebaseManagerForRepo : FirebaseManager() {
     var uploadCallCount = 0
     override suspend fun uploadImage(localPath: String): String {
         uploadCallCount++

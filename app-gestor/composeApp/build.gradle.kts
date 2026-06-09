@@ -202,8 +202,7 @@ tasks.register<DownloadLocoTask>("downloadLocoTranslations") {
     key.set(locoProperties.getProperty("locoKey") ?: "")
     locales.set(mapOf(
         "es-BO" to "values-es",
-        "en-US" to "values",
-        "it-IT" to "values-it"
+        "en-US" to "values"
     ))
     outputDir.set(project.file("src/commonMain/composeResources"))
 }

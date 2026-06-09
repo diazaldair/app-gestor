@@ -2,8 +2,8 @@ package com.gestorplus.appgestor.di
 
 import androidx.room.RoomDatabase
 import com.gestorplus.appgestor.core.notification.NotificationHelper
-import com.gestorplus.appgestor.booking.data.local.AppDatabase
-import com.gestorplus.appgestor.booking.data.local.getDatabaseBuilder
+import com.gestorplus.appgestor.core.data.local.AppDatabase
+import com.gestorplus.appgestor.core.data.local.getDatabaseBuilder
 import com.gestorplus.appgestor.core.data.repository.NotificationRepositoryImpl
 import com.gestorplus.appgestor.notification.domain.NotificationRepository
 import org.koin.android.ext.koin.androidContext

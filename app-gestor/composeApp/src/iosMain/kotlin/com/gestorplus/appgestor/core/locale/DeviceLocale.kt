@@ -6,5 +6,5 @@ import platform.Foundation.languageCode
 
 actual fun getDeviceLanguage(): String {
     val lang = NSLocale.currentLocale.languageCode ?: "en"
-    return if (lang in listOf("es", "en", "fr")) lang else "en"
+    return if (lang in listOf("es", "en")) lang else "en"
 }

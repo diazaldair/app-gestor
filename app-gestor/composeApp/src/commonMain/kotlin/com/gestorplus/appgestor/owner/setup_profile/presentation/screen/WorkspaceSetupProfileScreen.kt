@@ -37,6 +37,7 @@ import com.gestorplus.appgestor.owner.setup_profile.presentation.state.Workspace
 import com.gestorplus.appgestor.owner.setup_profile.presentation.state.WorkspaceSetupProfileEvent
 import com.gestorplus.appgestor.owner.setup_profile.presentation.viewmodel.WorkspaceSetupProfileViewModel
 import com.gestorplus.appgestor.util.rememberImagePicker
+import com.gestorplus.appgestor.core.util.ImageKitConfig
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.flow.collectLatest
@@ -445,7 +446,7 @@ fun WorkspaceSetupProfileScreen(
                     OutlinedTextField(
                         value = state.references,
                         onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.ReferencesChanged(it)) },
-                        placeholder = { Text("Referencias (Edf. Multicentro, Piso 4)", color = Color.White.copy(alpha = 0.3f)) },
+                        placeholder = { Text("Referencia (Edf. Multicentro, Piso 4)", color = Color.White.copy(alpha = 0.3f)) },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = BrandLightBlue,
@@ -531,7 +532,7 @@ fun WorkspaceSetupProfileScreen(
                                     .border(1.dp, GlassBorder, RoundedCornerShape(12.dp))
                             ) {
                                 AsyncImage(
-                                    model = image,
+                                    model = ImageKitConfig.getOptimizedUrl(image, width = 200),
                                     contentDescription = "Foto de galería",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
