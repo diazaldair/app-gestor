@@ -299,17 +299,23 @@ fun LoginScreen(
                                     .height(48.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(GoogleButtonBg)
-                                    .clickable { viewModel.onEvent(LoginEvent.OnGoogleLoginClicked) }
+                                    .clickable(enabled = !state.isLoading) { 
+                                        viewModel.onEvent(LoginEvent.OnGoogleLoginClicked(role))
+                                    }
                                     .padding(horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Text(
-                                    text = "Google",
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp
-                                )
+                                if (state.isLoading) {
+                                    CircularProgressIndicator(color = BrandBlue, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                                } else {
+                                    Text(
+                                        text = "Google",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                }
                             }
 
                             // Apple Button
@@ -320,7 +326,9 @@ fun LoginScreen(
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(AppleButtonBg)
                                     .border(1.dp, GlassBorder, RoundedCornerShape(10.dp))
-                                    .clickable { viewModel.onEvent(LoginEvent.OnAppleLoginClicked) }
+                                    .clickable(enabled = !state.isLoading) { 
+                                        viewModel.onEvent(LoginEvent.OnAppleLoginClicked) 
+                                    }
                                     .padding(horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
