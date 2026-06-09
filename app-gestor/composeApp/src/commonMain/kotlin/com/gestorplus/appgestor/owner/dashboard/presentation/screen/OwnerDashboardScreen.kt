@@ -38,6 +38,7 @@ fun OwnerDashboardScreen(
     onBack: () -> Unit,
     onNavigateToWorkingHours: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToServices: () -> Unit,
     viewModel: OwnerDashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -74,7 +75,8 @@ fun OwnerDashboardScreen(
                     selectedDate = selectedDate,
                     onMonthChange = { viewModel.onEvent(OwnerDashboardEvent.OnMonthChange(it)) },
                     onBack = onBack,
-                    onNavigateToWorkingHours = onNavigateToWorkingHours
+                    onNavigateToWorkingHours = onNavigateToWorkingHours,
+                    onNavigateToServices = onNavigateToServices
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 StatusFilters()
@@ -109,7 +111,8 @@ fun DashboardHeader(
     selectedDate: LocalDate,
     onMonthChange: (Int) -> Unit,
     onBack: () -> Unit,
-    onNavigateToWorkingHours: () -> Unit
+    onNavigateToWorkingHours: () -> Unit,
+    onNavigateToServices: () -> Unit
 ) {
     Column {
         Row(
@@ -148,10 +151,10 @@ fun DashboardHeader(
                         tint = AppTheme.colors.primary
                     )
                 }
-                IconButton(onClick = { /* TODO: Event */ }) {
+                IconButton(onClick = onNavigateToServices) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = stringResource(Res.string.nav_calendar),
+                        imageVector = Icons.Default.MedicalServices,
+                        contentDescription = "Services",
                         tint = AppTheme.colors.textPrimary
                     )
                 }

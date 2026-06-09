@@ -1,5 +1,7 @@
 package com.gestorplus.appgestor.di
 
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
+import com.gestorplus.appgestor.core.persistence.LocalPreferences
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasource
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasourceImpl
 import com.gestorplus.appgestor.owner.setup_profile.data.repository.SetupProfileRepositoryImpl
@@ -19,7 +21,7 @@ val setupProfileModule = module {
     single<SetupProfileRemoteDatasource> { SetupProfileRemoteDatasourceImpl(get()) }
 
     // 3. Repositorio
-    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get()) }
+    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceProfileUseCase)

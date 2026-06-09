@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
@@ -38,6 +37,7 @@ private val InputFieldBg = Color(0xFF0F172A).copy(alpha = 0.6f)
 private val CardBg = Color(0xFF1E293B).copy(alpha = 0.7f)
 private val ChipBg = Color(0xFF3B82F6).copy(alpha = 0.15f)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkspaceSetupScheduleScreen(
     onNavigateToNextStep: () -> Unit,
@@ -46,6 +46,9 @@ fun WorkspaceSetupScheduleScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    var showTimePicker by remember { mutableStateOf(false) }
+    var currentPickingType by remember { mutableStateOf<TimeType?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -271,7 +274,10 @@ fun WorkspaceSetupScheduleScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 TimeInputButton(
                                     time = state.morningStart,
-                                    onClick = { /* TODO: Show time picker */ }
+                                    onClick = { 
+                                        currentPickingType = TimeType.MORNING_START
+                                        showTimePicker = true 
+                                    }
                                 )
                                 Text(
                                     text = "-",
@@ -280,7 +286,10 @@ fun WorkspaceSetupScheduleScreen(
                                 )
                                 TimeInputButton(
                                     time = state.morningEnd,
-                                    onClick = { /* TODO: Show time picker */ }
+                                    onClick = { 
+                                        currentPickingType = TimeType.MORNING_END
+                                        showTimePicker = true 
+                                    }
                                 )
                             }
                         }
@@ -316,7 +325,10 @@ fun WorkspaceSetupScheduleScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 TimeInputButton(
                                     time = state.afternoonStart,
-                                    onClick = { /* TODO: Show time picker */ }
+                                    onClick = { 
+                                        currentPickingType = TimeType.AFTERNOON_START
+                                        showTimePicker = true 
+                                    }
                                 )
                                 Text(
                                     text = "-",
@@ -325,7 +337,10 @@ fun WorkspaceSetupScheduleScreen(
                                 )
                                 TimeInputButton(
                                     time = state.afternoonEnd,
-                                    onClick = { /* TODO: Show time picker */ }
+                                    onClick = { 
+                                        currentPickingType = TimeType.AFTERNOON_END
+                                        showTimePicker = true 
+                                    }
                                 )
                             }
                         }
@@ -426,6 +441,47 @@ fun WorkspaceSetupScheduleScreen(
                 }
             }
         }
+
+        if (showTimePicker && currentPickingType != null) {
+            val initialTime = when (currentPickingType!!) {
+                TimeType.MORNING_START -> state.morningStart
+                TimeType.MORNING_END -> state.morningEnd
+                TimeType.AFTERNOON_START -> state.afternoonStart
+                TimeType.AFTERNOON_END -> state.afternoonEnd
+            }
+            
+            val timePickerState = rememberTimePickerState(
+                initialHour = initialTime.split(":")[0].toIntOrNull() ?: 8,
+                initialMinute = initialTime.split(":")[1].toIntOrNull() ?: 0,
+                is24Hour = true
+            )
+
+            AlertDialog(
+                onDismissRequest = { showTimePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val formattedTime = "${timePickerState.hour.toString().padStart(2, '0')}:${timePickerState.minute.toString().padStart(2, '0')}"
+                        when (currentPickingType!!) {
+                            TimeType.MORNING_START -> viewModel.onEvent(WorkspaceSetupScheduleEvent.MorningStartChanged(formattedTime))
+                            TimeType.MORNING_END -> viewModel.onEvent(WorkspaceSetupScheduleEvent.MorningEndChanged(formattedTime))
+                            TimeType.AFTERNOON_START -> viewModel.onEvent(WorkspaceSetupScheduleEvent.AfternoonStartChanged(formattedTime))
+                            TimeType.AFTERNOON_END -> viewModel.onEvent(WorkspaceSetupScheduleEvent.AfternoonEndChanged(formattedTime))
+                        }
+                        showTimePicker = false
+                    }) {
+                        Text("Confirmar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showTimePicker = false }) {
+                        Text("Cancelar")
+                    }
+                },
+                text = {
+                    TimePicker(state = timePickerState)
+                }
+            )
+        }
     }
 }
 
@@ -445,4 +501,8 @@ fun TimeInputButton(time: String, onClick: () -> Unit) {
             fontWeight = FontWeight.Medium
         )
     }
+}
+
+enum class TimeType {
+    MORNING_START, MORNING_END, AFTERNOON_START, AFTERNOON_END
 }

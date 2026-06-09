@@ -30,6 +30,9 @@ import com.gestorplus.appgestor.owner.setup_schedule.presentation.screen.Workspa
 import com.gestorplus.appgestor.owner.setup_service.presentation.screen.WorkspaceSetupServiceScreen
 import com.gestorplus.appgestor.owner.setup_success.presentation.screen.WorkspaceSetupSuccessScreen
 import com.gestorplus.appgestor.profile.presentation.screen.ProfileScreen
+import com.gestorplus.appgestor.services.presentation.screen.ServicesCatalogScreen
+import com.gestorplus.appgestor.services_entry.presentation.screen.ServicesEntryScreen
+import com.gestorplus.appgestor.edit_services.presentation.screen.EditServiceScreen
 import org.koin.compose.koinInject
 
 enum class Screen {
@@ -49,7 +52,10 @@ enum class Screen {
     DoctorView,
     WorkingHours,
     ScheduleGroupDetail,
-    Profile
+    Profile,
+    ServicesEntry,
+    ServicesCatalog,
+    EditService
 }
 
 @Composable
@@ -63,6 +69,7 @@ fun App() {
         )
     }
     var selectedRole by remember { mutableStateOf("PATIENT") }
+    var editingServiceId by remember { mutableStateOf<String?>(null) }
 
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -76,8 +83,8 @@ fun App() {
     LaunchedEffect(Unit) {
         val defaults = mapOf(
             "primary_color" to "#6200EE",
-            "sync_client_name" to "Promoci\u00f3n de Verano",
-            "sync_client_service" to "Consultor\u00eda Gratuita",
+            "sync_client_name" to "Promoción de Verano",
+            "sync_client_service" to "Consultoría Gratuita",
             "sync_price" to "0.0",
             "onboarding_config" to DEFAULT_ONBOARDING_CONFIG
         )
@@ -193,7 +200,7 @@ fun App() {
             Screen.WorkspaceSetupSuccess -> {
                 WorkspaceSetupSuccessScreen(
                     onNavigateToDashboard = {
-                        currentScreen = Screen.DoctorView
+                        currentScreen = Screen.ServicesEntry
                     }
                 )
             }
@@ -216,13 +223,14 @@ fun App() {
                 OwnerDashboardScreen(
                     onBack = { currentScreen = Screen.Home },
                     onNavigateToWorkingHours = { currentScreen = Screen.WorkingHours },
-                    onNavigateToProfile = { currentScreen = Screen.Profile }
+                    onNavigateToProfile = { currentScreen = Screen.Profile },
+                    onNavigateToServices = { currentScreen = Screen.ServicesEntry }
                 )
             }
 
             Screen.WorkingHours -> {
                 WorkingHoursScreen(
-                    onBack = { currentScreen = Screen.BusinessView },
+                    onBack = { currentScreen = Screen.ServicesEntry },
                     onNavigateToGroupDetail = { currentScreen = Screen.ScheduleGroupDetail }
                 )
             }
@@ -238,6 +246,34 @@ fun App() {
                     onBack = { currentScreen = Screen.BusinessView }
                 )
             }
+
+            Screen.ServicesEntry -> {
+                ServicesEntryScreen(
+                    viewModel = koinInject(),
+                    onBack = { currentScreen = Screen.BusinessView },
+                    onOpenMenu = { /* TODO */ },
+                    onNavigateToCatalog = { currentScreen = Screen.ServicesCatalog },
+                    onNavigateToTurns = { currentScreen = Screen.WorkingHours }
+                )
+            }
+
+            Screen.ServicesCatalog -> {
+                ServicesCatalogScreen(
+                    onBack = { currentScreen = Screen.ServicesEntry },
+                    onNavigateToEdit = { id -> 
+                        editingServiceId = id
+                        currentScreen = Screen.EditService 
+                    },
+                    onOpenMenu = { /* TODO */ }
+                )
+            }
+
+            Screen.EditService -> {
+                EditServiceScreen(
+                    onBack = { currentScreen = Screen.ServicesCatalog },
+                    serviceId = editingServiceId ?: "8"
+                )
+            }
         }
     }
 }
@@ -248,14 +284,14 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
     {
       "id": 1,
       "title": {
-        "es": "\u00a1Organiza tu negocio!",
+        "es": "¡Organiza tu negocio!",
         "en": "Organize your business!",
-        "fr": "Organisez votre entreprise !"
+        "fr": "Organisez votre empresa !"
       },
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "G\u00e9rez facilement vos t\u00e2ches, projets et priorit\u00e9s avec GestorPlus."
+        "fr": "Gérez facilement vos tâches, proyectos et priorités avec GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",
@@ -268,12 +304,12 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "title": {
         "es": "Trabaja en equipo",
         "en": "Teamwork",
-        "fr": "Travail d'\u00e9quipe"
+        "fr": "Travail d'équipe"
       },
       "description": {
-        "es": "Colabora en tiempo real y mant\u00e9n a todo tu equipo sincronizado.",
+        "es": "Colabora en tiempo real y mantén a todo tu equipo sincronizado.",
         "en": "Collaborate in real-time and keep your entire team in sync.",
-        "fr": "Collaborez en temps r\u00e9el et gardez toute votre \u00e9quipe synchronis\u00e9e."
+        "fr": "Collaborez en temps réel et gardez toute votre équipe synchronisée."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1256/1256650.png",
@@ -286,12 +322,12 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "title": {
         "es": "Todo listo para empezar",
         "en": "All ready to start",
-        "fr": "Tout est pr\u00eat"
+        "fr": "Tout est prêt"
       },
       "description": {
         "es": "Transforma tu manera de trabajar desde hoy mismo.",
         "en": "Transform the way you work starting today.",
-        "fr": "Transformez votre fa\u00e7on de travailler d\u00e8s aujourd'hui."
+        "fr": "Transformez votre façon de trabajar dès aujourd'hui."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/1533/1533913.png",

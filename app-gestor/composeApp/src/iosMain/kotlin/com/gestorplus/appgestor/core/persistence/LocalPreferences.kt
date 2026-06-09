@@ -16,4 +16,13 @@ actual open class LocalPreferences {
         defaults.setBool(value, forKey = key)
         defaults.synchronize()
     }
+
+    actual open fun getString(key: String, defaultValue: String?): String? {
+        return defaults.stringForKey(key) ?: defaultValue
+    }
+
+    actual open fun putString(key: String, value: String) {
+        defaults.setObject(value, forKey = key)
+        defaults.synchronize()
+    }
 }

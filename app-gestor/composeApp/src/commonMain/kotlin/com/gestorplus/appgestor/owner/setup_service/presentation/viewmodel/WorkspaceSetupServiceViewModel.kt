@@ -32,12 +32,12 @@ class WorkspaceSetupServiceViewModel(
             is WorkspaceSetupServiceEvent.ServiceNameChanged -> _state.update { it.copy(serviceName = event.name, errorMessage = null) }
             is WorkspaceSetupServiceEvent.DescriptionChanged -> _state.update { it.copy(description = event.description, errorMessage = null) }
             is WorkspaceSetupServiceEvent.PriceChanged -> {
-                // Allow only numbers and a single decimal point
                 val regex = Regex("^\\d*\\.?\\d*$")
                 if (event.price.matches(regex)) {
                     _state.update { it.copy(price = event.price, errorMessage = null) }
                 }
             }
+            is WorkspaceSetupServiceEvent.CurrencyChanged -> _state.update { it.copy(currency = event.currency) }
             is WorkspaceSetupServiceEvent.DurationOptionSelected -> _state.update { it.copy(selectedDurationOption = event.option) }
             WorkspaceSetupServiceEvent.IncrementCustomHours -> _state.update { 
                 it.copy(customHours = minOf(it.customHours + 1, 12)) 

@@ -7,10 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -188,7 +188,7 @@ fun WorkspaceSetupServiceScreen(
                                 value = state.price,
                                 onValueChange = { viewModel.onEvent(WorkspaceSetupServiceEvent.PriceChanged(it)) },
                                 placeholder = { Text("0.00", color = Color.White.copy(alpha = 0.3f)) },
-                                trailingIcon = { Text("$", color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(end = 12.dp)) },
+                                trailingIcon = { Text(state.currency, color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(end = 12.dp)) },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedContainerColor = InputFieldBg,
                                     unfocusedContainerColor = InputFieldBg,
@@ -205,13 +205,15 @@ fun WorkspaceSetupServiceScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
                                 value = state.currency,
-                                onValueChange = { },
-                                enabled = false,
-                                trailingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.White.copy(alpha = 0.3f)) },
+                                onValueChange = { viewModel.onEvent(WorkspaceSetupServiceEvent.CurrencyChanged(it)) },
+                                trailingIcon = { Icon(Icons.Default.MonetizationOn, contentDescription = null, tint = Color.White.copy(alpha = 0.7f)) },
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    disabledContainerColor = InputFieldBg.copy(alpha = 0.4f),
-                                    disabledBorderColor = GlassBorder.copy(alpha = 0.2f),
-                                    disabledTextColor = Color.White.copy(alpha = 0.5f)
+                                    focusedContainerColor = InputFieldBg,
+                                    unfocusedContainerColor = InputFieldBg,
+                                    unfocusedBorderColor = GlassBorder,
+                                    focusedBorderColor = BrandBlue,
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             )

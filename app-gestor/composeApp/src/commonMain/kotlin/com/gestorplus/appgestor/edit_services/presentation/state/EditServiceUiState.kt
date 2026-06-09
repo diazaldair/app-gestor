@@ -8,7 +8,7 @@ data class EditServiceUiState(
     val category: String = "",
     val description: String = "",
     val price: String = "",
-    val currency: String = "USD",
+    val currency: String = "Bs",
     val isLoading: Boolean = false,
     val isSaving: Boolean = false
 )

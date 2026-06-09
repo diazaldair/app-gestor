@@ -20,107 +20,135 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gestorplus.appgestor.edit_services.presentation.state.EditServiceUiState
+import com.gestorplus.appgestor.designsystem.theme.AppTheme
+import com.gestorplus.appgestor.designsystem.theme.DsTheme
+import com.gestorplus.appgestor.edit_services.presentation.state.EditServiceEvent
+import com.gestorplus.appgestor.edit_services.presentation.viewmodel.EditServiceViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditServiceScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    serviceId: String,
+    viewModel: EditServiceViewModel = koinViewModel()
 ) {
-    // Simulamos el estado por ahora
-    var name by remember { mutableStateOf("Consulta Médica General") }
-    var category by remember { mutableStateOf("Medicina General") }
-    var description by remember { mutableStateOf("Consulta integral de medicina general para diagnóstico y tratamiento inicial.") }
-    var price by remember { mutableStateOf("50.00") }
+    val state by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        containerColor = Color(0xFF0F172A),
-        topBar = {
-            TopAppBar(
-                title = { Text("Editar Servicio", color = Color.White, fontSize = 18.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás", tint = Color.White)
+    LaunchedEffect(serviceId) {
+        viewModel.loadService(serviceId)
+    }
+
+    DsTheme {
+        Scaffold(
+            containerColor = AppTheme.colors.background,
+            topBar = {
+                TopAppBar(
+                    title = { Text("Editar Servicio $serviceId", color = AppTheme.colors.textPrimary, fontSize = 18.sp) },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Atrás", tint = AppTheme.colors.textPrimary)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                )
+            }
+        ) { padding ->
+            if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AppTheme.colors.primary)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .verticalScroll(rememberScrollState())
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    // Placeholder para subir imagen
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .background(AppTheme.colors.surface.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                            .border(1.dp, AppTheme.colors.textSecondary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .clickable { /* TODO */ },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.AddAPhoto, null, tint = AppTheme.colors.textSecondary, modifier = Modifier.size(32.dp))
+                            Spacer(Modifier.height(8.dp))
+                            Text("Subir imagen de portada", color = AppTheme.colors.textSecondary, fontSize = 14.sp)
+                        }
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Placeholder para subir imagen
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .background(Color(0xFF1E293B).copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                    .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .clickable { /* TODO */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.AddAPhoto, null, tint = Color.Gray, modifier = Modifier.size(32.dp))
-                    Spacer(Modifier.height(8.dp))
-                    Text("Subir imagen de portada", color = Color.Gray, fontSize = 14.sp)
-                }
-            }
 
-            EditField(label = "NOMBRE DEL SERVICIO", value = name, onValueChange = { name = it })
-            
-            Column {
-                Text("CATEGORÍA", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = { Icon(Icons.Default.KeyboardArrowDown, null, tint = Color.Gray) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = editFieldColors()
-                )
-            }
-
-            EditField(label = "DESCRIPCIÓN", value = description, onValueChange = { description = it }, minLines = 3)
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                EditField(
-                    label = "PRECIO", 
-                    value = price, 
-                    onValueChange = { price = it }, 
-                    modifier = Modifier.weight(1f),
-                    trailingIcon = { Text("$", color = Color.Gray) }
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("MONEDA", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = "USD",
-                        onValueChange = { },
-                        readOnly = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        trailingIcon = { Icon(Icons.Default.Lock, null, tint = Color.Gray, modifier = Modifier.size(16.dp)) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = editFieldColors()
+                    EditField(
+                        label = "NOMBRE DEL SERVICIO", 
+                        value = state.name, 
+                        onValueChange = { viewModel.onEvent(EditServiceEvent.NameChanged(it)) }
                     )
+                    
+                    Column {
+                        Text("CATEGORÍA", color = AppTheme.colors.textSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = state.category,
+                            onValueChange = { viewModel.onEvent(EditServiceEvent.CategoryChanged(it)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = { Icon(Icons.Default.KeyboardArrowDown, null, tint = AppTheme.colors.textSecondary) },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = editFieldColors()
+                        )
+                    }
+
+                    EditField(
+                        label = "DESCRIPCIÓN", 
+                        value = state.description, 
+                        onValueChange = { viewModel.onEvent(EditServiceEvent.DescriptionChanged(it)) }, 
+                        minLines = 3
+                    )
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        EditField(
+                            label = "PRECIO", 
+                            value = state.price, 
+                            onValueChange = { viewModel.onEvent(EditServiceEvent.PriceChanged(it)) }, 
+                            modifier = Modifier.weight(1f),
+                            trailingIcon = { Text(state.currency, color = AppTheme.colors.textSecondary) }
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("MONEDA", color = AppTheme.colors.textSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = state.currency,
+                                onValueChange = { },
+                                readOnly = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                trailingIcon = { Icon(Icons.Default.Lock, null, tint = AppTheme.colors.textSecondary, modifier = Modifier.size(16.dp)) },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = editFieldColors()
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Button(
+                        onClick = { viewModel.onEvent(EditServiceEvent.SaveService, onSuccess = onBack) },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.primary),
+                        enabled = !state.isSaving
+                    ) {
+                        if (state.isSaving) {
+                            CircularProgressIndicator(color = AppTheme.colors.onPrimary, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text("Guardar Cambios", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppTheme.colors.onPrimary)
+                        }
+                    }
                 }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            Button(
-                onClick = { /* Save logic */ },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6))
-            ) {
-                Text("Guardar Cambios", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
     }
@@ -136,7 +164,7 @@ fun EditField(
     trailingIcon: @Composable (() -> Unit)? = null
 ) {
     Column(modifier = modifier) {
-        Text(label, color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text(label, color = AppTheme.colors.textSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
@@ -152,10 +180,10 @@ fun EditField(
 
 @Composable
 fun editFieldColors() = OutlinedTextFieldDefaults.colors(
-    unfocusedContainerColor = Color(0xFF1E293B),
-    focusedContainerColor = Color(0xFF1E293B),
+    unfocusedContainerColor = AppTheme.colors.surface,
+    focusedContainerColor = AppTheme.colors.surface,
     unfocusedBorderColor = Color.Transparent,
-    focusedBorderColor = Color(0xFF3B82F6),
-    focusedTextColor = Color.White,
-    unfocusedTextColor = Color.White
+    focusedBorderColor = AppTheme.colors.primary,
+    focusedTextColor = AppTheme.colors.textPrimary,
+    unfocusedTextColor = AppTheme.colors.textPrimary
 )

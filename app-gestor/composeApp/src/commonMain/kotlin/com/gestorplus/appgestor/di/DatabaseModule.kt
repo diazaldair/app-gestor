@@ -11,4 +11,5 @@ val databaseModule = module {
     single { get<AppDatabase>().bookingDraftDao() }
     single { get<AppDatabase>().eventLogDao() }
     single { get<AppDatabase>().userProfileDao() }
+    single { get<AppDatabase>().serviceDao() }
 }

@@ -17,8 +17,8 @@ val setupServiceModule = module {
     // 2. Fuentes de Datos (Datasources)
     single { SetupServiceRemoteDatasource(get()) }
 
-    // 3. Repositorio
-    single<SetupServiceRepository> { SetupServiceRepositoryImpl(get(), get()) }
+    // 3. Repositorio (Ahora recibe 3 argumentos: remote, firebase, serviceDao)
+    single<SetupServiceRepository> { SetupServiceRepositoryImpl(get(), get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceServiceUseCase)

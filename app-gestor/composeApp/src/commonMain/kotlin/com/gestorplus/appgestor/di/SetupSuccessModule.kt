@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val setupSuccessModule = module {
     // 1. Fuentes de Datos (Datasources)
-    single { SetupSuccessLocalDatasource() }
+    single { SetupSuccessLocalDatasource(get()) }
 
     // 2. Repositorio
     single<SetupSuccessRepository> { SetupSuccessRepositoryImpl(get()) }

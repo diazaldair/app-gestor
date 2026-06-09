@@ -13,4 +13,12 @@ actual open class LocalPreferences(private val context: Context) {
     actual open fun putBoolean(key: String, value: Boolean) {
         prefs.edit().putBoolean(key, value).apply()
     }
+
+    actual open fun getString(key: String, defaultValue: String?): String? {
+        return prefs.getString(key, defaultValue)
+    }
+
+    actual open fun putString(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
 }

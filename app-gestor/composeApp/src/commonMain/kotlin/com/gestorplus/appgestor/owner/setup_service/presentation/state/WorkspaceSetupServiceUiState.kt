@@ -15,7 +15,7 @@ data class WorkspaceSetupServiceUiState(
     val serviceName: String = "",
     val description: String = "",
     val price: String = "",
-    val currency: String = "USD",
+    val currency: String = "Bs",
     val selectedDurationOption: DurationOption = DurationOption.MIN_15,
     val customHours: Int = 0,
     val customMinutes: Int = 15,

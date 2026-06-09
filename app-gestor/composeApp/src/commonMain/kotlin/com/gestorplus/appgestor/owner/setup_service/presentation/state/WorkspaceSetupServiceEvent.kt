@@ -4,6 +4,7 @@ sealed interface WorkspaceSetupServiceEvent {
     data class ServiceNameChanged(val name: String) : WorkspaceSetupServiceEvent
     data class DescriptionChanged(val description: String) : WorkspaceSetupServiceEvent
     data class PriceChanged(val price: String) : WorkspaceSetupServiceEvent
+    data class CurrencyChanged(val currency: String) : WorkspaceSetupServiceEvent
     data class DurationOptionSelected(val option: DurationOption) : WorkspaceSetupServiceEvent
     object IncrementCustomHours : WorkspaceSetupServiceEvent
     object DecrementCustomHours : WorkspaceSetupServiceEvent
