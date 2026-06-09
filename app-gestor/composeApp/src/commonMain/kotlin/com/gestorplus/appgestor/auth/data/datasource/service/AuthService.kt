@@ -1,5 +1,7 @@
 package com.gestorplus.appgestor.auth.data.datasource.service
 
+import com.gestorplus.appgestor.auth.domain.model.AuthenticationProvider
+import com.gestorplus.appgestor.auth.domain.model.FirebaseAuthenticatedUser
 import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.data.datasource.FirebaseManager
 
@@ -12,13 +14,37 @@ class AuthService(private val firebaseManager: FirebaseManager) {
         val uid = firebaseManager.registerUserWithEmail(email, password)
         
         val userPath = "${role.firebasePath}/$uid"
-        firebaseManager.saveData("$userPath/id", uid)
-        firebaseManager.saveData("$userPath/name", name)
-        firebaseManager.saveData("$userPath/email", email)
-        firebaseManager.saveData("$userPath/role", role.name)
-        firebaseManager.saveData("$userPath/registeredAt", System.currentTimeMillis().toString())
+        val profileData = mapOf(
+            "id" to uid,
+            "name" to name,
+            "email" to email,
+            "role" to role.name,
+            "registeredAt" to System.currentTimeMillis().toString(),
+            "authProvider" to AuthenticationProvider.EMAIL_PASSWORD.name
+        )
+        firebaseManager.saveObject(userPath, profileData)
         
         return uid
+    }
+
+    suspend fun authenticateWithGoogle(idToken: String): FirebaseAuthenticatedUser {
+        return firebaseManager.signInWithGoogleIdToken(idToken)
+    }
+
+    /**
+     * Creates a social profile in a single atomic operation to avoid partial data states.
+     */
+    suspend fun createSocialProfile(uid: String, name: String, email: String, role: UserRole) {
+        val userPath = "${role.firebasePath}/$uid"
+        val profileData = mapOf(
+            "id" to uid,
+            "name" to name,
+            "email" to email,
+            "role" to role.name,
+            "registeredAt" to System.currentTimeMillis().toString(),
+            "authProvider" to AuthenticationProvider.GOOGLE.name
+        )
+        firebaseManager.saveObject(userPath, profileData)
     }
 
     suspend fun getUserProfile(uid: String, role: UserRole): Map<String, Any>? {

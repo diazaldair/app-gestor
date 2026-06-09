@@ -31,6 +31,16 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun loginWithGoogle(idToken: String, selectedRole: UserRole): Result<UserSession> {
+        return try {
+            val userDto = remoteDatasource.loginWithGoogle(idToken, selectedRole)
+            localDatasource.saveSession(userDto)
+            Result.success(mapper.toDomain(userDto))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun registerDoctor(name: String, email: String, password: String): Result<UserSession> {
         return try {
             val userDto = remoteDatasource.register(name, email, password, UserRole.PROFESSIONAL)
