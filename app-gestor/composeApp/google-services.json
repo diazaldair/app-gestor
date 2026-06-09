@@ -13,7 +13,20 @@
           "package_name": "com.gestorplus.appgestor"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "505531929030-feiqi523ogpsrrohvl63og9bm5p40imo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gestorplus.appgestor",
+            "certificate_hash": "a5b78c9c907ef8fc7ced44f5bc365649f136cd24"
+          }
+        },
+        {
+          "client_id": "505531929030-1ugr3fghbmoi8fvobc2d6cg9kt7nd3me.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBvvC89D4rdkXlJD8vFGnay124QTMP61l4"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "505531929030-1ugr3fghbmoi8fvobc2d6cg9kt7nd3me.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
