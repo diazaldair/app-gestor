@@ -17,11 +17,13 @@ import androidx.lifecycle.lifecycleScope
 import com.gestorplus.appgestor.core.firebase.getToken
 import com.gestorplus.appgestor.core.work.LogScheduler
 import com.gestorplus.appgestor.core.data.repository.EventRepository
+import com.gestorplus.appgestor.core.util.ActivityProvider
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     private val eventRepository: EventRepository by inject()
+    private val activityProvider: ActivityProvider by inject()
 
     // Manejador del resultado del permiso
     private val requestPermissionLauncher = registerForActivityResult(
@@ -37,6 +39,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        
+        // Registrar la actividad en el proveedor para Credential Manager
+        activityProvider.attachActivity(this)
 
         // 1. Pedir permiso de notificaciones (Android 13+)
         askNotificationPermission()
@@ -102,6 +107,12 @@ class MainActivity : ComponentActivity() {
         
         // Disparar sincronización antes de que el proceso se detenga
         LogScheduler(this).triggerImmediateSync()
+    }
+
+    override fun onDestroy() {
+        // Limpiar la referencia de la actividad
+        activityProvider.detachActivity(this)
+        super.onDestroy()
     }
 }
 

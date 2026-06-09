@@ -92,6 +92,11 @@ kotlin {
             implementation(libs.firebase.messaging)
             implementation(libs.kotlinx.coroutines.play.services)
             
+            // Credentials & Google ID
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.googleid)
+            
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
         }
