@@ -11,4 +11,9 @@ val databaseModule = module {
     single { get<AppDatabase>().bookingDraftDao() }
     single { get<AppDatabase>().eventLogDao() }
     single { get<AppDatabase>().userProfileDao() }
+    single { get<AppDatabase>().workingShiftDao() }
+    single { get<AppDatabase>().scheduleExceptionDao() }
+    single { get<AppDatabase>().masterScheduleDao() }
+    single { get<AppDatabase>().autoLunchDao() }
+    single { get<AppDatabase>().timingDefaultsDao() }
 }

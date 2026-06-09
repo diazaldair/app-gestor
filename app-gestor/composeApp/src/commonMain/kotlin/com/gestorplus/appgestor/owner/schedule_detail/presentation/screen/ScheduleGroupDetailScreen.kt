@@ -1,4 +1,4 @@
-package com.gestorplus.appgestor.owner.presentation.screen
+package com.gestorplus.appgestor.owner.schedule_detail.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

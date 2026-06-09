@@ -10,7 +10,7 @@ actual class FirebaseManager actual constructor() {
     private val database = FirebaseDatabase.getInstance("https://appgestor-91a81-default-rtdb.firebaseio.com/").reference
     private val remoteConfig = FirebaseRemoteConfig.getInstance()
 
-    actual suspend fun saveData(path: String, value: String) {
+    actual suspend fun saveData(path: String, value: String?) {
         try {
             database.child(path).setValue(value).await()
         } catch (e: Exception) {

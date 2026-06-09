@@ -21,8 +21,8 @@ import com.gestorplus.appgestor.home.presentation.screen.HomeScreen
 import com.gestorplus.appgestor.onboarding.domain.usecase.IsOnboardingCompletedUseCase
 import com.gestorplus.appgestor.onboarding.presentation.screen.OnboardingScreen
 import com.gestorplus.appgestor.owner.dashboard.presentation.screen.OwnerDashboardScreen
-import com.gestorplus.appgestor.owner.presentation.screen.ScheduleGroupDetailScreen
-import com.gestorplus.appgestor.owner.presentation.screen.WorkingHoursScreen
+import com.gestorplus.appgestor.owner.schedule_detail.presentation.screen.ScheduleGroupDetailScreen
+import com.gestorplus.appgestor.owner.working_hours.presentation.screen.WorkingHoursScreen
 import com.gestorplus.appgestor.owner.setup_intro.domain.usecase.InitializeAndSyncConfigUseCase
 import com.gestorplus.appgestor.owner.setup_intro.presentation.screen.WorkspaceSetupIntroScreen
 import com.gestorplus.appgestor.owner.setup_profile.presentation.screen.WorkspaceSetupProfileScreen
