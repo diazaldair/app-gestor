@@ -123,8 +123,8 @@ fun App() {
             Screen.Login -> {
                 LoginScreen(
                     role = selectedRole,
-                    onNavigateToHome = {
-                        currentScreen = if (selectedRole == UserRole.PATIENT) {
+                    onNavigateToHome = { realRole ->
+                        currentScreen = if (realRole == UserRole.PATIENT) {
                             Screen.ClientView
                         } else {
                             Screen.WorkspaceSetupIntro
@@ -139,8 +139,8 @@ fun App() {
             Screen.Register -> {
                 RegisterScreen(
                     role = selectedRole,
-                    onNavigateToHome = {
-                        currentScreen = if (selectedRole == UserRole.PATIENT) {
+                    onNavigateToHome = { realRole ->
+                        currentScreen = if (realRole == UserRole.PATIENT) {
                             Screen.ClientView
                         } else {
                             Screen.WorkspaceSetupIntro

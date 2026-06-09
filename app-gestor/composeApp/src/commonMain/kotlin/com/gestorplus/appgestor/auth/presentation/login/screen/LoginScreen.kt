@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.auth.domain.model.UserRole
@@ -55,7 +54,7 @@ private val AppleButtonBg = Color(0xFF1E293B)
 @Composable
 fun LoginScreen(
     role: UserRole,
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (UserRole) -> Unit,
     onNavigateToRegister: () -> Unit,
     viewModel: LoginViewModel = koinViewModel()
 ) {
@@ -66,7 +65,7 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                LoginEfffect.NavigateToHome -> onNavigateToHome()
+                is LoginEfffect.NavigateToHome -> onNavigateToHome(effect.role)
                 LoginEfffect.NavigateToRegister -> onNavigateToRegister()
                 is LoginEfffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)
@@ -262,7 +261,7 @@ fun LoginScreen(
 
                         // Bypass Button for Dev
                         Button(
-                            onClick = { onNavigateToHome() }, // Directly navigate to onboarding bypassing ViewModel logic
+                            onClick = { onNavigateToHome(role) }, // Directly navigate to onboarding bypassing ViewModel logic
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)), // Green color to stand out
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier

@@ -2,6 +2,7 @@ package com.gestorplus.appgestor.auth.presentation.login.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gestorplus.appgestor.auth.domain.model.UserRole
 import com.gestorplus.appgestor.auth.domain.usecase.LoginWithEmailUseCase
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEvent
@@ -68,8 +69,13 @@ class LoginViewModel(
         _state.update { it.copy(isLoading = false) }
 
         result.fold(
-            onSuccess = {
-                _effect.emit(LoginEfffect.NavigateToHome)
+            onSuccess = { session ->
+                val role = try {
+                    UserRole.valueOf(session.role)
+                } catch (e: Exception) {
+                    UserRole.PATIENT
+                }
+                _effect.emit(LoginEfffect.NavigateToHome(role))
             },
             onFailure = { error ->
                 _state.update { it.copy(errorMessage = error.message ?: "Credenciales inválidas.") }

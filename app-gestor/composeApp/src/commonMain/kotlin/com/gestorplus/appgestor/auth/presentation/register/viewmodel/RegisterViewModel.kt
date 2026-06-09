@@ -102,8 +102,13 @@ class RegisterViewModel(
         _state.update { it.copy(isLoading = false) }
 
         result.fold(
-            onSuccess = {
-                _effect.emit(RegisterEfffect.NavigateToHome)
+            onSuccess = { session ->
+                val role = try {
+                    UserRole.valueOf(session.role)
+                } catch (e: Exception) {
+                    userRole // Fallback to selected role if something is wrong with the session role
+                }
+                _effect.emit(RegisterEfffect.NavigateToHome(role))
             },
             onFailure = { error ->
                 _state.update { it.copy(errorMessage = error.message ?: "Error al registrar la cuenta.") }

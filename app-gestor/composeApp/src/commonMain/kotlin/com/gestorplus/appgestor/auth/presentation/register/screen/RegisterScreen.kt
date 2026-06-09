@@ -54,7 +54,7 @@ private val GoogleButtonBg = Color(0xFF1E293B)
 @Composable
 fun RegisterScreen(
     role: UserRole,
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (UserRole) -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: RegisterViewModel = koinViewModel()
 ) {
@@ -69,7 +69,7 @@ fun RegisterScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                RegisterEfffect.NavigateToHome -> onNavigateToHome()
+                is RegisterEfffect.NavigateToHome -> onNavigateToHome(effect.role)
                 RegisterEfffect.NavigateToLogin -> onNavigateToLogin()
                 is RegisterEfffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)
