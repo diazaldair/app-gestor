@@ -43,9 +43,9 @@ class BookingViewModel(
         BookingUiState(
             clinicId = clinicId, 
             serviceId = serviceId,
-            selectedDate = now.dayOfMonth,
+            selectedDate = null,
             selectedMonth = "${monthNames[now.monthNumber - 1]} ${now.year}",
-            selectedDayOfWeek = dayNames[now.dayOfWeek.isoDayNumber - 1]
+            selectedDayOfWeek = ""
         )
     )
     val state = _state.asStateFlow()
@@ -55,7 +55,6 @@ class BookingViewModel(
 
     init {
         loadInitialData()
-        loadAvailableSlots(_state.value.selectedDate)
     }
 
     private fun loadInitialData() {
@@ -90,17 +89,48 @@ class BookingViewModel(
     fun onEvent(event: BookingEvent) {
         when (event) {
             is BookingEvent.OnDateSelected -> {
-                _state.update { it.copy(selectedDate = event.date) }
-                loadAvailableSlots(event.date)
+                val isDeselecting = _state.value.selectedDate == event.date
+                if (isDeselecting) {
+                    _state.update { 
+                        it.copy(
+                            selectedDate = null,
+                            selectedDayOfWeek = "",
+                            selectedTimeSlot = null,
+                            timeSlotsMorning = emptyList(),
+                            timeSlotsAfternoon = emptyList()
+                        ) 
+                    }
+                } else {
+                    val dayOfWeekName = try {
+                        val year = now.year
+                        val month = now.monthNumber
+                        val localDate = LocalDate(year, month, event.date)
+                        dayNames[localDate.dayOfWeek.isoDayNumber - 1]
+                    } catch (e: Exception) {
+                        ""
+                    }
+                    _state.update { 
+                        it.copy(
+                            selectedDate = event.date,
+                            selectedDayOfWeek = dayOfWeekName,
+                            selectedTimeSlot = null
+                        ) 
+                    }
+                    loadAvailableSlots(event.date)
+                }
             }
             is BookingEvent.OnTimeSlotSelected -> {
-                _state.update { it.copy(selectedTimeSlot = event.slot) }
+                _state.update { 
+                    val nextSlot = if (it.selectedTimeSlot == event.slot) null else event.slot
+                    it.copy(selectedTimeSlot = nextSlot) 
+                }
             }
             is BookingEvent.OnConfirmBooking -> {
                 viewModelScope.launch {
                     val currentSlot = _state.value.selectedTimeSlot
-                    if (currentSlot == null) {
-                        _effect.emit(BookingEfffect.ShowError("Por favor selecciona un horario"))
+                    val currentDate = _state.value.selectedDate
+                    if (currentSlot == null || currentDate == null) {
+                        _effect.emit(BookingEfffect.ShowError("Por favor selecciona una fecha y un horario"))
                         return@launch
                     }
 
@@ -109,7 +139,7 @@ class BookingViewModel(
                         BookingDraftEntity(
                             clinicId = clinicId,
                             serviceId = serviceId,
-                            selectedDate = _state.value.selectedDate,
+                            selectedDate = currentDate,
                             selectedMonth = _state.value.selectedMonth,
                             selectedTimeSlot = currentSlot
                         )

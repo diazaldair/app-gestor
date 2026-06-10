@@ -8,7 +8,7 @@ data class BookingUiState(
     val serviceId: String = "",
     val clinicName: String = "",
     val serviceName: String = "",
-    val selectedDate: Int = 1,
+    val selectedDate: Int? = null,
     val selectedMonth: String = "",
     val selectedDayOfWeek: String = "",
     val selectedTimeSlot: String? = null,

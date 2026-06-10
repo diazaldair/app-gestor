@@ -89,12 +89,14 @@ fun BookingScreen(
                 )
             },
             bottomBar = {
-                BookingFooter(
-                    selectedDate = "${state.selectedMonth.take(3)} ${state.selectedDate}",
-                    selectedTime = state.selectedTimeSlot,
-                    onConfirm = { viewModel.onEvent(BookingEvent.OnConfirmBooking) },
-                    isLoading = state.isLoading
-                )
+                if (state.selectedTimeSlot != null && state.selectedDate != null) {
+                    BookingFooter(
+                        selectedDate = "${state.selectedMonth.take(3)} ${state.selectedDate}",
+                        selectedTime = state.selectedTimeSlot,
+                        onConfirm = { viewModel.onEvent(BookingEvent.OnConfirmBooking) },
+                        isLoading = state.isLoading
+                    )
+                }
             },
             containerColor = AppTheme.colors.background
         ) { paddingValues ->
@@ -117,75 +119,81 @@ fun BookingScreen(
                     onDateSelected = { viewModel.onEvent(BookingEvent.OnDateSelected(it)) }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                if (state.selectedDate != null) {
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Available Time Slots Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            "Available Time Slots",
-                            style = AppTheme.typography.headlineLarge.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = AppTheme.colors.textPrimary
-                            )
-                        )
-                        Text(
-                            "${state.selectedDayOfWeek}, ${state.selectedMonth.substringBefore(" ")} ${state.selectedDate}",
-                            style = AppTheme.typography.labelLarge.copy(
-                                color = AppTheme.colors.textSecondary
-                            )
-                        )
-                    }
-                    
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(AppTheme.colors.primary.copy(alpha = 0.1f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    // Available Time Slots Header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Schedule,
-                                contentDescription = null,
-                                tint = AppTheme.colors.primary,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
+                        Column {
                             Text(
-                                "EST",
-                                color = AppTheme.colors.primary,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
+                                "Available Time Slots",
+                                style = AppTheme.typography.headlineLarge.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = AppTheme.colors.textPrimary
+                                )
+                            )
+                            Text(
+                                "${state.selectedDayOfWeek}, ${state.selectedMonth.substringBefore(" ")} ${state.selectedDate}",
+                                style = AppTheme.typography.labelLarge.copy(
+                                    color = AppTheme.colors.textSecondary
+                                )
                             )
                         }
+                        
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.primary.copy(alpha = 0.1f))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Schedule,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.primary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    "EST",
+                                    color = AppTheme.colors.primary,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Time Slots Grid
+                    TimeSlotGroup(
+                        title = "MORNING",
+                        slots = state.timeSlotsMorning,
+                        selectedSlot = state.selectedTimeSlot,
+                        onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    TimeSlotGroup(
+                        title = "AFTERNOON",
+                        slots = state.timeSlotsAfternoon,
+                        selectedSlot = state.selectedTimeSlot,
+                        onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Time Slots Grid
-                TimeSlotGroup(
-                    title = "MORNING",
-                    slots = state.timeSlotsMorning,
-                    selectedSlot = state.selectedTimeSlot,
-                    onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                TimeSlotGroup(
-                    title = "AFTERNOON",
-                    slots = state.timeSlotsAfternoon,
-                    selectedSlot = state.selectedTimeSlot,
-                    onSlotSelected = { viewModel.onEvent(BookingEvent.OnTimeSlotSelected(it)) }
-                )
-
-                Spacer(modifier = Modifier.height(120.dp)) // Espacio para el footer
+                if (state.selectedTimeSlot != null) {
+                    Spacer(modifier = Modifier.height(120.dp)) // Espacio para el footer
+                } else {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
@@ -214,7 +222,7 @@ fun BookingProgressIndicator(step: Int) {
 
 @Composable
 fun CalendarCard(
-    selectedDate: Int,
+    selectedDate: Int?,
     month: String,
     onDateSelected: (Int) -> Unit
 ) {
@@ -284,7 +292,7 @@ fun CalendarCard(
             chunkedDays.forEach { week ->
                 Row(modifier = Modifier.fillMaxWidth()) {
                     week.forEach { day ->
-                        val isSelected = day == selectedDate
+                        val isSelected = day != null && day == selectedDate
                         
                         Box(
                             modifier = Modifier
