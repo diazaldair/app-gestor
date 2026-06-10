@@ -2,7 +2,7 @@ package com.gestorplus.appgestor.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.gestorplus.appgestor.booking.presentation.screen.BookingBottomBar
+import com.gestorplus.appgestor.booking.presentation.screen.BookingFooter
 import org.junit.Rule
 import org.junit.Test
 
@@ -12,17 +12,18 @@ class BookingComponentTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun bookingBottomBar_displaysSelectedDateTime() {
+    fun bookingFooter_displaysSelectedDateTime() {
         // Arrange
         val testDate = "Oct 27"
         val testTime = "10:00 AM"
 
         // Act
         composeTestRule.setContent {
-            BookingBottomBar(
+            BookingFooter(
                 selectedDate = testDate,
                 selectedTime = testTime,
-                onConfirm = {}
+                onConfirm = {},
+                isLoading = false
             )
         }
 
@@ -34,13 +35,14 @@ class BookingComponentTest {
     }
 
     @Test
-    fun bookingBottomBar_showsPlaceholder_whenNoTimeSelected() {
+    fun bookingFooter_showsPlaceholder_whenNoTimeSelected() {
         // Act
         composeTestRule.setContent {
-            BookingBottomBar(
+            BookingFooter(
                 selectedDate = "Oct 27",
                 selectedTime = null,
-                onConfirm = {}
+                onConfirm = {},
+                isLoading = false
             )
         }
 
@@ -49,15 +51,16 @@ class BookingComponentTest {
     }
 
     @Test
-    fun bookingBottomBar_clickingConfirm_triggersCallback() {
+    fun bookingFooter_clickingConfirm_triggersCallback() {
         var clicked = false
         
         // Act
         composeTestRule.setContent {
-            BookingBottomBar(
+            BookingFooter(
                 selectedDate = "Oct 27",
                 selectedTime = "10:00 AM",
-                onConfirm = { clicked = true }
+                onConfirm = { clicked = true },
+                isLoading = false
             )
         }
 

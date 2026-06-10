@@ -27,6 +27,8 @@ import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlinx.datetime.*
+import org.jetbrains.compose.resources.stringResource
+import app_gestor.composeapp.generated.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -416,11 +418,15 @@ fun BookingFooter(
             ) {
                 Column {
                     Text(
-                        "Selected Slot",
+                        stringResource(Res.string.booking_selected_slot_label),
                         style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.textSecondary)
                     )
                     Text(
-                        if (selectedTime != null) "$selectedDate, $selectedTime" else "No slot selected",
+                        stringResource(
+                            Res.string.booking_selected_slot_format,
+                            selectedDate,
+                            selectedTime ?: stringResource(Res.string.booking_no_slot_selected)
+                        ),
                         style = AppTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = AppTheme.colors.textPrimary
@@ -439,7 +445,7 @@ fun BookingFooter(
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Confirm Booking", fontWeight = FontWeight.Bold)
+                            Text(stringResource(Res.string.booking_confirm_button), fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
                         }
