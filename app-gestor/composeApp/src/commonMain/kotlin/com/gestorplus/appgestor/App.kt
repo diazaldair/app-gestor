@@ -160,6 +160,7 @@ fun App() {
 
             Screen.Register -> {
                 RegisterScreen(
+                    role = selectedRole,
                     onNavigateToHome = {
                         currentScreen = if (selectedRole == "PATIENT") {
                             Screen.ExploreClinics

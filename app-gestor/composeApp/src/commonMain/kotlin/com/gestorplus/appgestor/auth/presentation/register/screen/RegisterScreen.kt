@@ -51,6 +51,7 @@ private val GoogleButtonBg = Color(0xFF1E293B)
 
 @Composable
 fun RegisterScreen(
+    role: String = "PATIENT",
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: RegisterViewModel = koinViewModel()
@@ -335,7 +336,7 @@ fun RegisterScreen(
 
                         // Submit Button
                         Button(
-                            onClick = { viewModel.onEvent(RegisterEvent.OnSubmitClicked) },
+                            onClick = { viewModel.onEvent(RegisterEvent.OnSubmitClicked(role)) },
                             enabled = !state.isLoading,
                             colors = ButtonDefaults.buttonColors(containerColor = BrandBlue),
                             shape = RoundedCornerShape(12.dp),
