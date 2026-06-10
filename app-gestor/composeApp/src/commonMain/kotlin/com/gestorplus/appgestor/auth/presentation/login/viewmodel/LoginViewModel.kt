@@ -7,6 +7,8 @@ import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEvent
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginUiState
 import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.IsProfileSetupUseCase
+import com.gestorplus.appgestor.notification.domain.NotificationRepository
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,7 +18,9 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val loginWithEmailUseCase: LoginWithEmailUseCase,
-    private val isProfileSetupUseCase: IsProfileSetupUseCase
+    private val isProfileSetupUseCase: IsProfileSetupUseCase,
+    private val notificationRepository: NotificationRepository,
+    private val firebaseManager: FirebaseManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -66,6 +70,19 @@ class LoginViewModel(
 
         result.fold(
             onSuccess = {
+                // REGISTRO DE TOKEN POST-LOGIN (Para Notificaciones Push)
+                viewModelScope.launch {
+                    try {
+                        val uid = firebaseManager.getCurrentUserUid()
+                        val token = notificationRepository.getFCMToken()
+                        if (uid != null && token != null) {
+                            firebaseManager.saveData("users/$uid/fcmToken", token)
+                        }
+                    } catch (e: Exception) {
+                        println("Error registrando token post-login")
+                    }
+                }
+
                 val isSetup = isProfileSetupUseCase()
                 if (isSetup) {
                     _effect.emit(LoginEfffect.NavigateToProfessionalDashboard)

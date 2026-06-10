@@ -5,10 +5,15 @@ import com.gestorplus.appgestor.booking.data.datasource.mapper.BookingMapper
 import com.gestorplus.appgestor.booking.domain.model.BookingSlot
 import com.gestorplus.appgestor.booking.domain.model.SlotPeriod
 import com.gestorplus.appgestor.booking.domain.repository.BookingRepository
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
+import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class BookingRepositoryImpl(
     private val bookingRemoteDatasource: BookingRemoteDatasource,
-    private val bookingMapper: BookingMapper
+    private val bookingMapper: BookingMapper,
+    private val firebaseManager: FirebaseManager
 ) : BookingRepository {
 
     override suspend fun getAvailableSlots(date: Int): List<BookingSlot> {
@@ -21,13 +26,46 @@ class BookingRepositoryImpl(
             }
         }
 
-        // Mock data fallback if no data in Firebase
         return getDefaultSlots()
     }
 
-    override suspend fun confirmBooking(date: Int, slot: String): Result<Unit> {
+    override suspend fun confirmBooking(
+        clinicId: String,
+        serviceId: String,
+        clinicName: String,
+        serviceName: String,
+        price: Double,
+        date: Int,
+        month: String,
+        timeSlot: String
+    ): Result<Unit> {
         return try {
-            bookingRemoteDatasource.confirmBooking(date, slot)
+            val uid = firebaseManager.getCurrentUserUid() ?: throw Exception("Usuario no autenticado")
+            val now = Clock.System.now().toEpochMilliseconds()
+            
+            // Datos de la cita
+            val bookingData = mapOf(
+                "id" to now.toString(),
+                "clinicId" to clinicId,
+                "serviceId" to serviceId,
+                "clinicName" to clinicName,
+                "serviceName" to serviceName,
+                "doctorName" to clinicName,
+                "price" to price.toString(),
+                "date" to date.toString(),
+                "month" to month,
+                "timeSlot" to timeSlot,
+                "status" to "PENDING",
+                "timestamp" to now.toString(),
+                "patientId" to uid
+            )
+
+            val bookingJson = Json.encodeToString(bookingData)
+            
+            // Solo guardamos en Firebase. La Cloud Function detectará este cambio y enviará el PUSH.
+            firebaseManager.saveData("users/$uid/bookings/$now", bookingJson)
+            firebaseManager.saveData("workspaces/$clinicId/appointments/$now", bookingJson)
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

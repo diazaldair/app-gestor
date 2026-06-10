@@ -5,9 +5,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<AppDatabase> {
-    val dbFile = context.getDatabasePath("gestorplus.db")
+    // Usamos un nombre fresco para evitar cualquier residuo de versiones anteriores
     return Room.databaseBuilder<AppDatabase>(
         context = context,
-        name = dbFile.absolutePath
-    )
+        name = "gestor_plus_fresh.db"
+    ).fallbackToDestructiveMigration(true)
 }

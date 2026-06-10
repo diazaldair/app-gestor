@@ -22,6 +22,8 @@ import com.gestorplus.appgestor.notifications.presentation.component.Notificatio
 import com.gestorplus.appgestor.notifications.presentation.component.NotificationFilterChips
 import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import com.gestorplus.appgestor.owner.dashboard.presentation.screen.BottomNavigationBar
+import com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent
+import com.gestorplus.appgestor.notifications.presentation.state.NotificationsEfffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +36,7 @@ fun NotificationsScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { eff ->
             when (eff) {
-                is com.gestorplus.appgestor.notifications.presentation.state.NotificationsEfffect.ShowMessage -> {
+                is NotificationsEfffect.ShowMessage -> {
                     // TODO: show snackbar
                 }
             }
@@ -53,10 +55,9 @@ fun NotificationsScreen(
         bottomBar = { BottomNavigationBar(onNavigateToProfile = {}) }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            NotificationFilterChips(current = state.filter) { filter -> viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.ChangeFilter(filter)) }
+            NotificationFilterChips(current = state.filter) { filter -> viewModel.onEvent(NotificationsEvent.ChangeFilter(filter)) }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (!state.isLoading && state.notifications.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -69,19 +70,19 @@ fun NotificationsScreen(
 
                 if (today.isNotEmpty()) {
                     item {
-                                Text(
-                                    stringResource(Res.string.notifications_section_today),
-                                    color = AppTheme.colors.textSecondary,
-                                    style = AppTheme.typography.bodyMedium.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
+                        Text(
+                            stringResource(Res.string.notifications_section_today),
+                            color = AppTheme.colors.textSecondary,
+                            style = AppTheme.typography.bodyMedium.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
                     items(today) { n ->
                         NotificationItem(
                             notification = n,
-                            onAccept = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.Accept(it)) },
-                            onDecline = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.Decline(it)) },
-                            onClick = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.MarkRead(it)) }
+                            onAccept = { id -> viewModel.onEvent(NotificationsEvent.Accept(id)) },
+                            onDecline = { id, reason -> viewModel.onEvent(NotificationsEvent.Decline(id, reason)) },
+                            onClick = { id -> viewModel.onEvent(NotificationsEvent.MarkRead(id)) }
                         )
                     }
                 }
@@ -98,9 +99,9 @@ fun NotificationsScreen(
                     items(yesterday) { n ->
                         NotificationItem(
                             notification = n,
-                            onAccept = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.Accept(it)) },
-                            onDecline = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.Decline(it)) },
-                            onClick = { viewModel.onEvent(com.gestorplus.appgestor.notifications.presentation.state.NotificationsEvent.MarkRead(it)) }
+                            onAccept = { id -> viewModel.onEvent(NotificationsEvent.Accept(id)) },
+                            onDecline = { id, reason -> viewModel.onEvent(NotificationsEvent.Decline(id, reason)) },
+                            onClick = { id -> viewModel.onEvent(NotificationsEvent.MarkRead(id)) }
                         )
                     }
                 }

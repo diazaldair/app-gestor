@@ -10,7 +10,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val bookingModule = module {
-    single<BookingRepository> { BookingRepositoryImpl(get(), get()) }
+    single<BookingRepository> { BookingRepositoryImpl(get(), get(), get()) }
     single { GetAvailableSlotsUseCase(get()) }
     single { ConfirmBookingUseCase(get()) }
     viewModel { (clinicId: String, serviceId: String) -> 

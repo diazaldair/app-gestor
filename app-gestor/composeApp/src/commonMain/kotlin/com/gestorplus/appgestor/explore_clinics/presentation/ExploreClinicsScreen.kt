@@ -176,8 +176,8 @@ fun SpecialtiesSection(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Si la lista de Firebase está vacía, mostramos las sugeridas en la imagen
-            val displaySpecs = if (specialties.isEmpty()) listOf("Cardio", "Pediatría", "Derma", "Neuro", "Oftalmo") else specialties
+            // Especialidades reales de los workspaces si existen, sino sugeridas estéticas
+            val displaySpecs = if (specialties.isEmpty()) listOf("Cardiología", "Pediatría", "Dermatología", "Neurología", "Oftalmología") else specialties
             
             items(displaySpecs) { specialty ->
                 val isSelected = specialty == selectedSpecialty
@@ -243,18 +243,10 @@ fun ClinicsSection(clinics: List<Clinic>, onClinicClick: (String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "Clínicas Cercanas",
+                "Clínicas Disponibles",
                 style = AppTheme.typography.headlineLarge.copy(
                     fontSize = 18.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            Text(
-                "Ver Todas",
-                modifier = Modifier.clickable { },
-                style = AppTheme.typography.labelSmall.copy(
-                    color = AppTheme.colors.primary,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -266,7 +258,7 @@ fun ClinicsSection(clinics: List<Clinic>, onClinicClick: (String) -> Unit) {
                 modifier = Modifier.fillMaxWidth().height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No hay clínicas registradas aún", color = AppTheme.colors.textSecondary)
+                Text("Buscando clínicas cercanas...", color = AppTheme.colors.textSecondary)
             }
         } else {
             clinics.forEach { clinic ->
@@ -290,7 +282,7 @@ fun ClinicCard(clinic: Clinic, onClick: () -> Unit) {
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(210.dp)) {
                 AsyncImage(
-                    model = clinic.imageUrl ?: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000",
+                    model = clinic.imageUrl?.takeIf { it.isNotBlank() } ?: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000",
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -320,22 +312,6 @@ fun ClinicCard(clinic: Clinic, onClick: () -> Unit) {
                             fontWeight = FontWeight.Bold
                         )
                     }
-                }
-                
-                // Favorite Button
-                IconButton(
-                    onClick = { /* Favorite */ },
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.TopEnd)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.3f))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorito",
-                        tint = Color.White
-                    )
                 }
             }
             
@@ -372,28 +348,11 @@ fun ClinicCard(clinic: Clinic, onClick: () -> Unit) {
                             )
                         }
                     }
-                    
-                    // Rating Badge (Mock since user said remove stars, but image has it. 
-                    // I will use a simple rounded badge without many stars as a compromise)
-                    Surface(
-                        color = AppTheme.colors.primary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, AppTheme.colors.primary.copy(alpha = 0.1f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Star, null, tint = AppTheme.colors.primary, modifier = Modifier.size(12.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("4.9", color = AppTheme.colors.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
                 }
                 
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    clinic.specialties.take(2).forEach { specialty ->
+                    clinic.specialties.take(3).forEach { specialty ->
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)

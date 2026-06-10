@@ -83,14 +83,35 @@ class BookingConfirmationViewModel(
 
     fun onConfirmClicked() {
         viewModelScope.launch {
+            val currentState = _state.value
+            val clinic = currentState.clinic
+            val service = currentState.service
+
+            if (clinic == null || service == null) {
+                _state.update { it.copy(error = "Información de cita incompleta") }
+                return@launch
+            }
+
             _state.update { it.copy(isLoading = true) }
-            val result = bookingRepository.confirmBooking(_state.value.date, _state.value.timeSlot)
+            
+            val result = bookingRepository.confirmBooking(
+                clinicId = clinic.id,
+                serviceId = service.id,
+                clinicName = clinic.name,
+                serviceName = service.name,
+                price = service.price,
+                date = currentState.date,
+                month = currentState.month,
+                timeSlot = currentState.timeSlot
+            )
+            
             _state.update { it.copy(isLoading = false) }
+            
             if (result.isSuccess) {
                 draftDao.deleteDraft()
                 _effect.emit(BookingConfirmationEffect.NavigateToHome)
             } else {
-                _state.update { it.copy(error = "Error al confirmar la reserva") }
+                _state.update { it.copy(error = result.exceptionOrNull()?.message ?: "Error al confirmar la reserva") }
             }
         }
     }

@@ -16,8 +16,24 @@ class NotificationsService(private val firebaseManager: FirebaseManager) {
         }
     }
 
-    suspend fun updateAppointmentStatus(userUid: String, notificationId: String, status: String) {
+    suspend fun updateAppointmentStatus(userUid: String, notificationId: String, status: String, reason: String? = null) {
+        // 1. Actualizar estado en la notificación del Dr
         firebaseManager.saveData("notifications/$userUid/$notificationId/appointmentStatus", status)
+        
+        // 2. Actualizar estado en la cita del workspace (Esto dispara la Cloud Function)
+        firebaseManager.saveData("workspaces/$userUid/appointments/$notificationId/status", status)
+        
+        // 3. Sincronizar con la vista del paciente
+        val appointmentData = firebaseManager.getData("workspaces/$userUid/appointments/$notificationId")
+        val patientId = (appointmentData as? Map<String, Any>)?.get("patientId") as? String
+        
+        if (patientId != null) {
+            firebaseManager.saveData("users/$patientId/bookings/$notificationId/status", status)
+            if (reason != null) {
+                firebaseManager.saveData("users/$patientId/bookings/$notificationId/declineReason", reason)
+                firebaseManager.saveData("workspaces/$userUid/appointments/$notificationId/declineReason", reason)
+            }
+        }
     }
 
     suspend fun markAsRead(userUid: String, notificationId: String) {

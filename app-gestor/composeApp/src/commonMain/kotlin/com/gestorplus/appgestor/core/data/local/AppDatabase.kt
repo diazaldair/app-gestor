@@ -39,7 +39,7 @@ import com.gestorplus.appgestor.my_bookings.data.local.entity.PatientBookingEnti
         ClinicServiceEntity::class,
         PatientBookingEntity::class
     ], 
-    version = 10
+    version = 12
 )
 abstract class AppDatabase : RoomDatabase(), DB {
     abstract fun bookingDao(): BookingDao

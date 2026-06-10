@@ -18,5 +18,7 @@ data class AppNotification(
     val appointmentDate: String? = null,
     val appointmentTime: String? = null,
     val timeRemaining: String? = null,
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val appointmentStatus: String? = null,
+    val declineReason: String? = null
 )

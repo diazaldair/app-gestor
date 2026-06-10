@@ -1,6 +1,5 @@
 package com.gestorplus.appgestor.owner.dashboard.data.repository
 
-import com.gestorplus.appgestor.booking.data.datasource.dto.FirebaseBookingDto
 import com.gestorplus.appgestor.core.util.DateTimeUtils
 import com.gestorplus.appgestor.core.data.local.entity.BookingEntity
 import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardLocalDatasource
@@ -8,14 +7,20 @@ import com.gestorplus.appgestor.owner.dashboard.data.datasource.DashboardRemoteD
 import com.gestorplus.appgestor.owner.dashboard.data.mapper.DashboardMapper
 import com.gestorplus.appgestor.owner.dashboard.domain.model.Booking
 import com.gestorplus.appgestor.owner.dashboard.domain.repository.DashboardRepository
+import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
 
 class DashboardRepositoryImpl(
     private val localDatasource: DashboardLocalDatasource,
     private val remoteDatasource: DashboardRemoteDatasource,
-    private val dashboardMapper: DashboardMapper
+    private val dashboardMapper: DashboardMapper,
+    private val firebaseManager: FirebaseManager
 ) : DashboardRepository {
+
+    private val json = Json { ignoreUnknownKeys = true }
 
     override fun getBookings(): Flow<List<Booking>> {
         return localDatasource.getBookingsFlow().map { entities ->
@@ -24,61 +29,48 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun addBooking(booking: Booking) {
-        val entity = dashboardMapper.toEntity(booking)
-        localDatasource.saveBookings(listOf(entity))
-
-        try {
-            val dto = FirebaseBookingDto(
-                clientName = booking.clientName,
-                serviceName = booking.serviceName,
-                status = booking.status
-            )
-            remoteDatasource.updateBooking(
-                booking.id.split("-").first().toIntOrNull() ?: 0,
-                booking.id.split("-").last(),
-                dashboardMapper.toPipedString(dto)
-            )
-        } catch (e: Exception) {
-            // Offline-first: already saved in Room
-        }
+        // Implementation for adding manually from dashboard if needed
     }
 
     override suspend fun updateStatus(bookingId: String, newStatus: String) {
         localDatasource.updateBookingStatus(bookingId, newStatus)
-        val parts = bookingId.split("-")
-        if (parts.size >= 2) {
-            val date = parts[0].toIntOrNull() ?: 0
-            val slot = parts[1]
-            remoteDatasource.saveData("bookings/$date/$slot/status", newStatus)
-        } else {
-            remoteDatasource.saveData("bookings/$bookingId/status", newStatus)
-        }
+        val uid = firebaseManager.getCurrentUserUid() ?: return
+        firebaseManager.saveData("workspaces/$uid/appointments/$bookingId/status", newStatus)
     }
 
     override suspend fun syncAllBookings() {
         try {
-            val bookingsRoot = remoteDatasource.getData("bookings") ?: return
+            val uid = firebaseManager.getCurrentUserUid() ?: return
+            val appointmentsData = firebaseManager.getData("workspaces/$uid/appointments") ?: return
 
-            (bookingsRoot as? Map<String, Any>)?.forEach { (date, slots) ->
-                (slots as? Map<String, String>)?.forEach { (slotId, value) ->
-                    val dto = dashboardMapper.parseBooking(value)
-                    val slotIndex = slotId.toIntOrNull() ?: 0
-                    val dateInt = date.toIntOrNull() ?: 0
-                    val booking = BookingEntity(
-                        id = "$date-$slotId",
-                        clientName = dto.clientName,
-                        serviceName = dto.serviceName,
-                        timestamp = DateTimeUtils.calculateTimestamp(dateInt, slotIndex),
-                        durationMinutes = 30,
-                        status = dto.status,
-                        price = 0.0,
-                        categoryColor = 0xFF6200EE
+            val bookingsList = (appointmentsData as? Map<String, Any>)?.mapNotNull { (id, data) ->
+                try {
+                    val jsonString = data as? String ?: return@mapNotNull null
+                    val dataMap = json.decodeFromString<Map<String, String>>(jsonString)
+                    
+                    // Solo mostramos las aceptadas en el Dashboard principal/calendario
+                    if (dataMap["status"] != "ACCEPTED") return@mapNotNull null
+
+                    BookingEntity(
+                        id = id,
+                        clientName = dataMap["patientName"] ?: "Paciente",
+                        serviceName = dataMap["serviceName"] ?: "Servicio",
+                        timestamp = dataMap["timestamp"]?.toLongOrNull() ?: 0L,
+                        durationMinutes = 30, // TODO: Get from service
+                        status = "ACCEPTED",
+                        price = dataMap["price"]?.toDoubleOrNull() ?: 0.0,
+                        categoryColor = 0xFF3B82F6
                     )
-                    localDatasource.saveBookings(listOf(booking))
+                } catch (e: Exception) {
+                    null
                 }
+            } ?: emptyList()
+
+            if (bookingsList.isNotEmpty()) {
+                localDatasource.saveBookings(bookingsList)
             }
         } catch (e: Exception) {
-            // Log error or handle failure
+            println("DEBUG: Error syncAllBookings: ${e.message}")
         }
     }
 

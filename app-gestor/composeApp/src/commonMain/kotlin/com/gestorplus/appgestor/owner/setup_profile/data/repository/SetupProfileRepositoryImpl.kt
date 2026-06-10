@@ -7,6 +7,7 @@ import com.gestorplus.appgestor.core.persistence.LocalPreferences
 import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.clinicProfile.data.local.dao.ClinicProfileDao
 import com.gestorplus.appgestor.clinicProfile.data.local.entity.ClinicProfileEntity
+import com.gestorplus.appgestor.notification.domain.NotificationRepository
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.async
@@ -19,7 +20,8 @@ class SetupProfileRepositoryImpl(
     private val remoteDatasource: SetupProfileRemoteDatasource,
     private val firebaseManager: FirebaseManager,
     private val localPreferences: LocalPreferences,
-    private val clinicProfileDao: ClinicProfileDao 
+    private val clinicProfileDao: ClinicProfileDao,
+    private val notificationRepository: NotificationRepository
 ) : SetupProfileRepository {
 
     override suspend fun saveWorkspaceProfile(profile: WorkspaceProfile): Result<Unit> = withContext(Dispatchers.IO) {
@@ -27,95 +29,64 @@ class SetupProfileRepositoryImpl(
             val currentUid = firebaseManager.getCurrentUserUid() 
                 ?: throw Exception("Sesión expirada. Por favor, inicia sesión de nuevo.")
 
-            println("DEBUG: [Repository] Iniciando guardado de perfil para UID: $currentUid")
-
-            // 1. Persistencia Local Rápida
+            // 1. Guardar FCM Token para que el Dr reciba notificaciones push
             try {
-                localPreferences.putString("registered_clinic_name", profile.clinicName)
-                localPreferences.putString("registered_professional_name", profile.fullName)
-                localPreferences.putBoolean("is_profile_setup", true)
-                println("DEBUG: [Repository] LocalPreferences guardado correctamente")
+                val token = notificationRepository.getFCMToken()
+                if (token != null) {
+                    firebaseManager.saveData("workspaces/$currentUid/fcmToken", token)
+                    firebaseManager.saveData("users/$currentUid/fcmToken", token)
+                }
             } catch (e: Exception) {
-                println("DEBUG: [Repository] Error en LocalPreferences: ${e.message}")
+                println("DEBUG: Error al obtener FCM Token: ${e.message}")
             }
 
-            // 2. Persistencia en ROOM
-            try {
-                val clinicEntity = ClinicProfileEntity(
-                    name = profile.fullName,
-                    bio = profile.biography,
-                    specialtiesJson = Json.encodeToString(profile.specialities),
-                    address = profile.exactAddress,
-                    mapUrl = profile.mapUrl,
-                    latitude = profile.latitude,
-                    longitude = profile.longitude
-                )
-                clinicProfileDao.insertProfile(clinicEntity)
-                println("DEBUG: [Repository] Room: Perfil insertado correctamente")
-            } catch (e: Exception) {
-                println("DEBUG: [Repository] Error en Room (ignorable): ${e.message}")
-            }
+            // 2. Persistencia Local Rápida
+            localPreferences.putString("registered_clinic_name", profile.clinicName)
+            localPreferences.putString("registered_professional_name", profile.fullName)
+            localPreferences.putBoolean("is_profile_setup", true)
 
-            // 3. Subida de imágenes
-            println("DEBUG: [Repository] Subiendo ${profile.galleryImages.size} imágenes...")
+            // 3. Persistencia en ROOM
+            val clinicEntity = ClinicProfileEntity(
+                name = profile.fullName,
+                bio = profile.biography,
+                specialtiesJson = Json.encodeToString(profile.specialities),
+                address = profile.exactAddress,
+                mapUrl = profile.mapUrl,
+                latitude = profile.latitude,
+                longitude = profile.longitude
+            )
+            clinicProfileDao.insertProfile(clinicEntity)
+
+            // 4. Subida de imágenes
             val uploadedImages = supervisorScope {
                 profile.galleryImages.mapIndexed { index, path ->
                     async {
-                        try {
-                            if (path.startsWith("http")) {
-                                println("DEBUG: [Repository] Imagen [$index] ya es URL: $path")
-                                path 
-                            } else {
-                                println("DEBUG: [Repository] Imagen [$index] subiendo path local: $path")
-                                val resultUrl = firebaseManager.uploadImage(path)
-                                println("DEBUG: [Repository] Imagen [$index] subida con éxito: $resultUrl")
-                                resultUrl
-                            }
-                        } catch (e: Exception) {
-                            println("DEBUG: [Repository] ERROR subiendo imagen [$index] ($path): ${e.message}")
-                            throw e
-                        }
+                        if (path.startsWith("http")) path 
+                        else firebaseManager.uploadImage(path)
                     }
                 }.awaitAll()
             }
-            
-            println("DEBUG: [Repository] Todas las imágenes subidas: $uploadedImages")
 
-            // 4. Guardar Perfil Completo en Firebase
+            // 5. Guardar Perfil Completo en Firebase
             val updatedProfile = profile.copy(galleryImages = uploadedImages)
-            val dataString = Json.encodeToString(updatedProfile)
-            
-            try {
-                remoteDatasource.saveWorkspaceProfile(currentUid, dataString)
-                println("DEBUG: [Repository] Perfil guardado exitosamente en Firebase (Realtime DB)")
-            } catch (e: Exception) {
-                println("DEBUG: [Repository] Error guardando en Firebase (Realtime DB): ${e.message}")
-                throw e
-            }
+            remoteDatasource.saveWorkspaceProfile(currentUid, Json.encodeToString(updatedProfile))
 
             Result.success(Unit)
         } catch (e: Exception) {
-            println("DEBUG: [Repository] ERROR FATAL al guardar perfil: ${e.message}")
-            e.printStackTrace()
             Result.failure(e)
         }
     }
 
     override suspend fun isProfileSetup(): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            // 1. Check local preference first for speed
             val localSetup = localPreferences.getBoolean("is_profile_setup", false)
             if (localSetup) return@withContext Result.success(true)
 
-            // 2. Check Firebase if not in local
             val currentUid = firebaseManager.getCurrentUserUid() ?: return@withContext Result.success(false)
             val data = firebaseManager.getData("workspaces/$currentUid/profile")
             
             val isSetup = data != null
-            if (isSetup) {
-                // Sync to local for next time
-                localPreferences.putBoolean("is_profile_setup", true)
-            }
+            if (isSetup) localPreferences.putBoolean("is_profile_setup", true)
             
             Result.success(isSetup)
         } catch (e: Exception) {

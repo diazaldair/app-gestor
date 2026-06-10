@@ -7,6 +7,5 @@ data class Clinic(
     val specialties: List<String>,
     val imageUrl: String? = null,
     val isOpen: Boolean = true,
-    val description: String = "",
-    val rating: Double = 0.0
+    val description: String = ""
 )

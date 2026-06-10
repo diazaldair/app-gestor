@@ -8,6 +8,7 @@ import com.gestorplus.appgestor.my_bookings.domain.model.PatientBooking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
 
 class PatientBookingRepositoryImpl(
     private val firebaseManager: FirebaseManager,
@@ -16,39 +17,43 @@ class PatientBookingRepositoryImpl(
     private val json = Json { ignoreUnknownKeys = true }
 
     fun getUpcomingBookings(): Flow<List<PatientBooking>> {
-        val now = System.currentTimeMillis()
+        val now = ClockSystemNow()
         return bookingDao.getUpcomingBookings(now).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
     fun getPastBookings(): Flow<List<PatientBooking>> {
-        val now = System.currentTimeMillis()
+        val now = ClockSystemNow()
         return bookingDao.getPastBookings(now).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
+    private fun ClockSystemNow(): Long = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+
     suspend fun syncBookings() {
         try {
             val uid = firebaseManager.getCurrentUserUid() ?: return
-            // En un escenario real, las reservas del paciente estarían en "users/$uid/bookings"
             val bookingsData = firebaseManager.getData("users/$uid/bookings") ?: return
             
             val bookingEntities = bookingsData.mapNotNull { (id, data) ->
                 try {
-                    val dataMap = data as? Map<String, Any> ?: return@mapNotNull null
+                    // El dato viene como un String JSON según BookingRepositoryImpl
+                    val jsonString = data as? String ?: return@mapNotNull null
+                    val dataMap = json.decodeFromString<Map<String, String>>(jsonString)
+                    
                     PatientBookingEntity(
                         id = id,
-                        clinicId = dataMap["clinicId"] as? String ?: "",
-                        clinicName = dataMap["clinicName"] as? String ?: "",
-                        serviceName = dataMap["serviceName"] as? String ?: "",
-                        doctorName = dataMap["doctorName"] as? String ?: "Especialista",
-                        doctorImageUrl = dataMap["doctorImageUrl"] as? String,
-                        timestamp = (dataMap["timestamp"] as? Number)?.toLong() ?: 0L,
-                        status = dataMap["status"] as? String ?: "PENDING",
-                        price = (dataMap["price"] as? Number)?.toDouble() ?: 0.0,
-                        currency = dataMap["currency"] as? String ?: "$"
+                        clinicId = dataMap["clinicId"] ?: "",
+                        clinicName = dataMap["clinicName"] ?: "",
+                        serviceName = dataMap["serviceName"] ?: "",
+                        doctorName = dataMap["doctorName"] ?: "Especialista",
+                        doctorImageUrl = dataMap["doctorImageUrl"],
+                        timestamp = dataMap["timestamp"]?.toLongOrNull() ?: 0L,
+                        status = dataMap["status"] ?: "PENDING",
+                        price = dataMap["price"]?.toDoubleOrNull() ?: 0.0,
+                        currency = dataMap["currency"] ?: "$"
                     )
                 } catch (e: Exception) {
                     null
@@ -60,7 +65,7 @@ class PatientBookingRepositoryImpl(
                 bookingDao.insertBookings(bookingEntities)
             }
         } catch (e: Exception) {
-            // Log error
+            println("DEBUG: Error syncBookings: ${e.message}")
         }
     }
 

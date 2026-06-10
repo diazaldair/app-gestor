@@ -43,9 +43,9 @@ class NotificationsRepositoryImpl(
         remoteDatasource.acceptAppointment(uid, notificationId)
     }
 
-    override suspend fun declineAppointment(notificationId: String) {
+    override suspend fun declineAppointment(notificationId: String, reason: String?) {
         val uid = firebaseManager.getCurrentUserUid() ?: return
-        remoteDatasource.declineAppointment(uid, notificationId)
+        remoteDatasource.declineAppointment(uid, notificationId, reason)
     }
 
     override suspend fun markAsRead(notificationId: String) {

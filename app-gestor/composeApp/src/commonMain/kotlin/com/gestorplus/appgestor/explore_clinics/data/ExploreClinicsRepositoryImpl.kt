@@ -24,12 +24,11 @@ class ExploreClinicsRepositoryImpl(
 
     suspend fun syncClinics() {
         try {
-            // Sincronizamos desde 'workspaces' que es la ruta donde se guardan los perfiles de clínicas creados
+            // Leemos todos los workspaces reales registrados en Firebase
             val workspacesData = firebaseManager.getData("workspaces") ?: return
             
             val clinicEntities = workspacesData.mapNotNull { (uid, data) ->
                 try {
-                    // En FirebaseManager.getData, snapshot.value se devuelve como Map<String, Any>
                     val dataMap = data as? Map<String, Any> ?: return@mapNotNull null
                     val profileJson = dataMap["profile"] as? String ?: return@mapNotNull null
                     val profile = json.decodeFromString<WorkspaceProfile>(profileJson)
@@ -39,8 +38,8 @@ class ExploreClinicsRepositoryImpl(
                         name = profile.clinicName,
                         address = profile.exactAddress,
                         description = profile.biography,
-                        imageUrl = profile.galleryImages.firstOrNull(),
-                        specialtiesJson = json.encodeToString(profile.specialities), // Usamos 'specialities' del modelo original
+                        imageUrl = profile.galleryImages.firstOrNull() ?: "",
+                        specialtiesJson = json.encodeToString(profile.specialities),
                         isOpen = true 
                     )
                 } catch (e: Exception) {
@@ -53,7 +52,7 @@ class ExploreClinicsRepositoryImpl(
                 clinicDao.insertClinics(clinicEntities)
             }
         } catch (e: Exception) {
-            // Manejar error
+            println("ERROR: Fallo al sincronizar clínicas: ${e.message}")
         }
     }
 
@@ -65,8 +64,7 @@ class ExploreClinicsRepositoryImpl(
             specialties = try { json.decodeFromString(specialtiesJson) } catch (e: Exception) { emptyList() },
             imageUrl = imageUrl,
             isOpen = isOpen,
-            description = description,
-            rating = 0.0 // No lo usaremos según requerimiento inicial
+            description = description
         )
     }
 }

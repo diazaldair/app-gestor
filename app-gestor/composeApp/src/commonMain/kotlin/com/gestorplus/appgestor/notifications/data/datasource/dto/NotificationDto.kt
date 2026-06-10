@@ -13,5 +13,7 @@ data class NotificationDto(
     val specialty: String? = null,
     val appointmentDate: String? = null,
     val appointmentTime: String? = null,
-    val isRead: Boolean? = false
+    val isRead: Boolean? = false,
+    val appointmentStatus: String? = null,
+    val declineReason: String? = null
 )

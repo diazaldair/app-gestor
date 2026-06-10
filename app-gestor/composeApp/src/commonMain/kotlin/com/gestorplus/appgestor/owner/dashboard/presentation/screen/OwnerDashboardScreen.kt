@@ -60,7 +60,10 @@ fun OwnerDashboardScreen(
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
-                BottomNavigationBar(onNavigateToProfile = onNavigateToProfile)
+                BottomNavigationBar(
+                    onNavigateToProfile = onNavigateToProfile,
+                    currentScreen = "Calendario"
+                )
             },
             containerColor = AppTheme.colors.background
         ) { paddingValues ->
@@ -473,16 +476,41 @@ fun AgendaItem(
 }
 
 @Composable
-fun BottomNavigationBar(onNavigateToProfile: () -> Unit) {
+fun BottomNavigationBar(
+    onNavigateToProfile: () -> Unit,
+    onExplorarClick: () -> Unit = {},
+    onCitasClick: () -> Unit = {},
+    currentScreen: String = ""
+) {
     Surface(
         color = AppTheme.colors.background,
         border = androidx.compose.foundation.BorderStroke(0.5.dp, AppTheme.colors.textPrimary.copy(alpha = 0.1f))
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            NavigationItem(Icons.Default.DateRange, stringResource(Res.string.nav_calendar), true, onClick = {})
-            NavigationItem(Icons.Default.Person, stringResource(Res.string.nav_clients), false, onClick = {})
-            NavigationItem(Icons.Default.Info, stringResource(Res.string.nav_insights), false, onClick = {})
-            NavigationItem(Icons.Default.AccountCircle, stringResource(Res.string.nav_profile), false, onClick = onNavigateToProfile)
+            NavigationItem(
+                icon = Icons.Default.DateRange,
+                label = stringResource(Res.string.nav_calendar),
+                isSelected = currentScreen == "Calendario" || currentScreen == "",
+                onClick = onCitasClick
+            )
+            NavigationItem(
+                icon = Icons.Default.Person,
+                label = stringResource(Res.string.nav_clients),
+                isSelected = currentScreen == "Explorar",
+                onClick = onExplorarClick
+            )
+            NavigationItem(
+                icon = Icons.Default.Info,
+                label = stringResource(Res.string.nav_insights),
+                isSelected = currentScreen == "Insights",
+                onClick = {}
+            )
+            NavigationItem(
+                icon = Icons.Default.AccountCircle,
+                label = stringResource(Res.string.nav_profile),
+                isSelected = currentScreen == "Perfil",
+                onClick = onNavigateToProfile
+            )
         }
     }
 }

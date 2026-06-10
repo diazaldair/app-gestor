@@ -15,8 +15,8 @@ import org.koin.dsl.module
 val setupProfileModule = module {
     single { SetupProfileService(get()) }
     single<SetupProfileRemoteDatasource> { SetupProfileRemoteDatasourceImpl(get()) }
-    // Inyectamos get() para el ClinicProfileDao que viene de DatabaseModule
-    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get(), get()) }
+    // SetupProfileRepositoryImpl necesita 5 parámetros: remoteDatasource, firebaseManager, localPreferences, clinicProfileDao, notificationRepository
+    single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get(), get(), get()) }
     
     factoryOf(::SaveWorkspaceProfileUseCase)
     factoryOf(::IsProfileSetupUseCase)

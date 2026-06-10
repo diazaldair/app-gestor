@@ -15,5 +15,7 @@ data class NotificationEntity(
     val specialty: String?,
     val appointmentDate: String?,
     val appointmentTime: String?,
-    val isRead: Boolean
+    val isRead: Boolean,
+    val appointmentStatus: String? = null,
+    val declineReason: String? = null
 )

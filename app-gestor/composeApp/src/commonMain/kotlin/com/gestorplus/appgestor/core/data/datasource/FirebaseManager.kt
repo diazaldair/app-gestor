@@ -18,4 +18,7 @@ expect open class FirebaseManager() {
     open suspend fun registerUserWithEmail(email: String, password: String): String
     open suspend fun loginUserWithEmail(email: String, password: String): String
     open fun getCurrentUserUid(): String?
+
+    // Notifications
+    open suspend fun sendPushNotification(toToken: String, title: String, body: String, data: Map<String, String>)
 }

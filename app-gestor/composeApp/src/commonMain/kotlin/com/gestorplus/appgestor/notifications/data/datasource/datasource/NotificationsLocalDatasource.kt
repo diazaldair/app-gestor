@@ -21,7 +21,9 @@ class NotificationsLocalDatasource(
                 specialty = entity.specialty,
                 appointmentDate = entity.appointmentDate,
                 appointmentTime = entity.appointmentTime,
-                isRead = entity.isRead
+                isRead = entity.isRead,
+                appointmentStatus = entity.appointmentStatus,
+                declineReason = entity.declineReason
             )
         }
     }
@@ -38,7 +40,9 @@ class NotificationsLocalDatasource(
                 specialty = dto.specialty,
                 appointmentDate = dto.appointmentDate,
                 appointmentTime = dto.appointmentTime,
-                isRead = dto.isRead ?: false
+                isRead = dto.isRead ?: false,
+                appointmentStatus = dto.appointmentStatus,
+                declineReason = dto.declineReason
             )
         }
         notificationDao.insertNotifications(entities)

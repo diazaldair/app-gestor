@@ -21,8 +21,8 @@ val dashboardModule = module {
     single { DashboardLocalDatasource(get()) }
     single { DashboardRemoteDatasource(get()) }
 
-    // 3. Repositorio
-    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(), get()) }
+    // 3. Repositorio (Agregamos get() para FirebaseManager)
+    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(), get(), get()) }
 
     // 4. Casos de Uso
     factoryOf(::GetOwnerBookingsUseCase)
