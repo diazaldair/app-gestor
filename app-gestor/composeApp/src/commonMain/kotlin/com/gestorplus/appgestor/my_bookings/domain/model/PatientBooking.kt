@@ -10,7 +10,11 @@ data class PatientBooking(
     val timestamp: Long,
     val status: BookingStatus,
     val price: Double,
-    val currency: String = "$"
+    val currency: String,
+    val date: Int? = null,
+    val month: String? = null,
+    val timeSlot: String? = null,
+    val notes: String? = null
 )
 
 enum class BookingStatus {

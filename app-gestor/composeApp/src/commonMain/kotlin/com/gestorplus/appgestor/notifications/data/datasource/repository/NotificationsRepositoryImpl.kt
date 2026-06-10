@@ -23,7 +23,6 @@ class NotificationsRepositoryImpl(
             return@flow
         }
         
-        // Offline-First strategy
         val local = localDatasource.getCachedNotifications()
         if (local.isNotEmpty()) {
             emit(local.map { mapper.toDomain(it) })
@@ -40,12 +39,24 @@ class NotificationsRepositoryImpl(
 
     override suspend fun acceptAppointment(notificationId: String) {
         val uid = firebaseManager.getCurrentUserUid() ?: return
-        remoteDatasource.acceptAppointment(uid, notificationId)
+        val notifications = remoteDatasource.getNotifications(uid)
+        val target = notifications.find { it.id == notificationId }
+        
+        remoteDatasource.acceptAppointment(
+            uid, notificationId, 
+            target?.bookingId, target?.patientUid, target?.clinicId, target?.date, target?.timeSlot
+        )
     }
 
     override suspend fun declineAppointment(notificationId: String) {
         val uid = firebaseManager.getCurrentUserUid() ?: return
-        remoteDatasource.declineAppointment(uid, notificationId)
+        val notifications = remoteDatasource.getNotifications(uid)
+        val target = notifications.find { it.id == notificationId }
+
+        remoteDatasource.declineAppointment(
+            uid, notificationId,
+            target?.bookingId, target?.patientUid, target?.clinicId, target?.date, target?.timeSlot
+        )
     }
 
     override suspend fun markAsRead(notificationId: String) {

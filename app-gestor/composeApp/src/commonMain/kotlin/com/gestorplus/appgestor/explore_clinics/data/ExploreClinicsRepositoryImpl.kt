@@ -29,21 +29,21 @@ class ExploreClinicsRepositoryImpl(
             
             val clinicEntities = workspacesData.mapNotNull { (uid, data) ->
                 try {
-                    // En FirebaseManager.getData, snapshot.value se devuelve como Map<String, Any>
                     val dataMap = data as? Map<String, Any> ?: return@mapNotNull null
                     val profileJson = dataMap["profile"] as? String ?: return@mapNotNull null
                     val profile = json.decodeFromString<WorkspaceProfile>(profileJson)
 
                     ClinicEntity(
                         id = uid,
-                        name = profile.clinicName,
-                        address = profile.exactAddress,
+                        name = profile.clinicName.ifBlank { "Sin nombre" },
+                        address = profile.exactAddress.ifBlank { "Sin dirección" },
                         description = profile.biography,
                         imageUrl = profile.galleryImages.firstOrNull(),
-                        specialtiesJson = json.encodeToString(profile.specialities), // Usamos 'specialities' del modelo original
+                        specialtiesJson = json.encodeToString(profile.specialities),
                         isOpen = true 
                     )
                 } catch (e: Exception) {
+                    println("Error syncClinics for UID $uid: ${e.message}")
                     null
                 }
             }

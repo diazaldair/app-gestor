@@ -11,23 +11,47 @@ class BookingRepositoryImpl(
     private val bookingMapper: BookingMapper
 ) : BookingRepository {
 
-    override suspend fun getAvailableSlots(date: Int): List<BookingSlot> {
-        val remoteSlots = bookingRemoteDatasource.getAvailableSlots(date)
+    override suspend fun getAvailableSlots(clinicId: String, date: Int): List<BookingSlot> {
+        val remoteSlots = bookingRemoteDatasource.getAvailableSlots(clinicId, date)
         
-        if (remoteSlots != null) {
-            return remoteSlots.map { (id, value) ->
-                val dto = bookingMapper.parseSlot(value.toString())
-                bookingMapper.toDomain(id, dto)
+        val bookedSlots = remoteSlots?.keys ?: emptySet()
+
+        return getDefaultSlots().map { slot ->
+            if (bookedSlots.contains(slot.time.replace(" ", "_"))) {
+                slot.copy(isAvailable = false)
+            } else {
+                slot
             }
         }
-
-        // Mock data fallback if no data in Firebase
-        return getDefaultSlots()
     }
 
-    override suspend fun confirmBooking(date: Int, slot: String): Result<Unit> {
+    override suspend fun confirmBooking(
+        clinicId: String,
+        serviceId: String,
+        clinicName: String,
+        serviceName: String,
+        doctorName: String,
+        patientName: String,
+        date: Int,
+        month: String,
+        timeSlot: String,
+        price: Double,
+        notes: String
+    ): Result<Unit> {
         return try {
-            bookingRemoteDatasource.confirmBooking(date, slot)
+            bookingRemoteDatasource.confirmBooking(
+                clinicId = clinicId,
+                serviceId = serviceId,
+                clinicName = clinicName,
+                serviceName = serviceName,
+                doctorName = doctorName,
+                patientName = patientName,
+                date = date,
+                month = month,
+                timeSlot = timeSlot,
+                price = price,
+                notes = notes
+            )
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

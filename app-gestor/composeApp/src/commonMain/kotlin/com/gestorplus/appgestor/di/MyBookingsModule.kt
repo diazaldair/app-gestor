@@ -6,6 +6,6 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val myBookingsModule = module {
-    single { PatientBookingRepositoryImpl(get(), get()) }
+    single { PatientBookingRepositoryImpl(get(), get(), get()) }
     viewModelOf(::MyBookingsViewModel)
 }

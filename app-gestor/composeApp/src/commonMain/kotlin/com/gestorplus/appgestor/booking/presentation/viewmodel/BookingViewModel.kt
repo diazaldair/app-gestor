@@ -8,35 +8,75 @@ import com.gestorplus.appgestor.booking.domain.usecase.GetAvailableSlotsUseCase
 import com.gestorplus.appgestor.booking.presentation.state.*
 import com.gestorplus.appgestor.core.data.local.dao.BookingDraftDao
 import com.gestorplus.appgestor.core.data.local.entity.BookingDraftEntity
+import com.gestorplus.appgestor.clinicProfile.data.local.dao.ClinicDao
+import com.gestorplus.appgestor.clinic_detail.data.local.dao.ClinicServiceDao
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.*
 
 class BookingViewModel(
     private val clinicId: String,
     private val serviceId: String,
     private val getAvailableSlotsUseCase: GetAvailableSlotsUseCase,
     private val confirmBookingUseCase: ConfirmBookingUseCase,
-    private val draftDao: BookingDraftDao
+    private val draftDao: BookingDraftDao,
+    private val clinicDao: ClinicDao,
+    private val serviceDao: ClinicServiceDao
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(BookingUiState(clinicId = clinicId, serviceId = serviceId))
+    private val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    private val monthNames = listOf(
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    )
+
+    private val dayNames = listOf(
+        "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
+    )
+
+    private val _state = MutableStateFlow(
+        BookingUiState(
+            clinicId = clinicId, 
+            serviceId = serviceId,
+            selectedDate = now.dayOfMonth,
+            selectedMonth = "${monthNames[now.monthNumber - 1]} ${now.year}",
+            selectedDayOfWeek = dayNames[now.dayOfWeek.isoDayNumber - 1]
+        )
+    )
     val state = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<BookingEfffect>()
     val effect = _effect.asSharedFlow()
 
     init {
+        loadInitialData()
         loadAvailableSlots(_state.value.selectedDate)
+    }
+
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            val clinic = clinicDao.getClinicById(clinicId)
+            serviceDao.getServicesByClinicId(clinicId).collect { services ->
+                val service = services.find { it.id == serviceId }
+                _state.update { 
+                    it.copy(
+                        clinicName = clinic?.name ?: "Clinic",
+                        serviceName = service?.name ?: "Service"
+                    )
+                }
+            }
+        }
     }
 
     private fun loadAvailableSlots(date: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val slots = getAvailableSlotsUseCase(date)
+            val slots = getAvailableSlotsUseCase(clinicId, date)
             _state.update { state ->
                 state.copy(
                     isLoading = false,
@@ -83,6 +123,7 @@ class BookingViewModel(
                     _effect.emit(BookingEfffect.NavigateBack)
                 }
             }
+            else -> {}
         }
     }
 }

@@ -9,6 +9,9 @@ interface PatientBookingDao {
     @Query("SELECT * FROM patient_bookings ORDER BY timestamp DESC")
     fun getAllBookings(): Flow<List<PatientBookingEntity>>
 
+    @Query("SELECT * FROM patient_bookings")
+    suspend fun getAllBookingsSync(): List<PatientBookingEntity>
+
     @Query("SELECT * FROM patient_bookings WHERE timestamp >= :now ORDER BY timestamp ASC")
     fun getUpcomingBookings(now: Long): Flow<List<PatientBookingEntity>>
 

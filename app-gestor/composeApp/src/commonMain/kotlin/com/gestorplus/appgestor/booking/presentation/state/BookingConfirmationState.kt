@@ -9,6 +9,7 @@ data class BookingConfirmationState(
     val date: Int = 0,
     val month: String = "",
     val timeSlot: String = "",
+    val notes: String = "",
     val isLoading: Boolean = false,
     val isConfirmed: Boolean = false,
     val error: String? = null

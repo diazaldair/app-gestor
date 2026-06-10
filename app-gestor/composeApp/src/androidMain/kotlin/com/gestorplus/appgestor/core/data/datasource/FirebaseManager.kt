@@ -32,7 +32,7 @@ actual open class FirebaseManager actual constructor() {
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    actual open suspend fun saveData(path: String, value: String) {
+    actual open suspend fun saveData(path: String, value: Any) {
         try {
             database.child(path).setValue(value).await()
         } catch (e: Exception) {

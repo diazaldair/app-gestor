@@ -25,6 +25,7 @@ import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import com.gestorplus.appgestor.my_bookings.domain.model.BookingStatus
 import com.gestorplus.appgestor.my_bookings.domain.model.PatientBooking
 import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.datetime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -221,7 +222,7 @@ fun BookingCard(booking: PatientBooking) {
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        booking.doctorName,
+                        booking.clinicName, // Cambiado de doctorName a clinicName para rescatar el dato correcto
                         style = AppTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = AppTheme.colors.textPrimary
@@ -232,16 +233,20 @@ fun BookingCard(booking: PatientBooking) {
                         style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.textSecondary, fontSize = 12.sp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+                    
+                    val dateText = "${booking.month?.take(3) ?: "Oct"} ${booking.date ?: 24}"
+                    val timeText = booking.timeSlot ?: "10:00 AM"
+
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.CalendarMonth, null, tint = AppTheme.colors.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("24 Oct", style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp))
+                            Text(dateText, style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp))
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Schedule, null, tint = AppTheme.colors.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("10:00 AM", style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp))
+                            Text(timeText, style = AppTheme.typography.labelLarge.copy(color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp))
                         }
                     }
                 }

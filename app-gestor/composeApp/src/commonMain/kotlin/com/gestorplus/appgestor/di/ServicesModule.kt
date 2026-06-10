@@ -17,7 +17,7 @@ val servicesModule = module {
     single { ServiceMapper() }
 
     // Repository
-    single<ServiceRepository> { ServiceRepositoryImpl(get(), get()) }
+    single<ServiceRepository> { ServiceRepositoryImpl(get(), get(), get()) }
 
     // Use Cases
     factoryOf(::GetServicesUseCase)

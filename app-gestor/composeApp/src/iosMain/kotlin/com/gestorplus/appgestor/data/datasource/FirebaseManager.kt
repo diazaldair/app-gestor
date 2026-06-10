@@ -1,7 +1,7 @@
 package com.gestorplus.appgestor.core.data.datasource
 
 actual open class FirebaseManager actual constructor() {
-    actual open suspend fun saveData(path: String, value: String) {
+    actual open suspend fun saveData(path: String, value: Any) {
         println("Firebase iOS: saveData not yet implemented for $path")
     }
 

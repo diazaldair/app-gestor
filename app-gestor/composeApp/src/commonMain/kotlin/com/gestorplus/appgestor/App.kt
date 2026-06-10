@@ -340,7 +340,9 @@ fun App() {
 
             Screen.Notifications -> {
                 NotificationsScreen(
-                    onBack = { currentScreen = Screen.ServicesEntry }
+                    onNavigateToHome = { currentScreen = Screen.BusinessView },
+                    onNavigateToAppointments = { currentScreen = Screen.WorkingHours },
+                    onNavigateToProfile = { currentScreen = Screen.ClinicProfile }
                 )
             }
         }

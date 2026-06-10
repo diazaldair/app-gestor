@@ -26,6 +26,7 @@ import com.gestorplus.appgestor.designsystem.theme.AppTheme
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlinx.datetime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,14 +56,23 @@ fun BookingScreen(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(
-                            "Select Date & Time",
-                            style = AppTheme.typography.headlineLarge.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = AppTheme.colors.textPrimary
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                state.serviceName,
+                                style = AppTheme.typography.headlineLarge.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = AppTheme.colors.textPrimary
+                                )
                             )
-                        )
+                            Text(
+                                state.clinicName,
+                                style = AppTheme.typography.labelLarge.copy(
+                                    fontSize = 12.sp,
+                                    color = AppTheme.colors.textSecondary
+                                )
+                            )
+                        }
                     },
                     navigationIcon = {
                         IconButton(onClick = { viewModel.onEvent(BookingEvent.OnBackClicked) }) {
@@ -80,7 +90,7 @@ fun BookingScreen(
             },
             bottomBar = {
                 BookingFooter(
-                    selectedDate = "Oct ${state.selectedDate}",
+                    selectedDate = "${state.selectedMonth.take(3)} ${state.selectedDate}",
                     selectedTime = state.selectedTimeSlot,
                     onConfirm = { viewModel.onEvent(BookingEvent.OnConfirmBooking) },
                     isLoading = state.isLoading
@@ -253,15 +263,28 @@ fun CalendarCard(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Rejilla de calendario simulada
-            val calendarDays = (27..30).toList() + (1..14).toList()
+            // Rejilla de calendario dinámica básica
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val firstDayOfMonth = LocalDate(today.year, today.month, 1)
+            val dayOfWeekOffset = (firstDayOfMonth.dayOfWeek.isoDayNumber % 7) // 0 for Sunday
+            
+            val daysInMonth = when (today.month) {
+                Month.FEBRUARY -> if ((today.year % 4 == 0 && today.year % 100 != 0) || (today.year % 400 == 0)) 29 else 28
+                Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
+                else -> 31
+            }
+
+            val calendarDays = mutableListOf<Int?>()
+            repeat(dayOfWeekOffset) { calendarDays.add(null) }
+            for (i in 1..daysInMonth) { calendarDays.add(i) }
+            while (calendarDays.size % 7 != 0) { calendarDays.add(null) }
+
             val chunkedDays = calendarDays.chunked(7)
             
             chunkedDays.forEach { week ->
                 Row(modifier = Modifier.fillMaxWidth()) {
                     week.forEach { day ->
-                        val isFromCurrentMonth = day < 20
-                        val isSelected = day == selectedDate && isFromCurrentMonth
+                        val isSelected = day == selectedDate
                         
                         Box(
                             modifier = Modifier
@@ -270,16 +293,18 @@ fun CalendarCard(
                                 .padding(2.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(if (isSelected) AppTheme.colors.primary else Color.Transparent)
-                                .clickable(enabled = isFromCurrentMonth) { onDateSelected(day) },
+                                .clickable(enabled = day != null) { day?.let { onDateSelected(it) } },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = day.toString(),
-                                style = AppTheme.typography.labelLarge.copy(
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                                    color = if (isSelected) Color.White else if (isFromCurrentMonth) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary.copy(alpha = 0.4f)
+                            if (day != null) {
+                                Text(
+                                    text = day.toString(),
+                                    style = AppTheme.typography.labelLarge.copy(
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                        color = if (isSelected) Color.White else AppTheme.colors.textPrimary
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
@@ -315,7 +340,7 @@ fun TimeSlotGroup(
             ) {
                 row.forEach { slot ->
                     val isSelected = slot == selectedSlot
-                    val isUnavailable = slot == "11:00 AM" // Simulación de no disponible
+                    val isUnavailable = false // En producción esto vendría del estado
                     
                     Box(
                         modifier = Modifier

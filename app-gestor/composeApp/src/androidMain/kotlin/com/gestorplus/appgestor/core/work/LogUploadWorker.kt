@@ -21,7 +21,7 @@ class LogUploadWorker(
         return try {
             // Usamos un número entero puro para evitar el error de String
             val dateInt = 20241231
-            val result = getAvailableSlotsUseCase.invoke(dateInt) 
+            val result = getAvailableSlotsUseCase.invoke("dummy_clinic", dateInt)
             
             Log.d("WorkManager", "✅ Tarea completada. Se encontraron ${result.size} slots.")
             Result.success()

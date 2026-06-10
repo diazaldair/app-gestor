@@ -52,31 +52,66 @@ class ClinicDetailRepositoryImpl(
 
     suspend fun syncServices(clinicId: String) {
         try {
-            // Assuming services for a clinic are stored at "clinics/$clinicId/services"
-            val servicesData = firebaseManager.getData("clinics/$clinicId/services") ?: return
+            // Sincronizamos desde 'workspaces/$clinicId'
+            val workspaceData = firebaseManager.getData("workspaces/$clinicId") ?: return
             
-            val serviceEntities = servicesData.mapNotNull { (id, data) ->
+            val allServiceEntities = mutableListOf<ClinicServiceEntity>()
+
+            // 1. Intentamos obtener el servicio inicial que se guarda durante el setup
+            val serviceJson = workspaceData["initial_service"] as? String
+            if (serviceJson != null) {
                 try {
-                    val dataMap = data as? Map<String, Any> ?: return@mapNotNull null
-                    ClinicServiceEntity(
-                        id = id,
+                    val workspaceService = json.decodeFromString<com.gestorplus.appgestor.owner.setup_service.domain.model.WorkspaceService>(serviceJson)
+                    allServiceEntities.add(ClinicServiceEntity(
+                        id = "initial_service_$clinicId",
                         clinicId = clinicId,
-                        name = dataMap["name"] as? String ?: "",
-                        durationMinutes = (dataMap["durationMinutes"] as? Number)?.toInt() ?: 30,
-                        price = (dataMap["price"] as? Number)?.toDouble() ?: 0.0,
-                        description = dataMap["description"] as? String ?: ""
-                    )
+                        name = workspaceService.name,
+                        durationMinutes = workspaceService.durationMinutes,
+                        price = workspaceService.price,
+                        description = workspaceService.description
+                    ))
                 } catch (e: Exception) {
-                    null
+                    println("Error decoding workspace initial service: ${e.message}")
+                }
+            }
+
+            // 2. Intentamos obtener la lista de servicios adicionales si existen
+            val servicesNode = workspaceData["services"] as? Map<String, Any>
+            servicesNode?.forEach { (id, data) ->
+                try {
+                    // Si los datos vienen como JSON String (estilo setup)
+                    if (data is String) {
+                        val ws = json.decodeFromString<com.gestorplus.appgestor.owner.setup_service.domain.model.WorkspaceService>(data)
+                        allServiceEntities.add(ClinicServiceEntity(
+                            id = id,
+                            clinicId = clinicId,
+                            name = ws.name,
+                            durationMinutes = ws.durationMinutes,
+                            price = ws.price,
+                            description = ws.description
+                        ))
+                    } else if (data is Map<*, *>) {
+                        // Si vienen como objeto estructurado
+                        allServiceEntities.add(ClinicServiceEntity(
+                            id = id,
+                            clinicId = clinicId,
+                            name = data["name"] as? String ?: "",
+                            durationMinutes = (data["durationMinutes"] as? Number)?.toInt() ?: 30,
+                            price = (data["price"] as? Number)?.toDouble() ?: 0.0,
+                            description = data["description"] as? String ?: ""
+                        ))
+                    }
+                } catch (e: Exception) {
+                    println("Error decoding additional service $id: ${e.message}")
                 }
             }
             
-            if (serviceEntities.isNotEmpty()) {
+            if (allServiceEntities.isNotEmpty()) {
                 serviceDao.deleteServicesByClinicId(clinicId)
-                serviceDao.insertServices(serviceEntities)
+                serviceDao.insertServices(allServiceEntities)
             }
         } catch (e: Exception) {
-            // Handle error
+            println("Error syncServices: ${e.message}")
         }
     }
 

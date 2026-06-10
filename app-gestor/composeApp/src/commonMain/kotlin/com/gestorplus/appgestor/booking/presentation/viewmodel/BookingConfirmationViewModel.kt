@@ -8,10 +8,12 @@ import com.gestorplus.appgestor.booking.presentation.state.BookingConfirmationSt
 import com.gestorplus.appgestor.clinicProfile.data.local.dao.ClinicDao
 import com.gestorplus.appgestor.clinic_detail.data.local.dao.ClinicServiceDao
 import com.gestorplus.appgestor.core.data.local.dao.BookingDraftDao
+import com.gestorplus.appgestor.core.data.local.dao.UserProfileDao
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -20,7 +22,8 @@ class BookingConfirmationViewModel(
     private val bookingRepository: BookingRepository,
     private val draftDao: BookingDraftDao,
     private val clinicDao: ClinicDao,
-    private val serviceDao: ClinicServiceDao
+    private val serviceDao: ClinicServiceDao,
+    private val userProfileDao: UserProfileDao
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookingConfirmationState())
@@ -81,11 +84,38 @@ class BookingConfirmationViewModel(
         }
     }
 
+    fun onNotesChanged(notes: String) {
+        _state.update { it.copy(notes = notes) }
+    }
+
     fun onConfirmClicked() {
         viewModelScope.launch {
+            val currentState = _state.value
+            val clinic = currentState.clinic ?: return@launch
+            val service = currentState.service ?: return@launch
+
             _state.update { it.copy(isLoading = true) }
-            val result = bookingRepository.confirmBooking(_state.value.date, _state.value.timeSlot)
+            
+            // Intentar obtener el nombre del paciente del perfil local
+            val userProfile = userProfileDao.getProfile().firstOrNull()
+            val patientName = userProfile?.name ?: "Paciente"
+
+            val result = bookingRepository.confirmBooking(
+                clinicId = clinic.id,
+                serviceId = service.id,
+                clinicName = clinic.name,
+                serviceName = service.name,
+                doctorName = clinic.name, 
+                patientName = patientName,
+                date = currentState.date,
+                month = currentState.month,
+                timeSlot = currentState.timeSlot,
+                price = service.price,
+                notes = currentState.notes
+            )
+            
             _state.update { it.copy(isLoading = false) }
+
             if (result.isSuccess) {
                 draftDao.deleteDraft()
                 _effect.emit(BookingConfirmationEffect.NavigateToHome)
