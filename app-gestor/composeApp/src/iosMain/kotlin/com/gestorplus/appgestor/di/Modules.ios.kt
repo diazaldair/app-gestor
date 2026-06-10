@@ -17,5 +17,7 @@ actual val platformModule: Module = module {
     }
     
     // Preferencias Locales
-    single { com.gestorplus.appgestor.core.persistence.LocalPreferences() }
+    single<com.gestorplus.appgestor.core.persistence.LocalPreferences> { 
+        com.gestorplus.appgestor.core.persistence.IosLocalPreferences() 
+    }
 }

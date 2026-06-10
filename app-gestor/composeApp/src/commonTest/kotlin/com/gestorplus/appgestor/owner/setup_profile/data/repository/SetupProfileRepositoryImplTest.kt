@@ -28,10 +28,12 @@ open class FakeFirebaseManagerForRepo : FirebaseManager() {
     override fun getCurrentUserUid(): String? = "user_test_id"
 }
 
-class FakeLocalPreferences : LocalPreferences() {
+class FakeLocalPreferences : LocalPreferences {
     private val data = mutableMapOf<String, String>()
     override fun putString(key: String, value: String) { data[key] = value }
     override fun getString(key: String, defaultValue: String?): String? = data[key] ?: defaultValue
+    override fun getBoolean(key: String, defaultValue: Boolean): Boolean = false
+    override fun putBoolean(key: String, value: Boolean) {}
 }
 
 class FakeClinicProfileDao : ClinicProfileDao {

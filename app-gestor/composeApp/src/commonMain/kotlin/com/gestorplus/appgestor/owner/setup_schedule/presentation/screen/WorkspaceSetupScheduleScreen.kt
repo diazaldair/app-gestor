@@ -53,7 +53,7 @@ fun WorkspaceSetupScheduleScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                WorkspaceSetupScheduleEfffect.NavigateToNextStep -> onNavigateToNextStep()
+                WorkspaceSetupScheduleEfffect.NavigateToServices -> onNavigateToNextStep()
                 WorkspaceSetupScheduleEfffect.NavigateBack -> onNavigateBack()
                 is WorkspaceSetupScheduleEfffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)

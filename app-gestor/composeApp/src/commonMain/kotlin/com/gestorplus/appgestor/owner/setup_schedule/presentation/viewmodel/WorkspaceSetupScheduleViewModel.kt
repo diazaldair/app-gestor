@@ -75,7 +75,7 @@ class WorkspaceSetupScheduleViewModel(
             
             result.onSuccess {
                 _state.update { it.copy(isLoading = false) }
-                sendEffect(WorkspaceSetupScheduleEfffect.NavigateToNextStep)
+                sendEffect(WorkspaceSetupScheduleEfffect.NavigateToServices)
             }.onFailure { error ->
                 _state.update { it.copy(isLoading = false, errorMessage = error.message ?: "Error al guardar el horario") }
                 sendEffect(WorkspaceSetupScheduleEfffect.ShowSnackbar(error.message ?: "Error desconocido"))
