@@ -12,7 +12,7 @@ enum class ThemeMode {
    HIGH_CONTRAST
 }
 
-val LocalColors = staticCompositionLocalOf { LightPalette }
+val LocalColors = staticCompositionLocalOf { DarkPalette }
 internal val LocalTypography = staticCompositionLocalOf { DefaultTypography }
 
 object AppTheme {
@@ -32,8 +32,8 @@ fun DsTheme(
    mode: ThemeMode? = null,
    content: @Composable () -> Unit
 ) {
-   val systemDark = isSystemInDarkTheme()
-   val themeMode = mode ?: if (systemDark) ThemeMode.DARK else ThemeMode.LIGHT
+   // Force ThemeMode.DARK as default to align with Figma designs and prevent the white screen issue.
+   val themeMode = mode ?: ThemeMode.DARK
 
    val colors = when (themeMode) {
       ThemeMode.LIGHT -> LightPalette

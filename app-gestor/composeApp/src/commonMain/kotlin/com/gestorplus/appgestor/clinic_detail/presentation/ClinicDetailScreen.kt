@@ -52,7 +52,7 @@ fun ClinicDetailScreen(
                             "SoloBook",
                             style = AppTheme.typography.headlineLarge.copy(
                                 fontSize = 18.sp,
-                                color = AppTheme.colors.primary,
+                                color = AppTheme.colors.textPrimary,
                                 fontWeight = FontWeight.Bold
                             )
                         )
@@ -62,7 +62,7 @@ fun ClinicDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Volver",
-                                tint = AppTheme.colors.primary
+                                tint = AppTheme.colors.textPrimary
                             )
                         }
                     },
@@ -72,14 +72,14 @@ fun ClinicDetailScreen(
                                 .padding(end = 16.dp)
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(AppTheme.colors.primary.copy(alpha = 0.1f))
-                                .border(1.dp, AppTheme.colors.primary.copy(alpha = 0.1f), CircleShape),
+                                .background(Color.White.copy(alpha = 0.05f))
+                                .border(1.dp, Color.White.copy(alpha = 0.05f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MedicalServices,
                                 contentDescription = null,
-                                tint = AppTheme.colors.primary,
+                                tint = AppTheme.colors.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -217,15 +217,15 @@ fun SpecialtiesSection(specialties: List<String>) {
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(AppTheme.colors.primary.copy(alpha = 0.1f))
-                        .border(1.dp, AppTheme.colors.primary.copy(alpha = 0.2f), CircleShape)
+                        .background(Color.White.copy(alpha = 0.05f))
+                        .border(1.dp, Color.White.copy(alpha = 0.05f), CircleShape)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         specialty,
                         style = AppTheme.typography.bodySmall.copy(
-                            color = AppTheme.colors.primary,
-                            fontWeight = FontWeight.Bold,
+                            color = AppTheme.colors.textSecondary,
+                            fontWeight = FontWeight.Medium,
                             fontSize = 12.sp
                         )
                     )
@@ -264,7 +264,7 @@ fun LocationSection(address: String) {
                     "Ver en el mapa",
                     modifier = Modifier.clickable { /* TODO */ }.padding(vertical = 4.dp),
                     style = AppTheme.typography.bodySmall.copy(
-                        color = AppTheme.colors.primary,
+                        color = AppTheme.colors.textSecondary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     )
@@ -297,9 +297,9 @@ fun ServicesSection(services: List<ClinicService>, onBookClick: (String) -> Unit
 fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = AppTheme.colors.surface.copy(alpha = 0.4f),
+        color = AppTheme.colors.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, AppTheme.colors.primary.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -334,7 +334,7 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                         "Ver descripción",
                         modifier = Modifier.clickable { /* TODO */ },
                         style = AppTheme.typography.bodySmall.copy(
-                            color = AppTheme.colors.primary,
+                            color = AppTheme.colors.textSecondary,
                             fontSize = 11.sp
                         )
                     )
@@ -346,7 +346,7 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                     "$${service.price}",
                     style = AppTheme.typography.headlineLarge.copy(
                         fontSize = 18.sp,
-                        color = AppTheme.colors.primary,
+                        color = AppTheme.colors.textPrimary,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -354,15 +354,15 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                 OutlinedButton(
                     onClick = { onBookClick(service.id) },
                     shape = CircleShape,
-                    border = BorderStroke(1.dp, AppTheme.colors.primary),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     modifier = Modifier.height(32.dp)
                 ) {
                     Text(
                         "Reservar",
                         style = AppTheme.typography.bodySmall.copy(
-                            color = AppTheme.colors.primary,
-                            fontWeight = FontWeight.Bold,
+                            color = AppTheme.colors.textPrimary,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp
                         )
                     )

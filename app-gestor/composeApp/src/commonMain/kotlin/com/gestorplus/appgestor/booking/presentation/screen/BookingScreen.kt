@@ -206,7 +206,7 @@ fun BookingProgressIndicator(step: Int) {
                     .height(6.dp)
                     .padding(horizontal = 4.dp)
                     .clip(CircleShape)
-                    .background(if (isActive) AppTheme.colors.primary else AppTheme.colors.primary.copy(alpha = 0.3f))
+                    .background(if (isActive) AppTheme.colors.primary else Color.White.copy(alpha = 0.2f))
             )
         }
     }
@@ -220,9 +220,9 @@ fun CalendarCard(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = AppTheme.colors.surface.copy(alpha = 0.2f),
+        color = AppTheme.colors.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, AppTheme.colors.primary.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -256,7 +256,7 @@ fun CalendarCard(
                         textAlign = TextAlign.Center,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = AppTheme.colors.primary.copy(alpha = 0.6f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
             }
@@ -356,7 +356,7 @@ fun TimeSlotGroup(
                             )
                             .border(
                                 width = 1.dp,
-                                color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.primary.copy(alpha = 0.2f),
+                                color = if (isSelected) AppTheme.colors.primary else Color.White.copy(alpha = 0.1f),
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .clickable(enabled = !isUnavailable) { onSlotSelected(slot) },
@@ -398,7 +398,7 @@ fun BookingFooter(
         color = AppTheme.colors.background.copy(alpha = 0.95f),
         modifier = Modifier.fillMaxWidth(),
         tonalElevation = 8.dp,
-        border = BorderStroke(1.dp, AppTheme.colors.primary.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Column {
             Row(

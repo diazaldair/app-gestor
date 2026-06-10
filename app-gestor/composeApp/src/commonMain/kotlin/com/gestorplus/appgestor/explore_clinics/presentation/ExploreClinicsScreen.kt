@@ -143,9 +143,9 @@ fun SearchSection(query: String, onQueryChange: (String) -> Unit) {
             },
             shape = RoundedCornerShape(16.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF1C2026),
-                unfocusedContainerColor = Color(0xFF1C2026),
-                disabledContainerColor = Color(0xFF1C2026),
+                focusedContainerColor = AppTheme.colors.surface,
+                unfocusedContainerColor = AppTheme.colors.surface,
+                disabledContainerColor = AppTheme.colors.surface,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.White,
@@ -201,7 +201,7 @@ fun SpecialtyItem(name: String, isSelected: Boolean, onClick: () -> Unit) {
             modifier = Modifier
                 .size(68.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(if (isSelected) AppTheme.colors.primary.copy(alpha = 0.2f) else Color(0xFF272A30))
+                .background(if (isSelected) AppTheme.colors.primary.copy(alpha = 0.2f) else Color.White.copy(alpha = 0.08f))
                 .border(
                     width = 1.dp,
                     color = if (isSelected) AppTheme.colors.primary.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.05f),
@@ -284,7 +284,7 @@ fun ClinicCard(clinic: Clinic, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(32.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1C2026)),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
         shape = RoundedCornerShape(32.dp)
     ) {
         Column {
@@ -424,7 +424,7 @@ fun BottomNavigationBar(
     onPerfilClick: () -> Unit
 ) {
     Surface(
-        color = Color(0xFF101419).copy(alpha = 0.95f),
+        color = AppTheme.colors.background.copy(alpha = 0.95f),
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {

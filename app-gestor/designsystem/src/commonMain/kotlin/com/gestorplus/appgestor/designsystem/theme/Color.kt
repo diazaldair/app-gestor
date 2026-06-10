@@ -20,10 +20,10 @@ data class AppColors(
 
 // SoloBook Palette (Dark version for professional look)
 val DarkPalette = AppColors(
-   primary = Color(0xFF3B82F6), // SoloBookPrimary
+   primary = Color(0xFF2D81E8), // SoloBookPrimary
    onPrimary = Color.White,
-   background = Color(0xFF0F172A), // SoloBookBackground
-   surface = Color(0xFF1E293B), // SoloBookSurface
+   background = Color(0xFF0A0D10), // SoloBookBackground
+   surface = Color(0xFF15191E), // SoloBookSurface
    onSurface = Color.White,
    textPrimary = Color.White,
    textSecondary = Color(0xFF94A3B8),
