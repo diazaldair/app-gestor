@@ -4,26 +4,27 @@ import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 
 class AuthService(private val firebaseManager: FirebaseManager) {
     suspend fun loginWithEmail(email: String, password: String): String {
-        // Hacemos login en Firebase Auth y obtenemos el UID
-        val uid = firebaseManager.loginUserWithEmail(email, password)
+        return firebaseManager.loginUserWithEmail(email, password)
+    }
+
+    suspend fun registerUser(name: String, email: String, password: String, role: String): String {
+        val uid = firebaseManager.registerUserWithEmail(email, password)
         
-        // Opcional: Actualizar la última fecha de sesión en Realtime Database
-        val sessionPath = "doctors/$uid/last_login"
-        firebaseManager.saveData(sessionPath, System.currentTimeMillis().toString())
+        val path = if (role == "PROFESSIONAL") "doctors/$uid" else "patients/$uid"
+        firebaseManager.saveData("$path/name", name)
+        firebaseManager.saveData("$path/email", email)
+        firebaseManager.saveData("$path/role", role)
+        firebaseManager.saveData("$path/registeredAt", System.currentTimeMillis().toString())
         
         return uid
     }
-
-    suspend fun registerDoctor(name: String, email: String, password: String): String {
-        // Registramos en Firebase Auth y obtenemos el UID
-        val uid = firebaseManager.registerUserWithEmail(email, password)
+    
+    suspend fun getUserRole(uid: String): String {
+        // Primero buscamos en doctors
+        val doctorData = firebaseManager.getData("doctors/$uid")
+        if (doctorData != null) return "PROFESSIONAL"
         
-        // Guardamos los metadatos en Firebase Realtime Database
-        val doctorPath = "doctors/$uid"
-        firebaseManager.saveData("$doctorPath/name", name)
-        firebaseManager.saveData("$doctorPath/email", email)
-        firebaseManager.saveData("$doctorPath/registeredAt", System.currentTimeMillis().toString())
-        
-        return uid
+        // Si no está, asumimos PATIENT o buscamos en patients
+        return "PATIENT"
     }
 }

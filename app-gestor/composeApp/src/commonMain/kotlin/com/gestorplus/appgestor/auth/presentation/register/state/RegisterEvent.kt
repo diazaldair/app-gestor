@@ -6,7 +6,7 @@ sealed interface RegisterEvent {
     data class PasswordChanged(val value: String) : RegisterEvent
     data class ConfirmPasswordChanged(val value: String) : RegisterEvent
     data object TogglePasswordVisibility : RegisterEvent
-    data object OnSubmitClicked : RegisterEvent
+    data class OnSubmitClicked(val role: String) : RegisterEvent
     data object OnGoogleRegisterClicked : RegisterEvent
     data object OnLoginClicked : RegisterEvent
 }

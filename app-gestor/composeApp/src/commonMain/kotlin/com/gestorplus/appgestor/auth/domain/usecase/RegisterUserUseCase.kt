@@ -3,11 +3,8 @@ package com.gestorplus.appgestor.auth.domain.usecase
 import com.gestorplus.appgestor.auth.domain.model.UserSession
 import com.gestorplus.appgestor.auth.domain.repository.AuthRepository
 
-/**
- * @deprecated Use RegisterUserUseCase instead
- */
-class RegisterDoctorUseCase(private val authRepository: AuthRepository) {
-    suspend operator fun invoke(name: String, email: String, password: String, confirmPassword: String): Result<UserSession> {
+class RegisterUserUseCase(private val authRepository: AuthRepository) {
+    suspend operator fun invoke(name: String, email: String, password: String, confirmPassword: String, role: String): Result<UserSession> {
         if (name.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
             return Result.failure(IllegalArgumentException("Por favor, completa todos los campos."))
         }
@@ -20,7 +17,6 @@ class RegisterDoctorUseCase(private val authRepository: AuthRepository) {
         if (password != confirmPassword) {
             return Result.failure(IllegalArgumentException("Las contraseñas no coinciden."))
         }
-        // Updated to use the generic registerUser with PROFESSIONAL role
-        return authRepository.registerUser(name, email, password, "PROFESSIONAL")
+        return authRepository.registerUser(name, email, password, role)
     }
 }

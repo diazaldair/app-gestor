@@ -112,12 +112,29 @@ fun ClinicProfileScreen(
                 }
                 
                 OutlinedCard(
-                    onClick = { viewModel.onEvent(ClinicProfileEvent.AddSpecialityClicked) },
+                    onClick = { /* Could open a dialog to add */ },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent)
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(Res.string.clinic_profile_add_specialty), color = AppTheme.colors.textSecondary, fontSize = 14.sp)
+                        TextField(
+                            value = state.newSpeciality,
+                            onValueChange = { viewModel.onEvent(ClinicProfileEvent.SpecialityInputChanged(it)) },
+                            placeholder = { Text(stringResource(Res.string.clinic_profile_add_specialty), fontSize = 12.sp) },
+                            modifier = Modifier.width(100.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            singleLine = true,
+                            trailingIcon = {
+                                IconButton(onClick = { viewModel.onEvent(ClinicProfileEvent.AddSpecialityClicked) }) {
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -133,25 +150,18 @@ fun ClinicProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Mock Map
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AppTheme.colors.surface),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(stringResource(Res.string.clinic_profile_map_placeholder), color = AppTheme.colors.textSecondary, fontSize = 12.sp)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             ClinicInputField(
                 label = stringResource(Res.string.clinic_profile_address_label),
                 value = state.profile.address,
                 onValueChange = { viewModel.onEvent(ClinicProfileEvent.AddressChanged(it)) },
                 leadingIcon = { Icon(Icons.Default.Map, contentDescription = null, tint = AppTheme.colors.textSecondary) }
+            )
+
+            ClinicInputField(
+                label = "URL de Ubicación (Google Maps)",
+                value = state.profile.locationUrl,
+                onValueChange = { viewModel.onEvent(ClinicProfileEvent.LocationUrlChanged(it)) },
+                leadingIcon = { Icon(Icons.Default.Link, contentDescription = null, tint = AppTheme.colors.textSecondary) }
             )
 
             Spacer(modifier = Modifier.height(32.dp))

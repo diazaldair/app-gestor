@@ -6,26 +6,25 @@ import com.gestorplus.appgestor.auth.data.datasource.service.AuthService
 class AuthRemoteDatasource(private val authService: AuthService) {
     suspend fun login(email: String, password: String): AuthUserDto {
         val uid = authService.loginWithEmail(email, password)
-        // Intentar obtener el nombre real desde la base de datos
-        // En una app real esto podría ir en AuthService o aquí
-        val simulatedName = email.substringBefore("@").replaceFirstChar { it.uppercase() }
+        val role = authService.getUserRole(uid)
+        
         return AuthUserDto(
             id = uid,
             email = email,
-            name = simulatedName, // TODO: Obtener de FirebaseDatabase usando getData("doctors/$uid/name")
-            role = "PROFESSIONAL",
+            name = email.substringBefore("@").replaceFirstChar { it.uppercase() },
+            role = role,
             token = uid
         )
     }
 
-    suspend fun registerDoctor(name: String, email: String, password: String): AuthUserDto {
-        val uid = authService.registerDoctor(name, email, password)
+    suspend fun registerUser(name: String, email: String, password: String, role: String): AuthUserDto {
+        val uid = authService.registerUser(name, email, password, role)
         return AuthUserDto(
             id = uid,
             email = email,
             name = name,
-            role = "PROFESSIONAL",
-            token = uid // En una app real aquí iría un JWT o session token, por ahora usamos el uid
+            role = role,
+            token = uid
         )
     }
 }

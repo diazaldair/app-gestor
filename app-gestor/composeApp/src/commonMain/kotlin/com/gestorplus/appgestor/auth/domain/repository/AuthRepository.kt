@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     fun getActiveSession(): Flow<UserSession?>
     suspend fun loginWithEmail(email: String, password: String): Result<UserSession>
-    suspend fun registerDoctor(name: String, email: String, password: String): Result<UserSession>
+    suspend fun registerUser(name: String, email: String, password: String, role: String): Result<UserSession>
     suspend fun logout(): Result<Unit>
 }

@@ -376,8 +376,8 @@ fun WorkspaceSetupProfileScreen(
 
                     // CAMPO DE ENLACE DE GOOGLE MAPS (NUEVO)
                     OutlinedTextField(
-                        value = state.mapUrl,
-                        onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.MapUrlChanged(it)) },
+                        value = state.locationUrl,
+                        onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.LocationUrlChanged(it)) },
                         placeholder = { Text("Enlace de Google Maps (Opcional)", color = Color.White.copy(alpha = 0.3f)) },
                         singleLine = true,
                         leadingIcon = {

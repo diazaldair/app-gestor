@@ -22,7 +22,7 @@ class ClinicProfileService(private val firebaseManager: FirebaseManager) {
         dto.name?.let { firebaseManager.saveData("clinics/$ownerUid/name", it) }
         dto.bio?.let { firebaseManager.saveData("clinics/$ownerUid/bio", it) }
         dto.address?.let { firebaseManager.saveData("clinics/$ownerUid/address", it) }
-        dto.mapUrl?.let { firebaseManager.saveData("clinics/$ownerUid/mapUrl", it) }
+        dto.locationUrl?.let { firebaseManager.saveData("clinics/$ownerUid/locationUrl", it) }
         dto.specialties?.let { 
             firebaseManager.saveData("clinics/$ownerUid/specialties", json.encodeToString(it))
         }

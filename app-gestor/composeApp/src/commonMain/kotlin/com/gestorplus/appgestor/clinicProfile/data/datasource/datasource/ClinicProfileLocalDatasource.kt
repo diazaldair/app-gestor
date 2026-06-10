@@ -23,7 +23,7 @@ class ClinicProfileLocalDatasource(
                 emptyList()
             },
             address = entity.address,
-            mapUrl = entity.mapUrl
+            locationUrl = entity.locationUrl
         )
     }
 
@@ -33,7 +33,7 @@ class ClinicProfileLocalDatasource(
             bio = dto.bio ?: "",
             specialtiesJson = json.encodeToString(dto.specialties ?: emptyList<String>()),
             address = dto.address ?: "",
-            mapUrl = dto.mapUrl
+            locationUrl = dto.locationUrl
         )
         clinicProfileDao.insertProfile(entity)
     }

@@ -11,7 +11,7 @@ data class WorkspaceProfile(
     val exactAddress: String,
     val references: String,
     val galleryImages: List<String>,
-    val mapUrl: String? = null,
+    val locationUrl: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null
 )

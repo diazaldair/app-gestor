@@ -8,5 +8,5 @@ data class ClinicProfileDto(
     val bio: String? = null,
     val specialties: List<String>? = null,
     val address: String? = null,
-    val mapUrl: String? = null
+    val locationUrl: String? = null
 )

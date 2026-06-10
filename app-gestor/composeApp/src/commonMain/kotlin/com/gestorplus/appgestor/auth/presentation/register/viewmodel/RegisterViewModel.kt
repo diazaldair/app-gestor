@@ -2,7 +2,7 @@ package com.gestorplus.appgestor.auth.presentation.register.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gestorplus.appgestor.auth.domain.usecase.RegisterDoctorUseCase
+import com.gestorplus.appgestor.auth.domain.usecase.RegisterUserUseCase
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEfffect
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEvent
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterUiState
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val registerDoctorUseCase: RegisterDoctorUseCase
+    private val registerUserUseCase: RegisterUserUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterUiState())
@@ -41,8 +41,8 @@ class RegisterViewModel(
                 RegisterEvent.TogglePasswordVisibility -> {
                     _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
                 }
-                RegisterEvent.OnSubmitClicked -> {
-                    submitRegister()
+                is RegisterEvent.OnSubmitClicked -> {
+                    submitRegister(event.role)
                 }
                 RegisterEvent.OnGoogleRegisterClicked -> {
                     _effect.emit(RegisterEfffect.ShowSnackbar("Registro con Google próximamente."))
@@ -54,18 +54,19 @@ class RegisterViewModel(
         }
     }
 
-    private suspend fun submitRegister() {
+    private suspend fun submitRegister(role: String) {
         val fullName = _state.value.fullName
         val email = _state.value.email
         val password = _state.value.password
         val confirmPassword = _state.value.confirmPassword
 
         _state.update { it.copy(isLoading = true) }
-        val result = registerDoctorUseCase(fullName, email, password, confirmPassword)
+        val result = registerUserUseCase(fullName, email, password, confirmPassword, role)
         _state.update { it.copy(isLoading = false) }
 
         result.fold(
-            onSuccess = {
+            onSuccess = { session ->
+                // Emitimos el efecto con el rol para que App.kt sepa a dónde navegar
                 _effect.emit(RegisterEfffect.NavigateToHome)
             },
             onFailure = { error ->

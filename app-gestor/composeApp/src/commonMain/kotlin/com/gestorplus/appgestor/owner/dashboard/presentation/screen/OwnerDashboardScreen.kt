@@ -32,6 +32,9 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
 import app_gestor.composeapp.generated.resources.*
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.Instant
 
 @Composable
 fun OwnerDashboardScreen(
@@ -82,10 +85,14 @@ fun OwnerDashboardScreen(
                     onNavigateToServices = onNavigateToServices
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                StatusFilters()
+                StatusFilters(
+                    selectedFilter = state.selectedFilter,
+                    onFilterChanged = { viewModel.onEvent(OwnerDashboardEvent.OnFilterChanged(it)) }
+                )
                 Spacer(modifier = Modifier.height(24.dp))
                 CalendarGrid(
                     selectedDate = selectedDate,
+                    allBookings = state.bookings,
                     onDateSelected = { viewModel.onEvent(OwnerDashboardEvent.OnDateSelected(it)) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
@@ -218,21 +225,48 @@ fun DashboardHeader(
 }
 
 @Composable
-fun StatusFilters() {
+fun StatusFilters(
+    selectedFilter: BookingFilter,
+    onFilterChanged: (BookingFilter) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        FilterChip(stringResource(Res.string.status_confirmed), Icons.Default.CheckCircle, true, Modifier.weight(1f))
-        FilterChip(stringResource(Res.string.status_pending), Icons.Default.Notifications, false, Modifier.weight(1f))
-        FilterChip(stringResource(Res.string.status_blocked), Icons.Default.Lock, false, Modifier.weight(1f))
+        FilterChip(
+            label = stringResource(Res.string.status_confirmed),
+            icon = Icons.Default.CheckCircle,
+            isSelected = selectedFilter == BookingFilter.CONFIRMED,
+            modifier = Modifier.weight(1f),
+            onClick = { onFilterChanged(if (selectedFilter == BookingFilter.CONFIRMED) BookingFilter.ALL else BookingFilter.CONFIRMED) }
+        )
+        FilterChip(
+            label = stringResource(Res.string.status_pending),
+            icon = Icons.Default.Notifications,
+            isSelected = selectedFilter == BookingFilter.PENDING,
+            modifier = Modifier.weight(1f),
+            onClick = { onFilterChanged(if (selectedFilter == BookingFilter.PENDING) BookingFilter.ALL else BookingFilter.PENDING) }
+        )
+        FilterChip(
+            label = stringResource(Res.string.status_blocked),
+            icon = Icons.Default.Lock,
+            isSelected = selectedFilter == BookingFilter.BLOCKED,
+            modifier = Modifier.weight(1f),
+            onClick = { onFilterChanged(if (selectedFilter == BookingFilter.BLOCKED) BookingFilter.ALL else BookingFilter.BLOCKED) }
+        )
     }
 }
 
 @Composable
-fun FilterChip(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isSelected: Boolean, modifier: Modifier) {
+fun FilterChip(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isSelected: Boolean,
+    modifier: Modifier,
+    onClick: () -> Unit = {}
+) {
     Surface(
-        modifier = modifier.height(40.dp),
+        modifier = modifier.height(40.dp).clickable { onClick() },
         shape = RoundedCornerShape(20.dp),
         color = if (isSelected) AppTheme.colors.primary else AppTheme.colors.surface
     ) {
@@ -261,6 +295,7 @@ fun FilterChip(label: String, icon: androidx.compose.ui.graphics.vector.ImageVec
 @Composable
 fun CalendarGrid(
     selectedDate: LocalDate,
+    allBookings: List<Booking>,
     onDateSelected: (Int) -> Unit
 ) {
     val daysOfWeek = listOf(
@@ -273,7 +308,6 @@ fun CalendarGrid(
         Res.string.day_sat
     )
     
-    // Cálculos para el mes actual
     val firstDayOfMonth = LocalDate(selectedDate.year, selectedDate.month, 1)
     val daysInMonth = when (selectedDate.month) {
         kotlinx.datetime.Month.FEBRUARY -> if (selectedDate.year % 4 == 0) 29 else 28
@@ -309,10 +343,16 @@ fun CalendarGrid(
                 
                 items(daysInMonth) { index ->
                     val day = index + 1
+                    val date = LocalDate(selectedDate.year, selectedDate.month, day)
+                    val hasAppointments = allBookings.any {
+                        val bDate = Instant.fromEpochMilliseconds(it.timestamp).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                        bDate == date
+                    }
+
                     CalendarDayItem(
                         day = day, 
                         isSelected = day == selectedDate.dayOfMonth, 
-                        hasAppointments = false, 
+                        hasAppointments = hasAppointments, 
                         onSelect = { onDateSelected(day) }
                     )
                 }
@@ -374,11 +414,6 @@ fun AgendaSection(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = "9:00 AM - 6:00 PM",
-                    color = AppTheme.colors.textSecondary,
-                    fontSize = 12.sp
-                )
             }
             Text(
                 text = stringResource(Res.string.owner_block_day),
@@ -391,53 +426,23 @@ fun AgendaSection(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (bookings.isEmpty()) {
-            Text(
-                text = stringResource(Res.string.owner_no_bookings),
-                color = AppTheme.colors.textSecondary,
-                modifier = Modifier.padding(24.dp)
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(Res.string.owner_no_bookings),
+                    color = AppTheme.colors.textSecondary
+                )
+            }
         } else {
             bookings.forEach { booking ->
                 AgendaItem(
-                    time = DateTimeUtils.formatTime(booking.timestamp),
-                    title = booking.serviceName,
-                    subtitle = stringResource(Res.string.owner_agenda_subtitle_format, booking.clientName, booking.durationMinutes),
-                    statusIcon = if (booking.status == "CONFIRMED") Icons.Default.CheckCircle else Icons.Default.Notifications,
-                    statusColor = if (booking.status == "CONFIRMED") AppTheme.colors.primary else AppTheme.colors.textSecondary,
-                    onClick = {
-                        if (booking.status != "CONFIRMED") onAccept(booking.id)
-                    }
+                    booking = booking,
+                    onAccept = onAccept,
+                    onReject = onReject
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-            }
-        }
-
-        // Ítem de Personal Time
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.Transparent,
-            shape = RoundedCornerShape(12.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.textSecondary.copy(alpha = 0.3f))
-        ) {
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(40.dp).background(AppTheme.colors.textSecondary.copy(alpha = 0.2f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Lock, null, tint = AppTheme.colors.textSecondary)
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(Res.string.owner_personal_time),
-                        color = AppTheme.colors.textPrimary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = stringResource(Res.string.owner_personal_time_desc),
-                        color = AppTheme.colors.textSecondary,
-                        fontSize = 12.sp
-                    )
-                }
-                Icon(Icons.Default.MoreVert, null, tint = AppTheme.colors.textSecondary)
             }
         }
     }
@@ -445,32 +450,61 @@ fun AgendaSection(
 
 @Composable
 fun AgendaItem(
-    time: String,
-    title: String,
-    subtitle: String,
-    statusIcon: androidx.compose.ui.graphics.vector.ImageVector,
-    statusColor: Color,
-    onClick: () -> Unit
+    booking: Booking,
+    onAccept: (String) -> Unit,
+    onReject: (String) -> Unit
 ) {
+    val isPending = booking.status == "PENDING"
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            val parts = time.split(" ")
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(parts[0], color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                if (parts.size > 1) Text(parts[1], color = AppTheme.colors.primary.copy(alpha = 0.7f), fontSize = 10.sp)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val time = DateTimeUtils.formatTime(booking.timestamp)
+                val parts = time.split(" ")
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(parts[0], color = AppTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    if (parts.size > 1) Text(parts[1], color = AppTheme.colors.primary.copy(alpha = 0.7f), fontSize = 10.sp)
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(booking.serviceName, color = AppTheme.colors.textPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = stringResource(Res.string.owner_agenda_subtitle_format, booking.clientName, booking.durationMinutes),
+                        color = AppTheme.colors.textSecondary,
+                        fontSize = 12.sp
+                    )
+                }
+                Icon(
+                    imageVector = if (booking.status == "CONFIRMED") Icons.Default.CheckCircle else Icons.Default.Notifications,
+                    contentDescription = null,
+                    tint = if (booking.status == "CONFIRMED") AppTheme.colors.primary else AppTheme.colors.textSecondary,
+                    modifier = Modifier.size(24.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = AppTheme.colors.textPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                Text(subtitle, color = AppTheme.colors.textSecondary, fontSize = 12.sp)
+            
+            if (isPending) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { onReject(booking.id) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.Red.copy(alpha = 0.5f))
+                    ) {
+                        Text("Rechazar", fontSize = 12.sp)
+                    }
+                    Button(
+                        onClick = { onAccept(booking.id) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.primary)
+                    ) {
+                        Text("Aceptar", fontSize = 12.sp)
+                    }
+                }
             }
-            Icon(statusIcon, null, tint = statusColor, modifier = Modifier.size(24.dp))
         }
     }
 }

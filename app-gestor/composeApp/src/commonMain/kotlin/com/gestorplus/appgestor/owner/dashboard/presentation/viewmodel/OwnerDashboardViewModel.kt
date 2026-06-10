@@ -33,24 +33,31 @@ class OwnerDashboardViewModel(
     private val _effect = MutableSharedFlow<OwnerDashboardEfffect>()
     val effect = _effect.asSharedFlow()
 
-    // Estado para el calendario: por defecto hoy
     private val _selectedDate = MutableStateFlow(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)
     val selectedDate = _selectedDate.asStateFlow()
 
-    // Escuchamos los cambios en Room y filtramos por fecha seleccionada
-    val bookings: StateFlow<List<Booking>> = getOwnerBookingsUseCase()
-        .combine(_selectedDate) { allBookings, date ->
-            allBookings.filter { booking ->
-                val bInstant = Instant.fromEpochMilliseconds(booking.timestamp)
-                val bDate = bInstant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-                bDate == date
+    val bookings: StateFlow<List<Booking>> = combine(
+        getOwnerBookingsUseCase(),
+        _selectedDate,
+        _state
+    ) { allBookings, date, currentState ->
+        allBookings.filter { booking ->
+            val bInstant = Instant.fromEpochMilliseconds(booking.timestamp)
+            val bDate = bInstant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val matchesDate = bDate == date
+            val matchesFilter = when (currentState.selectedFilter) {
+                BookingFilter.ALL -> true
+                BookingFilter.CONFIRMED -> booking.status == "CONFIRMED"
+                BookingFilter.PENDING -> booking.status == "PENDING"
+                BookingFilter.BLOCKED -> booking.status == "BLOCKED"
             }
+            matchesDate && matchesFilter
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     init {
         observeBookings()
@@ -84,6 +91,9 @@ class OwnerDashboardViewModel(
             is OwnerDashboardEvent.OnRejectBooking -> rejectBooking(event.bookingId)
             is OwnerDashboardEvent.OnDateSelected -> onDateSelected(event.day)
             is OwnerDashboardEvent.OnMonthChange -> onMonthChange(event.increment)
+            is OwnerDashboardEvent.OnFilterChanged -> {
+                _state.update { it.copy(selectedFilter = event.filter) }
+            }
             OwnerDashboardEvent.OnLoadLogs -> loadFirebaseLogs()
             OwnerDashboardEvent.OnRefreshBookings -> refreshBookings()
             OwnerDashboardEvent.OnClearError -> _state.update { it.copy(error = null) }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 12,
-    "identityHash": "e7bf7e7da308fbbb5f142da7c25eba94",
+    "identityHash": "1e90846422cb30e51caa983b9d07e9ef",
     "entities": [
       {
         "tableName": "bookings",
@@ -268,7 +268,7 @@
       },
       {
         "tableName": "clinic_profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `bio` TEXT NOT NULL, `specialtiesJson` TEXT NOT NULL, `address` TEXT NOT NULL, `mapUrl` TEXT, `latitude` REAL, `longitude` REAL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `bio` TEXT NOT NULL, `specialtiesJson` TEXT NOT NULL, `address` TEXT NOT NULL, `locationUrl` TEXT, `latitude` REAL, `longitude` REAL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -301,8 +301,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "mapUrl",
-            "columnName": "mapUrl",
+            "fieldPath": "locationUrl",
+            "columnName": "locationUrl",
             "affinity": "TEXT"
           },
           {
@@ -618,7 +618,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7bf7e7da308fbbb5f142da7c25eba94')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e90846422cb30e51caa983b9d07e9ef')"
     ]
   }
 }

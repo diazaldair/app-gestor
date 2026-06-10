@@ -10,7 +10,7 @@ class ClinicProfileMapper {
             biography = dto.bio ?: "",
             specialties = dto.specialties ?: emptyList(),
             address = dto.address ?: "",
-            mapPreviewUrl = dto.mapUrl
+            locationUrl = dto.locationUrl ?: ""
         )
     }
 
@@ -20,7 +20,7 @@ class ClinicProfileMapper {
             bio = model.biography,
             specialties = model.specialties,
             address = model.address,
-            mapUrl = model.mapPreviewUrl
+            locationUrl = model.locationUrl
         )
     }
 }

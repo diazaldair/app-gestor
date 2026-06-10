@@ -51,7 +51,7 @@ class SetupProfileRepositoryImpl(
                 bio = profile.biography,
                 specialtiesJson = Json.encodeToString(profile.specialities),
                 address = profile.exactAddress,
-                mapUrl = profile.mapUrl,
+                locationUrl = profile.locationUrl,
                 latitude = profile.latitude,
                 longitude = profile.longitude
             )

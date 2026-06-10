@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.SaveWorkspaceProfileUseCase
+import com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfile
 
 class WorkspaceSetupProfileViewModel(
     private val saveWorkspaceProfileUseCase: SaveWorkspaceProfileUseCase
@@ -60,8 +61,8 @@ class WorkspaceSetupProfileViewModel(
                 is WorkspaceSetupProfileEvent.ReferencesChanged -> {
                     _state.update { it.copy(references = event.value) }
                 }
-                is WorkspaceSetupProfileEvent.MapUrlChanged -> {
-                    _state.update { it.copy(mapUrl = event.value) }
+                is WorkspaceSetupProfileEvent.LocationUrlChanged -> {
+                    _state.update { it.copy(locationUrl = event.value) }
                 }
                 is WorkspaceSetupProfileEvent.PhotoSelected -> {
                     if (event.uri.isNotBlank()) {
@@ -82,7 +83,7 @@ class WorkspaceSetupProfileViewModel(
                     val currentState = _state.value
                     _state.update { it.copy(isLoading = true) }
                     
-                    val profile = com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfile(
+                    val profile = WorkspaceProfile(
                         clinicName = currentState.clinicName,
                         fullName = currentState.fullName,
                         specialities = currentState.specialities,
@@ -90,7 +91,7 @@ class WorkspaceSetupProfileViewModel(
                         exactAddress = currentState.exactAddress,
                         references = currentState.references,
                         galleryImages = currentState.galleryImages,
-                        mapUrl = currentState.mapUrl,
+                        locationUrl = currentState.locationUrl,
                         latitude = null,
                         longitude = null
                     )

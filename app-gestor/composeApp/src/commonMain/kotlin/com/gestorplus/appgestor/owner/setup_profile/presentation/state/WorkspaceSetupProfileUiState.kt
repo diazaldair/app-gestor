@@ -11,7 +11,7 @@ data class WorkspaceSetupProfileUiState(
     val biography: String = "",
     val exactAddress: String = "",
     val references: String = "",
-    val mapUrl: String = "",
+    val locationUrl: String = "",
     val galleryImages: List<String> = emptyList(),
     val selectedDepartment: String = "La Paz",
     val isLoading: Boolean = false,

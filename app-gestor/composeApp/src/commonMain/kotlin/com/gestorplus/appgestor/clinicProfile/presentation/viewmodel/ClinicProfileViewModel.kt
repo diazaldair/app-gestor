@@ -43,6 +43,9 @@ class ClinicProfileViewModel(
             is ClinicProfileEvent.AddressChanged -> {
                 _state.update { it.copy(profile = it.profile.copy(address = event.address)) }
             }
+            is ClinicProfileEvent.LocationUrlChanged -> {
+                _state.update { it.copy(profile = it.profile.copy(locationUrl = event.url)) }
+            }
             is ClinicProfileEvent.SpecialityInputChanged -> {
                 _state.update { it.copy(newSpeciality = event.value) }
             }
