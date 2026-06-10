@@ -3,6 +3,10 @@ package com.gestorplus.appgestor.owner.setup_profile.data.repository
 import com.gestorplus.appgestor.core.data.datasource.FirebaseManager
 import com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfile
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileRemoteDatasource
+import com.gestorplus.appgestor.core.persistence.LocalPreferences
+import com.gestorplus.appgestor.clinicProfile.data.local.dao.ClinicProfileDao
+import com.gestorplus.appgestor.clinicProfile.data.local.entity.ClinicProfileEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,11 +28,25 @@ open class FakeFirebaseManagerForRepo : FirebaseManager() {
     override fun getCurrentUserUid(): String? = "user_test_id"
 }
 
+class FakeLocalPreferences : LocalPreferences() {
+    private val data = mutableMapOf<String, String>()
+    override fun putString(key: String, value: String) { data[key] = value }
+    override fun getString(key: String, defaultValue: String?): String? = data[key] ?: defaultValue
+}
+
+class FakeClinicProfileDao : ClinicProfileDao {
+    override fun getProfile(): Flow<ClinicProfileEntity?> = error("Not implemented")
+    override suspend fun insertProfile(profile: ClinicProfileEntity) {}
+    override suspend fun clearProfile() {}
+}
+
 class SetupProfileRepositoryImplTest {
 
     private val fakeRemoteDs = FakeSetupProfileRemoteDatasource()
     private val fakeFirebase = FakeFirebaseManagerForRepo()
-    private val repository = SetupProfileRepositoryImpl(fakeRemoteDs, fakeFirebase)
+    private val fakeLocalPrefs = FakeLocalPreferences()
+    private val fakeDao = FakeClinicProfileDao()
+    private val repository = SetupProfileRepositoryImpl(fakeRemoteDs, fakeFirebase, fakeLocalPrefs, fakeDao)
 
     @Test
     fun `saveWorkspaceProfile uploads only local images`() = runTest {
@@ -48,10 +66,8 @@ class SetupProfileRepositoryImplTest {
         val result = repository.saveWorkspaceProfile(profile)
 
         assertTrue(result.isSuccess)
-        // Solo debió llamar a uploadImage una vez (por el content://)
         assertEquals(1, fakeFirebase.uploadCallCount)
         
-        // Verificar que el JSON guardado contenga ambas URLs (la subida y la existente)
         assertTrue(fakeRemoteDs.lastSavedData?.contains("https://firebasestorage.com/uploaded_photo1.jpg") == true)
         assertTrue(fakeRemoteDs.lastSavedData?.contains("https://already-online.com/photo2.png") == true)
     }
@@ -61,7 +77,7 @@ class SetupProfileRepositoryImplTest {
         val anonymousFirebase = object : FakeFirebaseManagerForRepo() {
             override fun getCurrentUserUid(): String? = null
         }
-        val repo = SetupProfileRepositoryImpl(fakeRemoteDs, anonymousFirebase)
+        val repo = SetupProfileRepositoryImpl(fakeRemoteDs, anonymousFirebase, fakeLocalPrefs, fakeDao)
         
         val profile = WorkspaceProfile(
             clinicName = "Any", fullName = "Any", specialities = emptyList(),

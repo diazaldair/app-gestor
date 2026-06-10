@@ -10,19 +10,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
-class ExploreClinicsRepositoryImpl(
+open class ExploreClinicsRepositoryImpl(
     private val firebaseManager: FirebaseManager,
     private val clinicDao: ClinicDao
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun getClinics(): Flow<List<Clinic>> {
+    open fun getClinics(): Flow<List<Clinic>> {
         return clinicDao.getAllClinics().map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
-    suspend fun syncClinics() {
+    open suspend fun syncClinics() {
         try {
             // Sincronizamos desde 'workspaces' que es la ruta donde se guardan los perfiles de clínicas creados
             val workspacesData = firebaseManager.getData("workspaces") ?: return
