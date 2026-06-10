@@ -84,7 +84,7 @@ fun ClinicDetailScreen(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarAppBarColors(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = AppTheme.colors.background.copy(alpha = 0.9f)
                     )
                 )
@@ -216,16 +216,17 @@ fun SpecialtiesSection(specialties: List<String>) {
             specialties.forEach { specialty ->
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(full = true))
+                        .clip(CircleShape)
                         .background(AppTheme.colors.primary.copy(alpha = 0.1f))
-                        .border(1.dp, AppTheme.colors.primary.copy(alpha = 0.2f), RoundedCornerShape(full = true))
+                        .border(1.dp, AppTheme.colors.primary.copy(alpha = 0.2f), CircleShape)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         specialty,
                         style = AppTheme.typography.bodySmall.copy(
                             color = AppTheme.colors.primary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
                         )
                     )
                 }
@@ -264,7 +265,8 @@ fun LocationSection(address: String) {
                     modifier = Modifier.clickable { /* TODO */ }.padding(vertical = 4.dp),
                     style = AppTheme.typography.bodySmall.copy(
                         color = AppTheme.colors.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
                     )
                 )
             }
@@ -309,7 +311,8 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                     service.name,
                     style = AppTheme.typography.bodyLarge.copy(
                         color = AppTheme.colors.textPrimary,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp
                     )
                 )
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
@@ -322,7 +325,7 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         "${service.durationMinutes} min",
-                        style = AppTheme.typography.bodySmall.copy(color = AppTheme.colors.textSecondary)
+                        style = AppTheme.typography.bodySmall.copy(color = AppTheme.colors.textSecondary, fontSize = 12.sp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("|", color = AppTheme.colors.textSecondary.copy(alpha = 0.3f))
@@ -350,7 +353,7 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = { onBookClick(service.id) },
-                    shape = RoundedCornerShape(full = true),
+                    shape = CircleShape,
                     border = BorderStroke(1.dp, AppTheme.colors.primary),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     modifier = Modifier.height(32.dp)
@@ -359,7 +362,8 @@ fun ServiceCard(service: ClinicService, onBookClick: (String) -> Unit) {
                         "Reservar",
                         style = AppTheme.typography.bodySmall.copy(
                             color = AppTheme.colors.primary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
                         )
                     )
                 }
