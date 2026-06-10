@@ -1,23 +1,28 @@
 package com.gestorplus.appgestor.owner.setup_schedule.domain.usecase
 
+import com.gestorplus.appgestor.owner.setup_schedule.domain.model.Shift
 import com.gestorplus.appgestor.owner.setup_schedule.domain.model.WorkspaceSchedule
 import com.gestorplus.appgestor.owner.setup_schedule.domain.repository.SetupScheduleRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Fake repository for testing the SaveWorkspaceScheduleUseCase in isolation.
- */
 class FakeSetupScheduleRepository : SetupScheduleRepository {
     var saveResult: Result<Unit> = Result.success(Unit)
     var lastSavedSchedule: WorkspaceSchedule? = null
+
+    override fun getShifts(): Flow<List<Shift>> = error("Not implemented")
 
     override suspend fun saveWorkspaceSchedule(schedule: WorkspaceSchedule): Result<Unit> {
         lastSavedSchedule = schedule
         return saveResult
     }
+
+    override suspend fun saveDetailedShifts(shifts: List<Shift>): Result<Unit> = Result.success(Unit)
+
+    override suspend fun deleteShift(shiftId: String) {}
 }
 
 class SaveWorkspaceScheduleUseCaseTest {
@@ -32,8 +37,6 @@ class SaveWorkspaceScheduleUseCaseTest {
         afternoonStart = "15:00",
         afternoonEnd = "20:00"
     )
-
-    // --- Happy path ---
 
     @Test
     fun `save valid schedule returns success`() = runTest {
@@ -52,8 +55,6 @@ class SaveWorkspaceScheduleUseCaseTest {
         assertTrue(result.isSuccess)
     }
 
-    // --- Validation: working days ---
-
     @Test
     fun `save schedule with no working days returns failure`() = runTest {
         val schedule = validSchedule().copy(workingDays = emptyList())
@@ -62,8 +63,6 @@ class SaveWorkspaceScheduleUseCaseTest {
         assertTrue(result.isFailure)
         assertEquals("Debes seleccionar al menos un día laboral.", result.exceptionOrNull()?.message)
     }
-
-    // --- Validation: morning hours ---
 
     @Test
     fun `save schedule with blank morningStart returns failure`() = runTest {
@@ -83,8 +82,6 @@ class SaveWorkspaceScheduleUseCaseTest {
         assertEquals("Debes definir al menos el horario de mañana.", result.exceptionOrNull()?.message)
     }
 
-    // --- Repository error propagation ---
-
     @Test
     fun `save propagates repository error`() = runTest {
         fakeRepo.saveResult = Result.failure(Exception("Database error"))
@@ -93,8 +90,6 @@ class SaveWorkspaceScheduleUseCaseTest {
         assertTrue(result.isFailure)
         assertEquals("Database error", result.exceptionOrNull()?.message)
     }
-
-    // --- Verify no repo call on validation failure ---
 
     @Test
     fun `validation failure does not call repository`() = runTest {

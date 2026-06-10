@@ -7,17 +7,8 @@ import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlinx.coroutines.test.*
+import kotlin.test.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
@@ -49,14 +40,16 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `when email changes, state is updated`() {
+    fun `when email changes, state is updated`() = runTest {
         viewModel.onEvent(LoginEvent.EmailChanged("test@test.com"))
+        advanceUntilIdle()
         assertEquals("test@test.com", viewModel.state.value.email)
     }
 
     @Test
-    fun `when password changes, state is updated`() {
+    fun `when password changes, state is updated`() = runTest {
         viewModel.onEvent(LoginEvent.PasswordChanged("password123"))
+        advanceUntilIdle()
         assertEquals("password123", viewModel.state.value.password)
     }
 
@@ -64,13 +57,16 @@ class LoginViewModelTest {
     fun `state transition - loading to success`() = runTest {
         viewModel.onEvent(LoginEvent.EmailChanged("doctor@test.com"))
         viewModel.onEvent(LoginEvent.PasswordChanged("password123"))
+        advanceUntilIdle()
 
         viewModel.onEvent(LoginEvent.OnSubmitClicked)
-
-        // Check loading state
+        
+        // El estado isLoading cambia a true en el ViewModel
+        // Necesitamos ejecutar el primer fragmento de la corrutina
+        runCurrent()
         assertTrue(viewModel.state.value.isLoading)
         
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         assertFalse(viewModel.state.value.isLoading)
         val effect = viewModel.effect.first()
@@ -82,12 +78,13 @@ class LoginViewModelTest {
         fakeRepo.loginResult = Result.failure(Exception("Network Error"))
         viewModel.onEvent(LoginEvent.EmailChanged("doctor@test.com"))
         viewModel.onEvent(LoginEvent.PasswordChanged("password123"))
+        advanceUntilIdle()
 
         viewModel.onEvent(LoginEvent.OnSubmitClicked)
-
+        runCurrent()
         assertTrue(viewModel.state.value.isLoading)
         
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         assertFalse(viewModel.state.value.isLoading)
         assertEquals("Network Error", viewModel.state.value.errorMessage)
