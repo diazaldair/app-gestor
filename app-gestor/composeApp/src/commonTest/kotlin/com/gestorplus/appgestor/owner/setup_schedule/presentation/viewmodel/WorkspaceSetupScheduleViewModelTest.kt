@@ -43,7 +43,7 @@ class WorkspaceSetupScheduleViewModelTest {
         viewModel.onEvent(WorkspaceSetupScheduleEvent.OnContinueClicked)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals("Debes seleccionar al menos un día de trabajo.", viewModel.state.value.errorMessage)
+        assertEquals("Debes seleccionar al menos un día laboral.", viewModel.state.value.errorMessage)
     }
 
     @Test

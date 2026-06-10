@@ -16,7 +16,9 @@ actual val platformModule: Module = module {
     }
 
     // Preferencias Locales
-    single { com.gestorplus.appgestor.core.persistence.LocalPreferences(androidContext()) }
+    single<com.gestorplus.appgestor.core.persistence.LocalPreferences> { 
+        com.gestorplus.appgestor.core.persistence.AndroidLocalPreferences(androidContext()) 
+    }
 
     // Notificaciones
     single { NotificationHelper(androidContext()) }

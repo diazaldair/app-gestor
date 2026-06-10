@@ -3,22 +3,22 @@ package com.gestorplus.appgestor.core.persistence
 import android.content.Context
 import android.content.SharedPreferences
 
-actual open class LocalPreferences(private val context: Context) {
+class AndroidLocalPreferences(private val context: Context) : LocalPreferences {
     private val prefs: SharedPreferences = context.getSharedPreferences("gestor_prefs", Context.MODE_PRIVATE)
 
-    actual open fun getBoolean(key: String, defaultValue: Boolean): Boolean {
+    override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
         return prefs.getBoolean(key, defaultValue)
     }
 
-    actual open fun putBoolean(key: String, value: Boolean) {
+    override fun putBoolean(key: String, value: Boolean) {
         prefs.edit().putBoolean(key, value).apply()
     }
 
-    actual open fun getString(key: String, defaultValue: String?): String? {
+    override fun getString(key: String, defaultValue: String?): String? {
         return prefs.getString(key, defaultValue)
     }
 
-    actual open fun putString(key: String, value: String) {
+    override fun putString(key: String, value: String) {
         prefs.edit().putString(key, value).apply()
     }
 }
