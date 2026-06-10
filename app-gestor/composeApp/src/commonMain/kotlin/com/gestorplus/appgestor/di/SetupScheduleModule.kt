@@ -20,8 +20,16 @@ val setupScheduleModule = module {
     // 2. Fuentes de Datos (Datasources)
     single { SetupScheduleRemoteDatasource(get()) }
 
-    // 3. Repositorio
-    single<SetupScheduleRepository> { SetupScheduleRepositoryImpl(get(), get(), get(), get()) }
+    // 3. Repositorio con inyección explícita para evitar errores de compilación
+    single<SetupScheduleRepository> { 
+        SetupScheduleRepositoryImpl(
+            remoteDatasource = get(),
+            firebaseManager = get(),
+            shiftDao = get(),
+            mapper = get(),
+            setupScheduleService = get()
+        ) 
+    }
 
     // 4. Casos de Uso
     factoryOf(::SaveWorkspaceScheduleUseCase)

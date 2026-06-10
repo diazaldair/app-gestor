@@ -9,6 +9,7 @@ expect open class FirebaseManager() {
     open fun getString(key: String): String
     open suspend fun getFirebaseLogs(path: String): List<String>
     open suspend fun getData(path: String): Map<String, Any>?
+    open suspend fun getRawData(path: String): Any?
     
     // Storage
     open suspend fun uploadImage(localPath: String): String

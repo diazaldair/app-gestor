@@ -94,6 +94,9 @@ kotlin {
             
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
+            
+            // OSMDroid - Mapa nativo
+            implementation(libs.osmdroid)
         }
         commonMain.dependencies {
             implementation(project(":designsystem"))

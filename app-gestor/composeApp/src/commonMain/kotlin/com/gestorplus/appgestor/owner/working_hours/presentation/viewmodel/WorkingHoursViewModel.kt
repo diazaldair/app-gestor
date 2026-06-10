@@ -29,11 +29,14 @@ class WorkingHoursViewModel(
 
     init {
         observeShifts()
+        refreshShiftsFromRemote()
     }
 
     fun onEvent(event: WorkingHoursEvent) {
         when (event) {
-            WorkingHoursEvent.LoadShifts -> { /* Ya se observa en init */ }
+            WorkingHoursEvent.LoadShifts -> { 
+                refreshShiftsFromRemote()
+            }
             is WorkingHoursEvent.AddShift -> {
                 _uiState.update { it.copy(shifts = it.shifts + event.shift.copy(id = "new_${it.shifts.size + 1}")) }
             }
@@ -77,18 +80,22 @@ class WorkingHoursViewModel(
 
     private fun observeShifts() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
             repository.getShifts().collectLatest { loadedShifts ->
                 _uiState.update { it.copy(
-                    shifts = if (loadedShifts.isEmpty()) {
-                        listOf(
-                            Shift("1", "Turno Mañana", "09:00 AM", "01:00 PM", listOf("L", "X", "V")),
-                            Shift("2", "Turno Tarde", "04:00 PM", "08:00 PM", listOf("M", "J"))
-                        )
-                    } else loadedShifts,
+                    shifts = loadedShifts,
                     isLoading = false
                 )}
             }
+        }
+    }
+
+    private fun refreshShiftsFromRemote() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            repository.refreshShifts().onFailure { error ->
+                _effect.emit(WorkingHoursEfffect.ShowSnackbar("No se pudo sincronizar: ${error.message}"))
+            }
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 

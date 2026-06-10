@@ -4,4 +4,5 @@ import com.gestorplus.appgestor.owner.setup_profile.domain.model.WorkspaceProfil
 
 interface SetupProfileRepository {
     suspend fun saveWorkspaceProfile(profile: WorkspaceProfile): Result<Unit>
+    suspend fun isProfileSetup(): Result<Boolean>
 }

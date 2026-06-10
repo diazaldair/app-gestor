@@ -12,14 +12,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gestorplus.appgestor.designsystem.theme.DsTheme
@@ -152,7 +147,7 @@ fun WorkspaceSetupProfileScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Input 1: NOMBRE DE LA CLÍNICA / CONSULTORIO
+                    // Input 1: NOMBRE DE LA CLÍNICA
                     Text(
                         text = "NOMBRE DE LA CLÍNICA / CONSULTORIO",
                         color = Color.White.copy(alpha = 0.5f),
@@ -225,7 +220,6 @@ fun WorkspaceSetupProfileScreen(
                             .border(1.dp, GlassBorder, RoundedCornerShape(14.dp))
                             .padding(16.dp)
                     ) {
-                        // Chips row
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -263,7 +257,6 @@ fun WorkspaceSetupProfileScreen(
                             }
                         }
 
-                        // Add Speciality Text Field
                         OutlinedTextField(
                             value = state.inputSpeciality,
                             onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.InputSpecialityChanged(it)) },
@@ -306,7 +299,7 @@ fun WorkspaceSetupProfileScreen(
                         onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.BiographyChanged(it)) },
                         placeholder = {
                             Text(
-                                "Describe brevemente la trayectoria y enfoque de la clínica o profesional...",
+                                "Describe brevemente la trayectoria...",
                                 color = Color.White.copy(alpha = 0.3f),
                                 fontSize = 14.sp
                             )
@@ -327,98 +320,80 @@ fun WorkspaceSetupProfileScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Ubicación del Consultorio
+                    // UBICACIÓN (Link en vez de mapa)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "UBICACIÓN DEL CONSULTORIO",
+                            text = "UBICACIÓN Y DEPARTAMENTO",
                             color = Color.White.copy(alpha = 0.5f),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.5.sp
                         )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable {
-                                viewModel.onEvent(WorkspaceSetupProfileEvent.FixLocationClicked)
+                        
+                        var deptExpanded by remember { mutableStateOf(false) }
+                        Box {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { deptExpanded = true }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = null,
+                                    tint = BrandLightBlue,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = state.selectedDepartment,
+                                    color = BrandLightBlue,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MyLocation,
-                                contentDescription = null,
-                                tint = BrandLightBlue,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Fijar actual",
-                                color = BrandLightBlue,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            DropdownMenu(
+                                expanded = deptExpanded,
+                                onDismissRequest = { deptExpanded = false },
+                                modifier = Modifier.background(CardBg).border(1.dp, GlassBorder)
+                            ) {
+                                listOf("La Paz", "Santa Cruz", "Cochabamba", "Oruro", "Potosí", "Sucre", "Tarija", "Beni", "Pando").forEach { dept ->
+                                    DropdownMenuItem(
+                                        text = { Text(dept, color = Color.White) },
+                                        onClick = {
+                                            viewModel.onEvent(WorkspaceSetupProfileEvent.DepartmentSelected(dept))
+                                            deptExpanded = false
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // Vista 3D Simulado del Mapa
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFF0F172A))
-                            .border(1.dp, GlassBorder, RoundedCornerShape(16.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            val w = size.width
-                            val h = size.height
-
-                            // Dibujamos líneas de fuga diagonales para dar perspectiva 3D
-                            val linePaintColor = Color(0xFF334155).copy(alpha = 0.5f)
-                            val gridStroke = Stroke(width = 1f)
-
-                            // Horizontales convergiendo hacia arriba
-                            for (i in 0..6) {
-                                val y = h * (i / 6f)
-                                drawLine(
-                                    color = linePaintColor,
-                                    start = androidx.compose.ui.geometry.Offset(0f, y),
-                                    end = androidx.compose.ui.geometry.Offset(w, y),
-                                    strokeWidth = 1f
-                                )
-                            }
-
-                            // Verticales convergiendo en perspectiva
-                            for (i in 0..8) {
-                                val xTop = w * (0.2f + 0.6f * (i / 8f))
-                                val xBottom = w * (-0.1f + 1.2f * (i / 8f))
-                                drawLine(
-                                    color = linePaintColor,
-                                    start = androidx.compose.ui.geometry.Offset(xTop, 0f),
-                                    end = androidx.compose.ui.geometry.Offset(xBottom, h),
-                                    strokeWidth = 1f
-                                )
-                            }
-                        }
-
-                        // Pin de mapa flotando
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = BrandLightBlue,
-                                modifier = Modifier.size(38.dp)
-                            )
-                        }
-                    }
+                    // CAMPO DE ENLACE DE GOOGLE MAPS (NUEVO)
+                    OutlinedTextField(
+                        value = state.mapUrl,
+                        onValueChange = { viewModel.onEvent(WorkspaceSetupProfileEvent.MapUrlChanged(it)) },
+                        placeholder = { Text("Enlace de Google Maps (Opcional)", color = Color.White.copy(alpha = 0.3f)) },
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Link, contentDescription = null, tint = BrandLightBlue)
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BrandLightBlue,
+                            unfocusedBorderColor = GlassBorder,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = InputFieldBg,
+                            unfocusedContainerColor = InputFieldBg
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -462,7 +437,7 @@ fun WorkspaceSetupProfileScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Galería del consultorio
+                    // Galería
                     Text(
                         text = "GALERÍA DEL CONSULTORIO",
                         color = Color.White.copy(alpha = 0.5f),
@@ -476,7 +451,6 @@ fun WorkspaceSetupProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        // Añadir Foto Card
                         item {
                             Box(
                                 modifier = Modifier
@@ -489,40 +463,21 @@ fun WorkspaceSetupProfileScreen(
                                             color = GlassBorder,
                                             style = Stroke(
                                                 width = 2f,
-                                                pathEffect = PathEffect.dashPathEffect(
-                                                    floatArrayOf(10f, 10f),
-                                                    0f
-                                                )
+                                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                                             ),
-                                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(
-                                                12.dp.toPx(),
-                                                12.dp.toPx()
-                                            )
+                                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx(), 12.dp.toPx())
                                         )
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PhotoCamera,
-                                        contentDescription = null,
-                                        tint = Color.White.copy(alpha = 0.6f),
-                                        modifier = Modifier.size(24.dp)
-                                    )
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Default.PhotoCamera, null, tint = Color.White.copy(alpha = 0.6f), modifier = Modifier.size(24.dp))
                                     Spacer(modifier = Modifier.height(6.dp))
-                                    Text(
-                                        text = "AÑADIR FOTO",
-                                        color = Color.White.copy(alpha = 0.4f),
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Text("AÑADIR FOTO", color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
 
-                        // Lista de Fotos cargadas
                         items(state.galleryImages) { image ->
                             Box(
                                 modifier = Modifier
@@ -533,12 +488,10 @@ fun WorkspaceSetupProfileScreen(
                             ) {
                                 AsyncImage(
                                     model = ImageKitConfig.getOptimizedUrl(image, width = 200),
-                                    contentDescription = "Foto de galería",
+                                    contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
-
-                                // Botón eliminar cruz roja
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
@@ -546,79 +499,30 @@ fun WorkspaceSetupProfileScreen(
                                         .size(18.dp)
                                         .clip(CircleShape)
                                         .background(Color.Red)
-                                        .clickable {
-                                            viewModel.onEvent(WorkspaceSetupProfileEvent.RemovePhotoClicked(image))
-                                        },
+                                        .clickable { viewModel.onEvent(WorkspaceSetupProfileEvent.RemovePhotoClicked(image)) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Borrar foto",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(10.dp)
-                                    )
+                                    Icon(Icons.Default.Close, null, tint = Color.White, modifier = Modifier.size(10.dp))
                                 }
                             }
                         }
                     }
 
-                    // Error text
                     state.errorMessage?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
+                        Text(text = error, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 16.dp))
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Onboarding Footer y Botón Continuar
+                    // Footer y Botón Continuar
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 24.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(
-                                text = "PASO 1 DE 3",
-                                color = Color.White.copy(alpha = 0.4f),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Información Básica",
-                                color = BrandLightBlue,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(BrandLightBlue)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF334155))
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF334155))
-                            )
+                            Text("PASO 1 DE 3", color = Color.White.copy(alpha = 0.4f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Información Básica", color = BrandLightBlue, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -627,30 +531,15 @@ fun WorkspaceSetupProfileScreen(
                         enabled = !state.isLoading,
                         colors = ButtonDefaults.buttonColors(containerColor = BrandBlue),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 32.dp)
-                            .height(54.dp)
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp).height(54.dp)
                     ) {
                         if (state.isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                         } else {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Continuar a Servicios",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("Continuar a Servicios", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
+                                Icon(Icons.Default.ArrowForward, null, tint = Color.White)
                             }
                         }
                     }

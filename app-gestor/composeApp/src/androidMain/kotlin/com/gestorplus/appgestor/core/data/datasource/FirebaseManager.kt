@@ -33,11 +33,7 @@ actual open class FirebaseManager actual constructor() {
         .build()
 
     actual open suspend fun saveData(path: String, value: String) {
-        try {
-            database.child(path).setValue(value).await()
-        } catch (e: Exception) {
-            Log.e("Firebase", "Error: ${e.message}")
-        }
+        database.child(path).setValue(value).await()
     }
 
     actual open suspend fun initializeRemoteConfig(defaultValues: Map<String, Any>) {
@@ -48,64 +44,52 @@ actual open class FirebaseManager actual constructor() {
         remoteConfig.setDefaultsAsync(defaultValues).await()
     }
 
-    actual open suspend fun fetchAndActivate(): Boolean {
-        return try {
-            remoteConfig.fetchAndActivate().await()
-            true
-        } catch (e: Exception) {
-            false
-        }
+    actual open suspend fun fetchAndActivate(): Boolean = try {
+        remoteConfig.fetchAndActivate().await()
+    } catch (e: Exception) {
+        false
     }
 
-    actual open fun getString(key: String): String {
-        return remoteConfig.getString(key)
+    actual open fun getString(key: String): String = remoteConfig.getString(key)
+
+    actual open suspend fun getFirebaseLogs(path: String): List<String> = try {
+        val snapshot = database.child(path).get().await()
+        snapshot.children.mapNotNull { it.value?.toString() }
+    } catch (e: Exception) {
+        emptyList()
     }
 
-    actual open suspend fun getFirebaseLogs(path: String): List<String> {
-        return try {
-            val snapshot = database.child(path).get().await()
-            snapshot.children.mapNotNull { it.value?.toString() }
-        } catch (e: Exception) {
-            emptyList()
-        }
+    actual open suspend fun getData(path: String): Map<String, Any>? = try {
+        val snapshot = database.child(path).get().await()
+        snapshot.value as? Map<String, Any>
+    } catch (e: Exception) {
+        null
     }
 
-    actual open suspend fun getData(path: String): Map<String, Any>? {
-        return try {
-            val snapshot = database.child(path).get().await()
-            snapshot.value as? Map<String, Any>
-        } catch (e: Exception) {
-            null
-        }
+    actual open suspend fun getRawData(path: String): Any? = try {
+        database.child(path).get().await().value
+    } catch (e: Exception) {
+        null
     }
 
     actual open suspend fun registerUserWithEmail(email: String, password: String): String {
-        val auth = FirebaseAuth.getInstance()
-        val result = auth.createUserWithEmailAndPassword(email, password).await()
-        return result.user?.uid ?: throw Exception("Fallo al crear el usuario en Firebase Auth")
+        val result = FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Error Auth")
     }
 
     actual open suspend fun loginUserWithEmail(email: String, password: String): String {
-        val auth = FirebaseAuth.getInstance()
-        val result = auth.signInWithEmailAndPassword(email, password).await()
-        return result.user?.uid ?: throw Exception("Credenciales incorrectas")
+        val result = FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Error Auth")
     }
 
-    /**
-     * Sube una imagen a ImageKit.io.
-     * Versión ULTRA-ROBUSTA: Redimensiona la imagen y usa el formato de Auth estricto.
-     */
-    actual open suspend fun uploadImage(localPath: String): String {
-        return withContext(Dispatchers.IO) {
-            try {
-                val context = FirebaseApp.getInstance().applicationContext
-                val uri = android.net.Uri.parse(localPath)
-                
-                // 1. Cargar y Redimensionar Imagen (Máximo 800px para asegurar éxito total)
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val original = BitmapFactory.decodeStream(inputStream) ?: throw Exception("Imagen no válida")
-                
-                val scale = if (original.width > 800) 800f / original.width else 1.0f
+    actual open suspend fun uploadImage(localPath: String): String = withContext(Dispatchers.IO) {
+        try {
+            val context = FirebaseApp.getInstance().applicationContext
+            val uri = android.net.Uri.parse(localPath)
+            
+            val base64Image = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val original = BitmapFactory.decodeStream(inputStream) ?: throw Exception("Formato no soportado")
+                val scale = if (original.width > 1000) 1000f / original.width else 1.0f
                 val bitmap = if (scale < 1.0f) {
                     Bitmap.createScaledBitmap(original, (original.width * scale).toInt(), (original.height * scale).toInt(), true)
                 } else original
@@ -113,50 +97,43 @@ actual open class FirebaseManager actual constructor() {
                 val out = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out)
                 val bytes = out.toByteArray()
-                
                 if (bitmap != original) bitmap.recycle()
                 original.recycle()
+                android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+            } ?: throw Exception("Error leyendo archivo")
 
-                // 2. Auth Basic con el formato que ImageKit espera: "privateKey:"
-                val privateKey = ImageKitConfig.PRIVATE_KEY.trim()
-                val authString = "$privateKey:"
-                val encodedAuth = android.util.Base64.encodeToString(authString.toByteArray(), android.util.Base64.NO_WRAP)
-                val authHeader = "Basic $encodedAuth"
+            val privateKey = ImageKitConfig.PRIVATE_KEY.trim()
+            val encodedAuth = android.util.Base64.encodeToString("$privateKey:".toByteArray(), android.util.Base64.NO_WRAP)
+            val fileName = "clinic_${System.currentTimeMillis()}.jpg"
 
-                // 3. Petición Multipart Binaria (Sin folder por ahora para descartar errores)
-                val fileName = "img_${System.currentTimeMillis()}.jpg"
-                val requestBody = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", fileName, bytes.toRequestBody("image/jpeg".toMediaTypeOrNull()))
-                    .addFormDataPart("fileName", fileName)
-                    .addFormDataPart("useUniqueFileName", "true")
-                    .build()
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", base64Image)
+                .addFormDataPart("fileName", fileName)
+                .addFormDataPart("useUniqueFileName", "true")
+                .addFormDataPart("folder", "workspaces_gallery") // Sin "/" al inicio
+                .build()
 
-                val request = Request.Builder()
-                    .url("https://upload.imagekit.io/api/v1/files/upload")
-                    .addHeader("Authorization", authHeader)
-                    .post(requestBody)
-                    .build()
+            val request = Request.Builder()
+                .url("https://upload.imagekit.io/api/v1/files/upload")
+                .addHeader("Authorization", "Basic $encodedAuth")
+                .post(requestBody)
+                .build()
 
-                // 4. Ejecutar
-                client.newCall(request).execute().use { response ->
-                    val body = response.body?.string() ?: ""
-                    Log.d("ImageKit", "Code: ${response.code} - Body: $body")
-                    
-                    if (response.isSuccessful) {
-                        JSONObject(body).getString("url")
-                    } else {
-                        throw Exception("ImageKit Error ${response.code}: $body")
-                    }
+            client.newCall(request).execute().use { response ->
+                val body = response.body?.string() ?: ""
+                if (response.isSuccessful) {
+                    JSONObject(body).getString("url")
+                } else {
+                    Log.e("ImageKit", "Error ${response.code}: $body")
+                    throw Exception("ImageKit Error: ${response.code}")
                 }
-            } catch (e: Exception) {
-                Log.e("ImageKit", "Error", e)
-                throw e
             }
+        } catch (e: Exception) {
+            Log.e("FirebaseManager", "Upload failed", e)
+            throw e
         }
     }
 
-    actual open fun getCurrentUserUid(): String? {
-        return FirebaseAuth.getInstance().currentUser?.uid
-    }
+    actual open fun getCurrentUserUid(): String? = FirebaseAuth.getInstance().currentUser?.uid
 }

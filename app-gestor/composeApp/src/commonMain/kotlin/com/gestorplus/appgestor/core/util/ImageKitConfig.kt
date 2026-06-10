@@ -1,9 +1,9 @@
 package com.gestorplus.appgestor.core.util
 
 object ImageKitConfig {
-    const val PUBLIC_KEY = "public_sRziIymcCXjqfGexbiDAPFrIoIA="
-    const val PRIVATE_KEY = "private_YEQTLocTSOyfzHsZc1uj5FTgS0k="
-    const val URL_ENDPOINT = "https://ik.imagekit.io/5pj4aajs5/app-image/"
+    const val PUBLIC_KEY = "public_0azeJz+O/QI+dcY5TA7ediCi9e8="
+    const val PRIVATE_KEY = "private_QUXE7jtptE7fYONHBGfgdCDUVJc="
+    const val URL_ENDPOINT = "https://ik.imagekit.io/5pj4aajs5/"
     
     /**
      * Genera una URL optimizada de ImageKit.

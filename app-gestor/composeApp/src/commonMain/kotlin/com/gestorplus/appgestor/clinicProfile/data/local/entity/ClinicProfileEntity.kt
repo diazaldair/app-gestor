@@ -11,5 +11,7 @@ data class ClinicProfileEntity(
     val bio: String,
     val specialtiesJson: String, // Almacenado como JSON string
     val address: String,
-    val mapUrl: String?
+    val mapUrl: String?,
+    val latitude: Double? = null,
+    val longitude: Double? = null
 )

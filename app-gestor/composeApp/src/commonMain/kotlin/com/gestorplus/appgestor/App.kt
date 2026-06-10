@@ -149,6 +149,9 @@ fun App() {
                             Screen.WorkspaceSetupIntro
                         }
                     },
+                    onNavigateToDashboard = {
+                        currentScreen = Screen.ServicesEntry
+                    },
                     onNavigateToRegister = {
                         currentScreen = Screen.Register
                     }
@@ -360,7 +363,7 @@ private const val DEFAULT_ONBOARDING_CONFIG = """
       "description": {
         "es": "Gestiona tus proyectos y prioridades de forma sencilla con GestorPlus.",
         "en": "Easily manage projects and priorities with GestorPlus.",
-        "fr": "Gérez facilement vos tareas, proyectos et priorités con GestorPlus."
+        "fr": "Gérez fácilmente vos tareas, proyectos et priorités con GestorPlus."
       },
       "image_url": {
         "es": "https://cdn-icons-png.flaticon.com/512/2620/2620667.png",

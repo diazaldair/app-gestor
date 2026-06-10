@@ -6,6 +6,7 @@ import com.gestorplus.appgestor.owner.setup_profile.data.repository.SetupProfile
 import com.gestorplus.appgestor.owner.setup_profile.data.datasource.SetupProfileService
 import com.gestorplus.appgestor.owner.setup_profile.domain.repository.SetupProfileRepository
 import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.SaveWorkspaceProfileUseCase
+import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.IsProfileSetupUseCase
 import com.gestorplus.appgestor.owner.setup_profile.presentation.viewmodel.WorkspaceSetupProfileViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
@@ -18,5 +19,6 @@ val setupProfileModule = module {
     single<SetupProfileRepository> { SetupProfileRepositoryImpl(get(), get(), get(), get()) }
     
     factoryOf(::SaveWorkspaceProfileUseCase)
+    factoryOf(::IsProfileSetupUseCase)
     viewModelOf(::WorkspaceSetupProfileViewModel)
 }

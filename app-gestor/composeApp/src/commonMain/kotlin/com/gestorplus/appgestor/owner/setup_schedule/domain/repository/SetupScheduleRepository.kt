@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SetupScheduleRepository {
     fun getShifts(): Flow<List<Shift>>
+    suspend fun refreshShifts(): Result<Unit>
     suspend fun saveWorkspaceSchedule(schedule: WorkspaceSchedule): Result<Unit>
     suspend fun saveDetailedShifts(shifts: List<Shift>): Result<Unit>
     suspend fun deleteShift(shiftId: String)

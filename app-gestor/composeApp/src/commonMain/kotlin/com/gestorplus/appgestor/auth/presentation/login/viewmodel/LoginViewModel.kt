@@ -6,6 +6,7 @@ import com.gestorplus.appgestor.auth.domain.usecase.LoginWithEmailUseCase
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEfffect
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginEvent
 import com.gestorplus.appgestor.auth.presentation.login.state.LoginUiState
+import com.gestorplus.appgestor.owner.setup_profile.domain.usecase.IsProfileSetupUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val loginWithEmailUseCase: LoginWithEmailUseCase
+    private val loginWithEmailUseCase: LoginWithEmailUseCase,
+    private val isProfileSetupUseCase: IsProfileSetupUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -64,7 +66,12 @@ class LoginViewModel(
 
         result.fold(
             onSuccess = {
-                _effect.emit(LoginEfffect.NavigateToHome)
+                val isSetup = isProfileSetupUseCase()
+                if (isSetup) {
+                    _effect.emit(LoginEfffect.NavigateToProfessionalDashboard)
+                } else {
+                    _effect.emit(LoginEfffect.NavigateToHome)
+                }
             },
             onFailure = { error ->
                 _state.update { it.copy(errorMessage = error.message ?: "Credenciales inválidas.") }

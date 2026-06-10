@@ -54,21 +54,14 @@ class WorkspaceSetupProfileViewModel(
                 is WorkspaceSetupProfileEvent.BiographyChanged -> {
                     _state.update { it.copy(biography = event.value) }
                 }
-                WorkspaceSetupProfileEvent.FixLocationClicked -> {
-                    _state.update {
-                        it.copy(
-                            isLocationFixed = true,
-                            exactAddress = "Av. Arce #123, La Paz",
-                            references = "Edf. Multicentro, Piso 4"
-                        )
-                    }
-                    _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar("Ubicación actual fijada correctamente."))
-                }
                 is WorkspaceSetupProfileEvent.ExactAddressChanged -> {
                     _state.update { it.copy(exactAddress = event.value) }
                 }
                 is WorkspaceSetupProfileEvent.ReferencesChanged -> {
                     _state.update { it.copy(references = event.value) }
+                }
+                is WorkspaceSetupProfileEvent.MapUrlChanged -> {
+                    _state.update { it.copy(mapUrl = event.value) }
                 }
                 is WorkspaceSetupProfileEvent.PhotoSelected -> {
                     if (event.uri.isNotBlank()) {
@@ -82,6 +75,9 @@ class WorkspaceSetupProfileViewModel(
                         it.copy(galleryImages = it.galleryImages - event.image)
                     }
                 }
+                is WorkspaceSetupProfileEvent.DepartmentSelected -> {
+                    _state.update { it.copy(selectedDepartment = event.department) }
+                }
                 WorkspaceSetupProfileEvent.OnContinueClicked -> {
                     val currentState = _state.value
                     _state.update { it.copy(isLoading = true) }
@@ -93,7 +89,10 @@ class WorkspaceSetupProfileViewModel(
                         biography = currentState.biography,
                         exactAddress = currentState.exactAddress,
                         references = currentState.references,
-                        galleryImages = currentState.galleryImages
+                        galleryImages = currentState.galleryImages,
+                        mapUrl = currentState.mapUrl,
+                        latitude = null,
+                        longitude = null
                     )
                     
                     val result = saveWorkspaceProfileUseCase(profile)
@@ -102,8 +101,9 @@ class WorkspaceSetupProfileViewModel(
                     if (result.isSuccess) {
                         _effect.emit(WorkspaceSetupProfileEfffect.NavigateToServices)
                     } else {
-                        _state.update { it.copy(errorMessage = result.exceptionOrNull()?.message ?: "Error al guardar") }
-                        _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar("Error al guardar el perfil"))
+                        val errorMsg = result.exceptionOrNull()?.message ?: "Error al guardar"
+                        _state.update { it.copy(errorMessage = errorMsg) }
+                        _effect.emit(WorkspaceSetupProfileEfffect.ShowSnackbar(errorMsg))
                     }
                 }
                 WorkspaceSetupProfileEvent.OnBackClicked -> {
