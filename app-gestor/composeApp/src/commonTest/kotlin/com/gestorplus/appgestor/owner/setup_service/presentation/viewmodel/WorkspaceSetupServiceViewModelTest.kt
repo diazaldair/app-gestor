@@ -4,6 +4,7 @@ import com.gestorplus.appgestor.owner.setup_service.domain.usecase.SaveWorkspace
 import com.gestorplus.appgestor.owner.setup_service.domain.usecase.FakeSetupServiceRepository
 import com.gestorplus.appgestor.owner.setup_service.presentation.state.WorkspaceSetupServiceEvent
 import com.gestorplus.appgestor.owner.setup_service.presentation.state.WorkspaceSetupServiceEfffect
+import com.gestorplus.appgestor.owner.setup_service.presentation.state.DurationOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -30,33 +31,38 @@ class WorkspaceSetupServiceViewModelTest {
 
     @Test
     fun `when name changes, state is updated`() = runTest {
-        viewModel.onEvent(WorkspaceSetupServiceEvent.NameChanged("Limpieza Dental"))
-        assertEquals("Limpieza Dental", viewModel.state.value.name)
+        viewModel.onEvent(WorkspaceSetupServiceEvent.ServiceNameChanged("Limpieza Dental"))
+        assertEquals("Limpieza Dental", viewModel.state.value.serviceName)
     }
 
     @Test
-    fun `when duration is selected, state reflects minutes correctly`() = runTest {
-        // Supongamos que el evento DurationSelected(30) es para 30 min
-        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationSelected(45))
-        assertEquals(45, viewModel.state.value.durationMinutes)
+    fun `when duration is selected, state reflects option correctly`() = runTest {
+        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationOptionSelected(DurationOption.MIN_45))
+        assertEquals(DurationOption.MIN_45, viewModel.state.value.selectedDurationOption)
     }
 
     @Test
-    fun `successful service creation emits NavigateToSuccess effect`() = runTest {
-        viewModel.onEvent(WorkspaceSetupServiceEvent.NameChanged("Consulta"))
+    fun `successful service creation emits NavigateToNextStep effect`() = runTest {
+        viewModel.onEvent(WorkspaceSetupServiceEvent.ServiceNameChanged("Consulta"))
         viewModel.onEvent(WorkspaceSetupServiceEvent.PriceChanged("50.0"))
-        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationSelected(30))
+        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationOptionSelected(DurationOption.MIN_30))
 
         viewModel.onEvent(WorkspaceSetupServiceEvent.OnContinueClicked)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(WorkspaceSetupServiceEfffect.NavigateToSuccess, viewModel.effect.first())
+        assertEquals(WorkspaceSetupServiceEfffect.NavigateToNextStep, viewModel.effect.first())
     }
 
     @Test
     fun `save fails with zero duration and shows error`() = runTest {
-        viewModel.onEvent(WorkspaceSetupServiceEvent.NameChanged("Test"))
-        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationSelected(0))
+        viewModel.onEvent(WorkspaceSetupServiceEvent.ServiceNameChanged("Test"))
+        // Seleccionamos Custom y bajamos los minutos a 0
+        viewModel.onEvent(WorkspaceSetupServiceEvent.DurationOptionSelected(DurationOption.CUSTOM))
+        // Por defecto customMinutes es 15, decrementamos 3 veces (5 min cada una)
+        repeat(3) {
+            viewModel.onEvent(WorkspaceSetupServiceEvent.DecrementCustomMinutes)
+        }
+
         viewModel.onEvent(WorkspaceSetupServiceEvent.OnContinueClicked)
         testDispatcher.scheduler.advanceUntilIdle()
 

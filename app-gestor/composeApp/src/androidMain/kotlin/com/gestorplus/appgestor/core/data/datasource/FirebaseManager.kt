@@ -23,14 +23,17 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 actual open class FirebaseManager actual constructor() {
-    private val database = FirebaseDatabase.getInstance("https://appgestor-91a81-default-rtdb.firebaseio.com/").reference
-    private val remoteConfig = FirebaseRemoteConfig.getInstance()
+    private val database by lazy { FirebaseDatabase.getInstance("https://appgestor-91a81-default-rtdb.firebaseio.com/").reference }
+    private val remoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
+    private val auth by lazy { FirebaseAuth.getInstance() }
     
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .build()
+    private val client by lazy { 
+        OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build()
+    }
 
     actual open suspend fun saveData(path: String, value: Any) {
         try {
@@ -80,28 +83,21 @@ actual open class FirebaseManager actual constructor() {
     }
 
     actual open suspend fun registerUserWithEmail(email: String, password: String): String {
-        val auth = FirebaseAuth.getInstance()
         val result = auth.createUserWithEmailAndPassword(email, password).await()
         return result.user?.uid ?: throw Exception("Fallo al crear el usuario en Firebase Auth")
     }
 
     actual open suspend fun loginUserWithEmail(email: String, password: String): String {
-        val auth = FirebaseAuth.getInstance()
         val result = auth.signInWithEmailAndPassword(email, password).await()
         return result.user?.uid ?: throw Exception("Credenciales incorrectas")
     }
 
-    /**
-     * Sube una imagen a ImageKit.io.
-     * Versión ULTRA-ROBUSTA: Redimensiona la imagen y usa el formato de Auth estricto.
-     */
     actual open suspend fun uploadImage(localPath: String): String {
         return withContext(Dispatchers.IO) {
             try {
                 val context = FirebaseApp.getInstance().applicationContext
                 val uri = android.net.Uri.parse(localPath)
                 
-                // 1. Cargar y Redimensionar Imagen (Máximo 800px para asegurar éxito total)
                 val inputStream = context.contentResolver.openInputStream(uri)
                 val original = BitmapFactory.decodeStream(inputStream) ?: throw Exception("Imagen no válida")
                 
@@ -117,13 +113,11 @@ actual open class FirebaseManager actual constructor() {
                 if (bitmap != original) bitmap.recycle()
                 original.recycle()
 
-                // 2. Auth Basic con el formato que ImageKit espera: "privateKey:"
                 val privateKey = ImageKitConfig.PRIVATE_KEY.trim()
                 val authString = "$privateKey:"
                 val encodedAuth = android.util.Base64.encodeToString(authString.toByteArray(), android.util.Base64.NO_WRAP)
                 val authHeader = "Basic $encodedAuth"
 
-                // 3. Petición Multipart Binaria (Sin folder por ahora para descartar errores)
                 val fileName = "img_${System.currentTimeMillis()}.jpg"
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -138,7 +132,6 @@ actual open class FirebaseManager actual constructor() {
                     .post(requestBody)
                     .build()
 
-                // 4. Ejecutar
                 client.newCall(request).execute().use { response ->
                     val body = response.body?.string() ?: ""
                     Log.d("ImageKit", "Code: ${response.code} - Body: $body")
@@ -157,6 +150,6 @@ actual open class FirebaseManager actual constructor() {
     }
 
     actual open fun getCurrentUserUid(): String? {
-        return FirebaseAuth.getInstance().currentUser?.uid
+        return auth.currentUser?.uid
     }
 }

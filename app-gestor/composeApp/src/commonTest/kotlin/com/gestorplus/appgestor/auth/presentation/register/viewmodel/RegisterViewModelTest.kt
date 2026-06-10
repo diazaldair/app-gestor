@@ -3,22 +3,12 @@ package com.gestorplus.appgestor.auth.presentation.register.viewmodel
 import com.gestorplus.appgestor.auth.domain.usecase.RegisterDoctorUseCase
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEvent
 import com.gestorplus.appgestor.auth.presentation.register.state.RegisterEfffect
-import com.gestorplus.appgestor.auth.domain.repository.AuthRepository
-import com.gestorplus.appgestor.auth.domain.usecase.RegisterDoctorUseCaseTest
 import com.gestorplus.appgestor.auth.domain.usecase.FakeAuthRepositoryForRegister
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.flow.first
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
+import kotlinx.coroutines.test.*
+import kotlinx.coroutines.launch
+import kotlin.test.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RegisterViewModelTest {
@@ -43,6 +33,7 @@ class RegisterViewModelTest {
     @Test
     fun `when name changes, state is updated and error is cleared`() = runTest {
         viewModel.onEvent(RegisterEvent.FullNameChanged("Dr. House"))
+        advanceUntilIdle()
         
         val state = viewModel.state.value
         assertEquals("Dr. House", state.fullName)
@@ -53,6 +44,7 @@ class RegisterViewModelTest {
     fun `when toggle password visibility, isPasswordVisible changes`() = runTest {
         val initialState = viewModel.state.value.isPasswordVisible
         viewModel.onEvent(RegisterEvent.TogglePasswordVisibility)
+        advanceUntilIdle()
         
         assertEquals(!initialState, viewModel.state.value.isPasswordVisible)
     }
@@ -63,29 +55,32 @@ class RegisterViewModelTest {
         viewModel.onEvent(RegisterEvent.EmailChanged("invalid-email"))
         viewModel.onEvent(RegisterEvent.PasswordChanged("Pass12345"))
         viewModel.onEvent(RegisterEvent.ConfirmPasswordChanged("Pass12345"))
+        advanceUntilIdle()
         
         viewModel.onEvent(RegisterEvent.OnSubmitClicked)
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
-        assertEquals("Formato de correo inválido.", viewModel.state.value.errorMessage)
+        assertEquals("Por favor, ingresa un correo electrónico válido.", viewModel.state.value.errorMessage)
         assertFalse(viewModel.state.value.isLoading)
     }
 
     @Test
     fun `successful registration emits NavigateToHome effect`() = runTest {
-        // Arrange: Datos válidos (según Regex de ViewModel)
         viewModel.onEvent(RegisterEvent.FullNameChanged("Dr John Smith"))
         viewModel.onEvent(RegisterEvent.EmailChanged("john@smith.com"))
         viewModel.onEvent(RegisterEvent.PasswordChanged("Password123"))
         viewModel.onEvent(RegisterEvent.ConfirmPasswordChanged("Password123"))
+        advanceUntilIdle()
 
-        // Act
+        val effects = mutableListOf<RegisterEfffect>()
+        val job = launch { 
+            viewModel.effect.collect { effects.add(it) } 
+        }
+
         viewModel.onEvent(RegisterEvent.OnSubmitClicked)
+        advanceUntilIdle()
         
-        // Assert: Esperar a que las corrutinas terminen
-        testDispatcher.scheduler.advanceUntilIdle()
-        
-        val effect = viewModel.effect.first()
-        assertEquals(RegisterEfffect.NavigateToHome, effect)
+        assertTrue(effects.contains(RegisterEfffect.NavigateToHome))
+        job.cancel()
     }
 }
